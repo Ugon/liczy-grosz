@@ -1,0 +1,14 @@
+*.iml
+.idea/
+.project
+.classpath
+.settings
+*.properties
+target/
+domain/target/
+persistance/target/
+service/target/
+app/target/
+app/budget/target
+app/expenses/target
+app/statistics/target
