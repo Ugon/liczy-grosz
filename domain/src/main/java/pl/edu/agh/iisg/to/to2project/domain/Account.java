@@ -1,3 +1,5 @@
+package pl.edu.agh.iisg.to.to2project.domain;
+
 import com.google.common.base.Preconditions;
 
 import java.math.BigDecimal;
