@@ -13,4 +13,12 @@
         <version>1.0</version>
     </parent>
 
+    <dependencies>
+        <dependency>
+            <groupId>pl.edu.agh.iisg.to</groupId>
+            <artifactId>to2project.persistence</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
 </project>

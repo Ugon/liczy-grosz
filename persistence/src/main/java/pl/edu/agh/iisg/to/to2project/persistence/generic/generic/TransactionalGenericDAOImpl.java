@@ -5,7 +5,6 @@ import com.googlecode.genericdao.search.ExampleOptions;
 import com.googlecode.genericdao.search.Filter;
 import com.googlecode.genericdao.search.ISearch;
 import com.googlecode.genericdao.search.SearchResult;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,7 +17,7 @@ import java.util.List;
  * @author Wojciech Pachuta.
  */
 public class TransactionalGenericDAOImpl<T, ID extends Serializable> extends GenericDAOImpl<T, ID>
-        implements TransactionalGeneticDao<T, ID> {
+        implements TransactionalGenericDAO<T, ID> {
 
     @Override
     @Autowired

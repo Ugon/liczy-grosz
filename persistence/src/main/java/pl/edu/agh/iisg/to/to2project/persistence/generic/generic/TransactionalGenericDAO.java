@@ -7,5 +7,5 @@ import java.io.Serializable;
 /**
  * @author Wojciech Pachuta.
  */
-public interface TransactionalGeneticDao<T, ID extends Serializable> extends GenericDAO<T, ID>{
+public interface TransactionalGenericDAO<T, ID extends Serializable> extends GenericDAO<T, ID>{
 }
