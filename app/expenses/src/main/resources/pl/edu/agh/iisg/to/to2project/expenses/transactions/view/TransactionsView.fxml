@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.control.Button?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <TableView prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+            <columns>
+                <TableColumn prefWidth="150.0" text="Account Name"/>
+                <TableColumn prefWidth="100.0" text="Transfer"/>
+                <TableColumn prefWidth="100.0" text="Actual Balance"/>
+                <TableColumn prefWidth="100.0" text="Date"/>
+                <TableColumn prefWidth="100.0" text="Category"/>
+                <TableColumn prefWidth="100.0" text="Payee"/>
+                <TableColumn prefWidth="150.0" text="Comment"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" prefHeight="50" alignment="CENTER">
+            <Button text="Transaction Between Your Accounts"/>
+            <Button text="Transaction With External Payee"/>
+            <Button text="Edit Selected Transaction"/>
+            <Button text="Delete Selected Transaction"/>
+        </HBox>
+    </bottom>
+</BorderPane>
