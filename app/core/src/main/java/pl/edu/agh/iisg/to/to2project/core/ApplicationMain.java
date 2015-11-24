@@ -3,6 +3,7 @@ package pl.edu.agh.iisg.to.to2project.core;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ApplicationMain extends Application {
         loader.setLocation(ApplicationMain.class.getResource("view/RootContent.fxml"));
 
         try {
-            primaryStage.setScene(new Scene(loader.load()));
+            primaryStage.setScene(new Scene((BorderPane) loader.load()));
         } catch (IOException exc) {
             Logger.getLogger("GUI").log(ALL, "Cannot instantiate Application Root Content Layout.");
             exc.printStackTrace();
