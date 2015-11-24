@@ -20,20 +20,16 @@ import java.math.BigDecimal;
 @ComponentScan({"pl.edu.agh.iisg.to.to2project"})
 public class App {
 
-    private static TransactionService transactionService;
-    private static CategoryService categoryService;
-
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(App.class, args);
-
-        System.out.println("dupa\n\n");
 
         AccountService accountService = (AccountService) ctx.getBean("accountServiceImpl");
         CategoryService categoryService = (CategoryService) ctx.getBean("categoryServiceImpl");
         TransactionService transactionService = (TransactionService) ctx.getBean("transactionServiceImpl");
 
-        accountService.save(new Account("Dupa", new BigDecimal(10)));
+        System.out.println("dupa\n\n");
 
+        accountService.save(new Account("Dupa", new BigDecimal(10)));
     }
 
 }
