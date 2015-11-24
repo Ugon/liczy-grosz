@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.control.Button?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <TableView prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+            <columns>
+                <TableColumn prefWidth="150.0" text="Account Name"/>
+                <TableColumn prefWidth="100.0" text="Balance"/>
+                <TableColumn prefWidth="550.0" text="Other"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" prefHeight="50" alignment="CENTER">
+            <Button text="Add New Account"/>
+            <Button text="Edit Selected Account"/>
+            <Button text="Delete Selected Account"/>
+        </HBox>
+    </bottom>
+</BorderPane>
