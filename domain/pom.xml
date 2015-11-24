@@ -7,6 +7,8 @@
     <artifactId>to2project.domain</artifactId>
     <version>1.0</version>
 
+    <packaging>jar</packaging>
+
     <parent>
         <groupId>pl.edu.agh.iisg.to</groupId>
         <artifactId>to2project</artifactId>
@@ -23,6 +25,11 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
         </dependency>
     </dependencies>
 

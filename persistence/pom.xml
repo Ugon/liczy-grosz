@@ -7,6 +7,8 @@
     <artifactId>to2project.persistence</artifactId>
     <version>1.0</version>
 
+    <packaging>jar</packaging>
+
     <parent>
         <groupId>pl.edu.agh.iisg.to</groupId>
         <artifactId>to2project</artifactId>
@@ -14,6 +16,11 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.37</version>
+        </dependency>
         <dependency>
             <groupId>pl.edu.agh.iisg.to</groupId>
             <artifactId>to2project.domain</artifactId>
@@ -27,7 +34,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>4.1.6.RELEASE</version>
+            <version>4.2.3.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.genericdao</groupId>
@@ -37,12 +44,22 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>4.1.6.RELEASE</version>
+            <version>4.2.3.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.1.6.RELEASE</version>
+            <version>4.2.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>4.2.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>4.2.3.RELEASE</version>
         </dependency>
     </dependencies>
 

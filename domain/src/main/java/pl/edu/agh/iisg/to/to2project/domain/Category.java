@@ -2,6 +2,8 @@ package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -10,7 +12,7 @@ import java.util.Set;
 /**
  * @author Wojciech Pachuta.
  */
-public class Category {
+public class Category extends AbstractEntity {
     private String name;
     private Set<Category> subCategories;
     private Optional<Category> parentCategory;

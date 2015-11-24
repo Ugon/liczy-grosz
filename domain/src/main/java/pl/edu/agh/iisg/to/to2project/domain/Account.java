@@ -2,19 +2,24 @@ package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Wojciech Pachuta.
  */
-public class Account {
+@Entity
+@Table
+public class Account extends AbstractEntity{
+    @Column
     private String name;
+
+    @Column
     private BigDecimal balance;
 
-    private Set<Transaction> transactionHistory;
+//    private Set<Transaction> transactionHistory;
 
     Account() {
     }
@@ -25,7 +30,7 @@ public class Account {
         Preconditions.checkNotNull(balance);
         this.name = name;
         this.balance = balance;
-        this.transactionHistory = new HashSet<>();
+//        this.transactionHistory = new HashSet<>();
     }
 
     public String getName() {
@@ -54,17 +59,17 @@ public class Account {
         balance = balance.subtract(delta);
     }
 
-    public Set<Transaction> getTransactionHistory() {
-        return Collections.unmodifiableSet(transactionHistory);
-    }
-
-    public boolean addTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.add(transaction);
-    }
-
-    public boolean removeTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.remove(transaction);
-    }
+//    public Set<Transaction> getTransactionHistory() {
+//        return Collections.unmodifiableSet(transactionHistory);
+//    }
+//
+//    public boolean addTransaction(Transaction transaction){
+//        Preconditions.checkNotNull(transaction);
+//        return transactionHistory.add(transaction);
+//    }
+//
+//    public boolean removeTransaction(Transaction transaction){
+//        Preconditions.checkNotNull(transaction);
+//        return transactionHistory.remove(transaction);
+//    }
 }

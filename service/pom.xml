@@ -7,6 +7,8 @@
     <artifactId>to2project.service</artifactId>
     <version>1.0</version>
 
+    <packaging>jar</packaging>
+
     <parent>
         <groupId>pl.edu.agh.iisg.to</groupId>
         <artifactId>to2project</artifactId>

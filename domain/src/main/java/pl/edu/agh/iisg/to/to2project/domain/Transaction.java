@@ -3,13 +3,15 @@ package pl.edu.agh.iisg.to.to2project.domain;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
  */
-public class Transaction {
+public class Transaction extends AbstractEntity {
     private final Account account;
     private final BigDecimal delta;
     private final DateTime dateTime;
