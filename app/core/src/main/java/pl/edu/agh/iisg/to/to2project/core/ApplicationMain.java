@@ -64,9 +64,7 @@ public class ApplicationMain extends Application {
         CategoryService categoryService = (CategoryService) ctx.getBean("categoryServiceImpl");
         TransactionService transactionService = (TransactionService) ctx.getBean("transactionServiceImpl");
 
-        System.out.println("dupa\n\n");
-
-        accountService.save(new Account("Dupa", new BigDecimal(10)));
+        accountService.save(new Account("SampleAccount", new BigDecimal(10)));
 
         launch(args);
     }

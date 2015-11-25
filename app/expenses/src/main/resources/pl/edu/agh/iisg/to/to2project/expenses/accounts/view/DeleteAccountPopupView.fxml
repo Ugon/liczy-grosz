@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="320" prefWidth="320">
-    <!---->
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="320" prefWidth="320"
+            fx:controller="pl.edu.agh.iisg.to.to2project.expenses.accounts.controller.DeleteAccountPopupController">
+
+    <VBox spacing="15">
+        <padding>
+            <Insets top="20" left="10" right="10"/>
+        </padding>
+        <!--<TextFlow maxWidth="300">-->
+            <Text style="-fx-text-alignment: justify" wrappingWidth="300">Are you sure you want to continue? Deleting the account is an irreversible operation and you won't be able to undo these changes. Please note that deleting the account is associated with deleting the transaction history of this account too.</Text>
+        <!--</TextFlow>-->
+        <HBox spacing="20" alignment="CENTER">
+            <padding>
+                <Insets top="15" left="65" right="65"/>
+            </padding>
+            <Button minWidth="75" text="Proceed" fx:id="cancelButton" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" fx:id="OKButton" onAction="#handleCancelButtonClick"/>
+        </HBox>
+    </VBox>
 </BorderPane>
