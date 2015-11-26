@@ -23,7 +23,7 @@
 
     <bottom>
         <HBox spacing="10" prefHeight="50" alignment="CENTER">
-            <Button text="Transaction Between Your Accounts" onAction="#handleSelfTransactionClick"/>
+            <Button text="Transaction Between My Accounts" onAction="#handleSelfTransactionClick"/>
             <Button text="Transaction With External Payee" onAction="#handleExternalTransactionClick"/>
             <Button text="Edit Selected Transaction" onAction="#handleEditTransactionClick"/>
             <Button text="Delete Selected Transaction" onAction="#handleDeleteTransactionClick"/>
