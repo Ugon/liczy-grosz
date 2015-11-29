@@ -18,6 +18,8 @@
     <modules>
         <module>core</module>
         <module>expenses</module>
+        <module>budget</module>
+        <module>statistics</module>
     </modules>
 
     <dependencies>
