@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.CategoryButtonsHandlers">
+    <center>
+        <TableView prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+            <columns>
+                <TableColumn prefWidth="100.0" text="Category"/>
+                <TableColumn prefWidth="100.0" text="Parent Category"/>
+                <TableColumn prefWidth="600.0" text="Other"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" prefHeight="50" alignment="CENTER">
+            <Button text="Add New Category" onAction="#handleAddCategoryClick"/>
+            <Button text="Edit Selected Category" onAction="#handleEditCategoryClick"/>
+            <Button text="Delete Selected Category" onAction="#handleDeleteCategoryClick"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -21,6 +21,16 @@
             <artifactId>to2project.app.expenses</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>pl.edu.agh.iisg.to</groupId>
+            <artifactId>to2project.app.budget</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.edu.agh.iisg.to</groupId>
+            <artifactId>to2project.app.statistics</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -29,7 +39,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>my.package.ApplicationMain</mainClass>
+                    <mainClass>pl.edu.agh.iisg.to.to2project.app.core.ApplicationMain</mainClass>
                 </configuration>
             </plugin>
 

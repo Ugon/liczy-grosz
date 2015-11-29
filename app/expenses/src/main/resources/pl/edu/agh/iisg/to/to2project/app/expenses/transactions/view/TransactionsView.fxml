@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.TransactionButtonsHandlers">
+    <center>
+        <TableView prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+            <columns>
+                <TableColumn prefWidth="150.0" text="Account Name"/>
+                <TableColumn prefWidth="100.0" text="Transfer"/>
+                <TableColumn prefWidth="100.0" text="Actual Balance"/>
+                <TableColumn prefWidth="100.0" text="Date"/>
+                <TableColumn prefWidth="100.0" text="Category"/>
+                <TableColumn prefWidth="100.0" text="Payee"/>
+                <TableColumn prefWidth="150.0" text="Comment"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" prefHeight="50" alignment="CENTER">
+            <Button text="Transaction Between My Accounts" onAction="#handleSelfTransactionClick"/>
+            <Button text="Transaction With External Payee" onAction="#handleExternalTransactionClick"/>
+            <Button text="Edit Selected Transaction" onAction="#handleEditTransactionClick"/>
+            <Button text="Delete Selected Transaction" onAction="#handleDeleteTransactionClick"/>
+        </HBox>
+    </bottom>
+</BorderPane>

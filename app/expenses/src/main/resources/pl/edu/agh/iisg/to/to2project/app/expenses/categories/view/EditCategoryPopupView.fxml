@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="160" prefWidth="320"
+            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.EditCategoryPopupController">
+    <VBox spacing="15">
+        <padding>
+            <Insets top="20" left="10" right="10"/>
+        </padding>
+        <HBox>
+            <GridPane>
+                <Label text="New Category Name:" minWidth="130" GridPane.columnIndex="0"/>
+                <TextField minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Parent Category:" minWidth="130" GridPane.columnIndex="0"/>
+                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox spacing="20" alignment="CENTER">
+            <padding>
+                <Insets top="15" left="65" right="65"/>
+            </padding>
+            <Button minWidth="75" text="OK" fx:id="cancelButton" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" fx:id="OKButton" onAction="#handleCancelButtonClick"/>
+        </HBox>
+    </VBox>
+</BorderPane>

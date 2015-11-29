@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.ExternalTransactionPopupController">
+    <VBox spacing="15">
+        <HBox>
+            <GridPane>
+                <Label text="New Account Name:" minWidth="130" GridPane.columnIndex="0"/>
+                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Payee:" minWidth="130" GridPane.columnIndex="0"/>
+                <TextField minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Category:" minWidth="130" GridPane.columnIndex="0"/>
+                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Transfer:" minWidth="130" GridPane.columnIndex="0"/>
+                <HBox spacing="10" GridPane.columnIndex="1">
+                    <TextField minWidth="100"/>
+                    <TextField minWidth="60"/>
+                </HBox>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Type:" minWidth="130" GridPane.columnIndex="0"/>
+                <HBox GridPane.columnIndex="1" minWidth="170">
+                    <fx:define>
+                        <ToggleGroup fx:id="TransferTypeGroup"/>
+                    </fx:define>
+                    <RadioButton minWidth="85" text="Income" toggleGroup="$TransferTypeGroup"/>
+                    <RadioButton minWidth="85" text="Expenditure" toggleGroup="$TransferTypeGroup"/>
+                </HBox>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Date:" minWidth="130" GridPane.columnIndex="0"/>
+                <DatePicker minWidth="170" GridPane.columnIndex="1"/>
+            </GridPane>
+        </HBox>
+        <HBox>
+            <GridPane>
+                <Label text="New Comment:" minWidth="130" GridPane.columnIndex="0"/>
+                <TextArea minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
+                          style="-fx-font-size: 10"/>
+            </GridPane>
+        </HBox>
+        <HBox spacing="20" alignment="CENTER">
+            <padding>
+                <Insets top="15" left="65" right="65"/>
+            </padding>
+            <Button minWidth="75" text="OK" fx:id="cancelButton" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" fx:id="OKButton" onAction="#handleCancelButtonClick"/>
+        </HBox>
+    </VBox>
+</BorderPane>
