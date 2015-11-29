@@ -4,7 +4,7 @@
 3. executable jar file will be created in app/core/target/to2project.app.core-1.0.jar
 4. java -jar to2project.app.core-1.0.jar
 
-Alternative way:
+Alternative way: <br />
 1. create mysql database with name "to2", user "root", and blank password.<br />
 2. just run the app in intellij "Run 'ApplicationMain'" on app/core/src/.../ApplicationMain.java
 
