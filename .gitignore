@@ -3,7 +3,6 @@
 .project
 .classpath
 .settings
-*.properties
 target/
 domain/target/
 persistance/target/
