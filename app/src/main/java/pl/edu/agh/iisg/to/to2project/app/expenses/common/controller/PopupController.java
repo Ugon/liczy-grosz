@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
 public abstract class PopupController {
 
@@ -16,11 +17,21 @@ public abstract class PopupController {
     @FXML
     protected Button OKButton;
 
+    protected Stage dialogStage;
+
     @FXML
     protected abstract void handleOKButtonClick(ActionEvent actionEvent);
 
     @FXML
     protected void handleCancelButtonClick(ActionEvent actionEvent) {
-        ((Stage) cancelButton.getScene().getWindow()).close();
+        dialogStage.close();
+    }
+
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
+    }
+
+    protected void showDialogAndWait(){
+        dialogStage.showAndWait();
     }
 }

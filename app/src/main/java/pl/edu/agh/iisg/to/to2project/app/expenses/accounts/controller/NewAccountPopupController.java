@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
 import pl.edu.agh.iisg.to.to2project.domain.Account;
@@ -12,17 +13,22 @@ import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Optional;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
 @Controller
+@Scope("prototype")
 public class NewAccountPopupController extends PopupController {
 
     @Autowired
     private AccountService accountService;
 
     private DecimalFormat decimalFormat;
+
+    private Account newAccount;
 
     @FXML
     private TextField nameTextField;
@@ -42,6 +48,7 @@ public class NewAccountPopupController extends PopupController {
         if(isInputValid()){
             updateModel();
         }
+        dialogStage.close();
     }
 
     private boolean isInputValid(){
@@ -57,7 +64,12 @@ public class NewAccountPopupController extends PopupController {
             e.printStackTrace();
         }
 
-        Account newAccount = new Account(name, initialBalance);
+        newAccount = new Account(name, initialBalance);
         accountService.save(newAccount);
+    }
+
+    public Optional<Account> addAccount() {
+        showDialogAndWait();
+        return Optional.ofNullable(newAccount);
     }
 }

@@ -13,13 +13,13 @@
         <HBox>
             <GridPane>
                 <Label text="New Account Name:" minWidth="130" GridPane.columnIndex="0"/>
-                <TextField minWidth="170" GridPane.columnIndex="1"/>
+                <TextField fx:id="nameTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Actual Balance:" minWidth="130" GridPane.columnIndex="0"/>
-                <TextField minWidth="170" GridPane.columnIndex="1"/>
+                <Label text="New Initial Balance:" minWidth="130" GridPane.columnIndex="0"/>
+                <TextField fx:id="initialBalanceTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox spacing="20" alignment="CENTER">

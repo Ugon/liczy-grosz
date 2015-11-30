@@ -65,6 +65,7 @@ public class Account extends AbstractEntity{
     public void setInitialBalance(BigDecimal initialBalance){
         Preconditions.checkNotNull(initialBalance);
         Preconditions.checkArgument(initialBalance.compareTo(BigDecimal.ZERO) >= 0);
+        this.initialBalance.set(initialBalance);
     }
 
     public ObjectProperty<BigDecimal> initialBalanceProperty() {
