@@ -1,10 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -14,21 +15,21 @@ import java.util.Optional;
 @Entity
 @Table
 public class Transaction extends AbstractEntity {
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "accountId")
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "accountId")
     private final Account account;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private final BigDecimal delta;
 
-    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @Column(nullable = false)
+//    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+//    @Column(nullable = false)
     private final DateTime dateTime;
 
-    @OneToOne(optional = true, fetch = FetchType.EAGER)
+//    @OneToOne(optional = true, fetch = FetchType.EAGER)
     private Category category;
 
-    @Column(nullable = true)
+//    @Column(nullable = true)
     private String comment;
 
     Transaction(){
@@ -43,18 +44,22 @@ public class Transaction extends AbstractEntity {
         this.dateTime = dateTime;
     }
 
+    @Transient
     public Account getAccount() {
         return account;
     }
 
+    @Transient
     public BigDecimal getDelta() {
         return delta;
     }
 
+    @Transient
     public DateTime getDateTime() {
         return dateTime;
     }
 
+    @Transient
     public Optional<Category> getCategory() {
         return Optional.of(category);
     }
@@ -68,6 +73,7 @@ public class Transaction extends AbstractEntity {
         this.category = null;
     }
 
+    @Transient
     public Optional<String> getComment() {
         return Optional.ofNullable(comment);
     }

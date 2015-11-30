@@ -1,14 +1,12 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.property.*;
+import javafx.collections.ObservableSet;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,54 +14,66 @@ import java.util.Set;
  */
 @Entity
 @Table
+@Access(AccessType.PROPERTY)
 public class Account extends AbstractEntity{
-    @Column(nullable = false, unique = true)
-    private String name;
+    private final StringProperty name;
 
-    @Column(nullable = false)
-    private BigDecimal balance;
+    private final ObjectProperty<BigDecimal> initialBalance;
 
-    @OneToMany(mappedBy = "account")
-    private Set<Transaction> transactionHistory;
+    private final ObservableSet<Transaction> transactionHistory;
 
     Account() {
+        super();
+        this.name = new SimpleStringProperty(this, "name");
+        this.initialBalance = new SimpleObjectProperty<>(this, "initialBalance");
+        this.transactionHistory = new SimpleSetProperty<>(this, "transactionHistory");
     }
 
     public Account(String name, BigDecimal balance) {
+        this();
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(!name.isEmpty());
         Preconditions.checkNotNull(balance);
-        this.name = name;
-        this.balance = balance;
-        this.transactionHistory = new HashSet<>();
+        setName(name);
+        this.initialBalance.set(balance);
     }
 
+
+
+    @Column(nullable = false, unique = true)
     public String getName() {
-        return name;
+        return name.get();
     }
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(!name.isEmpty());
-        this.name = name;
+        this.name.set(name);
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public StringProperty nameProperty() {
+        return name;
     }
 
-    public void addMoney(BigDecimal delta){
-        Preconditions.checkNotNull(delta);
-        Preconditions.checkArgument(delta.compareTo(BigDecimal.ZERO) >= 0);
-        balance = balance.add(delta);
+
+
+    @Column(nullable = false)
+    public BigDecimal getInitialBalance() {
+        return initialBalance.get();
     }
 
-    public void subtractMoney(BigDecimal delta){
-        Preconditions.checkNotNull(delta);
-        Preconditions.checkArgument(delta.compareTo(BigDecimal.ZERO) >= 0);
-        balance = balance.subtract(delta);
+    public void setInitialBalance(BigDecimal initialBalance){
+        Preconditions.checkNotNull(initialBalance);
+        Preconditions.checkArgument(initialBalance.compareTo(BigDecimal.ZERO) >= 0);
     }
 
+    public ObjectProperty<BigDecimal> initialBalanceProperty() {
+        return this.initialBalance;
+    }
+
+
+//    @OneToMany(mappedBy = "account")
+    @Transient
     public Set<Transaction> getTransactionHistory() {
         return Collections.unmodifiableSet(transactionHistory);
     }
@@ -77,6 +87,13 @@ public class Account extends AbstractEntity{
         Preconditions.checkNotNull(transaction);
         return transactionHistory.remove(transaction);
     }
+
+    public ObservableSet<Transaction> transactionHistoryObservableSet() {
+        return transactionHistory;
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {

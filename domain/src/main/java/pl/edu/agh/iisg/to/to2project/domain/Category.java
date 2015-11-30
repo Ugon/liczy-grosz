@@ -14,13 +14,13 @@ import java.util.Set;
 @Entity
 @Table
 public class Category extends AbstractEntity {
-    @Column(nullable = false, unique = true)
+//    @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategory")
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategory")
     private Set<Category> subCategories;
 
-    @OneToOne(optional = true)
+//    @OneToOne(optional = true)
     private Category parentCategory;
 
     Category() {
@@ -43,6 +43,7 @@ public class Category extends AbstractEntity {
         this.parentCategory = parentCategory;
     }
 
+    @Transient
     public String getName() {
         return name;
     }
@@ -53,6 +54,7 @@ public class Category extends AbstractEntity {
         this.name = name;
     }
 
+    @Transient
     public Set<Category> getSubCategories() {
         return Collections.unmodifiableSet(subCategories);
     }
@@ -67,6 +69,7 @@ public class Category extends AbstractEntity {
         return subCategories.remove(category);
     }
 
+    @Transient
     public Optional<Category> getParentCategory(){
         return Optional.ofNullable(parentCategory);
     }
