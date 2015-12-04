@@ -25,6 +25,7 @@ public abstract class Popup<T extends PopupController> {
     private T controller;
 
     @PostConstruct
+    @SuppressWarnings("unchecked")
     private void initializePopup() {
         try {
             Parent parent = (Parent) loader.load(getFullyQualifiedResource());

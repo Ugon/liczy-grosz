@@ -31,7 +31,7 @@ public abstract class PopupController {
         this.dialogStage = dialogStage;
     }
 
-    protected void showDialogAndWait(){
-        dialogStage.showAndWait();
+    protected void showDialog(){
+        dialogStage.show();
     }
 }

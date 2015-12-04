@@ -13,7 +13,6 @@ import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.Optional;
 
 /**
  * @author Bartłomiej Grochal
@@ -68,8 +67,7 @@ public class NewAccountPopupController extends PopupController {
         accountService.save(newAccount);
     }
 
-    public Optional<Account> addAccount() {
-        showDialogAndWait();
-        return Optional.ofNullable(newAccount);
+    public void addAccount() {
+        showDialog();
     }
 }

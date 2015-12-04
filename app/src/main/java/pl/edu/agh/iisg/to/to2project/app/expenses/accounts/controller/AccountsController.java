@@ -1,6 +1,5 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +16,6 @@ import pl.edu.agh.iisg.to.to2project.domain.Account;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 /**
  * @author Bartłomiej Grochal
@@ -45,7 +43,7 @@ public class AccountsController {
 
     @FXML
     public void initialize() {
-        data = FXCollections.observableArrayList(accountService.getList());
+        data = accountService.getList();
         accountsTable.setItems(data);
 
         accountsTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -59,10 +57,7 @@ public class AccountsController {
         NewAccountPopup popup = context.getBean(NewAccountPopup.class);
         NewAccountPopupController controller = popup.getController();
 
-        Optional<Account> newAccount = controller.addAccount();
-        if(newAccount.isPresent()){
-            data.add(newAccount.get());
-        }
+        controller.addAccount();
     }
 
     @FXML
@@ -83,9 +78,7 @@ public class AccountsController {
 
         Account selectedAccount = accountsTable.getSelectionModel().getSelectedItem();
         if(selectedAccount != null){
-            if(controller.deleteAccount(selectedAccount)){
-                data.remove(selectedAccount);
-            }
+            controller.deleteAccount(selectedAccount);
         }
     }
 }

@@ -1,9 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.iisg.to.to2project.domain.Transaction;
-import pl.edu.agh.iisg.to.to2project.persistence.generic.TransactionDAO;
 import pl.edu.agh.iisg.to.to2project.service.TransactionService;
 import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 
@@ -13,9 +11,9 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 @Service
 public class TransactionServiceImpl extends CRUDServiceGeneric<Transaction, Long> implements TransactionService {
 
-    @Autowired
-    protected void setDao(TransactionDAO dao) {
-        this.dao = dao;
-    }
+//    @Autowired
+//    protected void setDao(TransactionDAO dao) {
+//        this.dao = dao;
+//    }
 
 }

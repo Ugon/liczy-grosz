@@ -22,19 +22,15 @@ public class DeleteAccountPopupController extends PopupController {
 
     private Account account;
 
-    private boolean deleted = false;
-
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
         accountService.remove(account);
-        deleted = true;
         dialogStage.close();
     }
 
-    public boolean deleteAccount(Account account){
+    public void deleteAccount(Account account){
         this.account = account;
-        showDialogAndWait();
-        return deleted;
+        showDialog();
     }
 }

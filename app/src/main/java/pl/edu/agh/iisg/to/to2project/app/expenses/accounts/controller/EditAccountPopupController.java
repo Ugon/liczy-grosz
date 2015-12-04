@@ -70,6 +70,6 @@ public class EditAccountPopupController extends PopupController {
 
     public void editAccount(Account account) {
         this.account = account;
-        showDialogAndWait();
+        showDialog();
     }
 }
