@@ -11,9 +11,4 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 @Service
 public class AccountServiceImpl extends CRUDServiceGeneric<Account, Long> implements AccountService {
 
-//    @Autowired
-//    protected void setDao(AccountDAO dao) {
-//        this.dao = dao;
-//    }
-
 }

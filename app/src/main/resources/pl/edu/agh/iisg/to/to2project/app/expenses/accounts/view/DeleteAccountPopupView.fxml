@@ -14,8 +14,8 @@
             <Insets top="20" left="10" right="10"/>
         </padding>
         <Text style="-fx-text-alignment: justify" wrappingWidth="300">Are you sure you want to continue? Deleting the
-            account is an irreversible operation and you won't be able to undo these changes. Please note that deleting
-            the account is associated with deleting the transaction history of this account too.
+            destinationAccount is an irreversible operation and you won't be able to undo these changes. Please note that deleting
+            the destinationAccount is associated with deleting the transaction history of this destinationAccount too.
         </Text>
         <HBox spacing="20" alignment="CENTER">
             <padding>

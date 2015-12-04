@@ -11,9 +11,4 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 @Service
 public class CategoryServiceImpl extends CRUDServiceGeneric<Category, Long> implements CategoryService {
 
-//    @Autowired
-//    protected void setDao(CategoryDAO dao) {
-//        this.dao = dao;
-//    }
-
 }

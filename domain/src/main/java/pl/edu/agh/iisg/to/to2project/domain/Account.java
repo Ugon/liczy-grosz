@@ -16,17 +16,21 @@ import java.util.Set;
 @Table
 @Access(AccessType.PROPERTY)
 public class Account extends AbstractEntity{
+
     private final StringProperty name;
 
     private final ObjectProperty<BigDecimal> initialBalance;
 
-    private final ObservableSet<Transaction> transactionHistory;
+    private final ObservableSet<InternalTransaction> internalTransactionHistory;
+
+    private final ObservableSet<ExternalTransaction> externalTransactionHistory;
 
     Account() {
         super();
-        this.name = new SimpleStringProperty(this, "name");
-        this.initialBalance = new SimpleObjectProperty<>(this, "initialBalance");
-        this.transactionHistory = new SimpleSetProperty<>(this, "transactionHistory");
+        this.name = new SimpleStringProperty();
+        this.initialBalance = new SimpleObjectProperty<>();
+        this.internalTransactionHistory = new SimpleSetProperty<>();
+        this.externalTransactionHistory = new SimpleSetProperty<>();
     }
 
     public Account(String name, BigDecimal balance) {
@@ -41,7 +45,7 @@ public class Account extends AbstractEntity{
 
 
     @Column(nullable = false, unique = true)
-    public String getName() {
+    private String getName() {
         return name.get();
     }
 
@@ -58,7 +62,7 @@ public class Account extends AbstractEntity{
 
 
     @Column(nullable = false)
-    public BigDecimal getInitialBalance() {
+    private BigDecimal getInitialBalance() {
         return initialBalance.get();
     }
 
@@ -73,26 +77,54 @@ public class Account extends AbstractEntity{
     }
 
 
-//    @OneToMany(mappedBy = "account")
-    @Transient
-    public Set<Transaction> getTransactionHistory() {
-        return Collections.unmodifiableSet(transactionHistory);
+
+    @OneToMany(mappedBy = "destinationAccount")
+    private Set<InternalTransaction> getInternalTransactionHistory() {
+        return Collections.unmodifiableSet(internalTransactionHistory);
     }
 
-    public boolean addTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.add(transaction);
+    private void setInternalTransactionHistory(Set<InternalTransaction> internalTransactionHistory){
+        this.internalTransactionHistory.addAll(internalTransactionHistory);
     }
 
-    public boolean removeTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.remove(transaction);
+    public boolean addInternalTransaction(InternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return internalTransactionHistory.add(internalTransaction);
     }
 
-    public ObservableSet<Transaction> transactionHistoryObservableSet() {
-        return transactionHistory;
+    public boolean removeInternalTransaction(InternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return internalTransactionHistory.remove(internalTransaction);
     }
 
+    public ObservableSet<InternalTransaction> internalTransactionHistoryObservableSet() {
+        return internalTransactionHistory;
+    }
+
+
+
+    @OneToMany(mappedBy = "destinationAccount")
+    private Set<ExternalTransaction> getExternalTransactionHistory() {
+        return Collections.unmodifiableSet(externalTransactionHistory);
+    }
+
+    private void setExternalTransactionHistory(Set<ExternalTransaction> externalTransactionHistory){
+        this.externalTransactionHistory.addAll(externalTransactionHistory);
+    }
+
+    public boolean addExternalTransaction(ExternalTransaction externalTransaction){
+        Preconditions.checkNotNull(externalTransaction);
+        return externalTransactionHistory.add(externalTransaction);
+    }
+
+    public boolean removeExternalTransaction(ExternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return externalTransactionHistory.remove(internalTransaction);
+    }
+
+    public ObservableSet<ExternalTransaction> externalTransactionHistoryObservableSet() {
+        return externalTransactionHistory;
+    }
 
 
 

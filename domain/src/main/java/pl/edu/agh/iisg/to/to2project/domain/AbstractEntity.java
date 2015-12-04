@@ -36,12 +36,12 @@ public abstract class AbstractEntity implements Serializable {
 
         AbstractEntity that = (AbstractEntity) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return id.equals(that.id);
 
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 }
