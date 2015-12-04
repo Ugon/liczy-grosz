@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
@@ -42,6 +43,26 @@ public class ExternalTransaction extends AbstractTransaction {
 
     public StringProperty sourceProperty() {
         return source;
+    }
+
+
+
+
+    @Override
+    @Transient
+    public void setCategory(Category category) {
+        Preconditions.checkNotNull(category);
+        category.addExternalTransaction(this);
+        this.category.set(Optional.of(category));
+    }
+
+    @Override
+    public void removeCategory() {
+        if(this.category.get().isPresent()){
+            Category category = this.category.get().get();
+            category.removeExternalTransaction(this);
+            this.category.set(Optional.empty());
+        }
     }
 
 

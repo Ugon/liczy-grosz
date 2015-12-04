@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
@@ -31,7 +32,6 @@ public class InternalTransaction extends AbstractTransaction {
 
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sourceAccount_id")
     public Account getSourceAccount() {
         return sourceAccount.get();
     }
@@ -44,6 +44,28 @@ public class InternalTransaction extends AbstractTransaction {
     public ObjectProperty<Account> sourceAccountProperty() {
         return sourceAccount;
     }
+
+
+
+
+    @Override
+    @Transient
+    public void setCategory(Category category) {
+        Preconditions.checkNotNull(category);
+        category.addInternalTransaction(this);
+        this.category.set(Optional.of(category));
+    }
+
+    @Override
+    public void removeCategory() {
+        if(this.category.get().isPresent()){
+            Category category = this.category.get().get();
+            category.removeInternalTransaction(this);
+            this.category.set(Optional.empty());
+        }
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -23,7 +23,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     private final ObjectProperty<DateTime> dateTime;
 
-    private final ObjectProperty<Optional<Category>> category;
+    final ObjectProperty<Optional<Category>> category;
 
     private final ObjectProperty<Optional<String>> comment;
 
@@ -88,25 +88,20 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
 
 
-    @OneToOne(optional = true, fetch = FetchType.EAGER)
-    private Category getCategory() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Category getCategoryColumn() {
         return category.get().orElse(null);
     }
 
-    @OneToOne(optional = true, fetch = FetchType.EAGER)
-    private void setCategoryHibernate(Category category) {
+    private void setCategoryColumn(Category category) {
         this.category.set(Optional.of(category));
     }
 
     @Transient
-    public void setCategory(Category category) {
-        Preconditions.checkNotNull(category);
-        this.category.set(Optional.of(category));
-    }
+    public abstract void setCategory(Category category);
 
-    public void removeCategoty(){
-        this.category.set(Optional.empty());
-    }
+    public abstract void removeCategory();
+
     public ObjectProperty<Optional<Category>> categoryProperty() {
         return category;
     }

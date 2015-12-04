@@ -107,7 +107,6 @@ public class Category extends AbstractEntity {
 
 
 
-
     @OneToOne(optional = true, fetch = FetchType.EAGER)
     private Category getParentCategory(){
         return parentCategory.get().orElse(null);
@@ -127,7 +126,7 @@ public class Category extends AbstractEntity {
 
 
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "categoryColumn")
     private Set<ExternalTransaction> getExternalTransactions() {
         return Collections.unmodifiableSet(externalTransactions);
     }
@@ -136,12 +135,12 @@ public class Category extends AbstractEntity {
         this.externalTransactions.addAll(externalTransactions);
     }
 
-    public boolean addExternalTransaction(ExternalTransaction externalTransaction){
+    boolean addExternalTransaction(ExternalTransaction externalTransaction){
         Preconditions.checkNotNull(externalTransaction);
         return externalTransactions.add(externalTransaction);
     }
 
-    public boolean removeExternalTransaction(ExternalTransaction internalTransaction){
+    boolean removeExternalTransaction(ExternalTransaction internalTransaction){
         Preconditions.checkNotNull(internalTransaction);
         return externalTransactions.remove(internalTransaction);
     }
@@ -152,7 +151,7 @@ public class Category extends AbstractEntity {
 
 
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "categoryColumn")
     private Set<InternalTransaction> getInternalTransactions() {
         return Collections.unmodifiableSet(internalTransactions);
     }
@@ -161,12 +160,12 @@ public class Category extends AbstractEntity {
         this.internalTransactions.addAll(internalTransactions);
     }
 
-    public boolean addInternalTransaction(InternalTransaction internalTransaction){
+    boolean addInternalTransaction(InternalTransaction internalTransaction){
         Preconditions.checkNotNull(internalTransaction);
         return internalTransactions.add(internalTransaction);
     }
 
-    public boolean removeInternalTransaction(InternalTransaction internalTransaction){
+    boolean removeInternalTransaction(InternalTransaction internalTransaction){
         Preconditions.checkNotNull(internalTransaction);
         return internalTransactions.remove(internalTransaction);
     }
