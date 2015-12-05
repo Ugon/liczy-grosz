@@ -1,26 +1,29 @@
 package pl.edu.agh.iisg.to.to2project.service.generic;
 
+import javafx.collections.ObservableList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericDAO;
+import pl.edu.agh.iisg.to.to2project.domain.AbstractEntity;
+import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericCachingDAO;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
  */
-public class CRUDServiceGeneric<T, ID extends Serializable> implements CRUDService<T, ID> {
+public abstract class CRUDServiceGeneric<T extends AbstractEntity, ID extends Serializable> implements CRUDService<T, ID> {
 
-    protected TransactionalGenericDAO<T, ID> dao;
+    @Autowired
+    protected TransactionalGenericCachingDAO<T, ID> dao;
 
-    protected void setDao(TransactionalGenericDAO<T, ID> dao){
-        this.dao = dao;
-    }
+//    protected void setDao(TransactionalGenericDAO<T, ID> dao){
+//        this.dao = dao;
+//    }
 
-    protected TransactionalGenericDAO<T, ID> getDao(){
+    protected TransactionalGenericCachingDAO<T, ID> getDao(){
         return dao;
     }
 
@@ -32,20 +35,20 @@ public class CRUDServiceGeneric<T, ID extends Serializable> implements CRUDServi
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
-    public List<T> getList() {
+    public ObservableList<T> getList() {
         return dao.findAll();
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void save(T entity) {
-        dao.save(entity);
+        dao.saveOrUpdate(entity);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void update(T entity) {
-        dao.save(entity);
+        dao.saveOrUpdate(entity);
     }
 
     @Override
@@ -57,6 +60,6 @@ public class CRUDServiceGeneric<T, ID extends Serializable> implements CRUDServi
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void removeByPK(ID pk) {
-        dao.removeById(pk);
+//        dao.removeById(pk);
     }
 }

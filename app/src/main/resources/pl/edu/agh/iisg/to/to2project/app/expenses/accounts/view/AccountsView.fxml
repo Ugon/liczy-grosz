@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller.AccountsController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+    <center>
+        <TableView fx:id="accountsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+            <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Account Name"/>
+                <TableColumn fx:id="balanceColumn" prefWidth="100.0" text="Balance"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" prefHeight="50" alignment="CENTER">
+            <Button text="Add New Account" onAction="#handleAddAccountClick"/>
+            <Button text="Edit Selected Account" onAction="#handleEditAccountClick"/>
+            <Button text="Delete Selected Account" onAction="#handleDeleteAccountClick"/>
+        </HBox>
+    </bottom>
+</BorderPane>

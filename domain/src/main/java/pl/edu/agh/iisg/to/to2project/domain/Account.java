@@ -1,14 +1,12 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.property.*;
+import javafx.collections.ObservableSet;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,67 +14,119 @@ import java.util.Set;
  */
 @Entity
 @Table
+@Access(AccessType.PROPERTY)
 public class Account extends AbstractEntity{
-    @Column(nullable = false, unique = true)
-    private String name;
 
-    @Column(nullable = false)
-    private BigDecimal balance;
+    private final StringProperty name;
 
-    @OneToMany(mappedBy = "account")
-    private Set<Transaction> transactionHistory;
+    private final ObjectProperty<BigDecimal> initialBalance;
+
+    private final ObservableSet<InternalTransaction> internalTransactionHistory;
+
+    private final ObservableSet<ExternalTransaction> externalTransactionHistory;
 
     Account() {
+        super();
+        this.name = new SimpleStringProperty();
+        this.initialBalance = new SimpleObjectProperty<>();
+        this.internalTransactionHistory = new SimpleSetProperty<>();
+        this.externalTransactionHistory = new SimpleSetProperty<>();
     }
 
     public Account(String name, BigDecimal balance) {
+        this();
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(!name.isEmpty());
         Preconditions.checkNotNull(balance);
-        this.name = name;
-        this.balance = balance;
-        this.transactionHistory = new HashSet<>();
+        setName(name);
+        this.initialBalance.set(balance);
     }
 
-    public String getName() {
-        return name;
+
+
+    @Column(nullable = false, unique = true)
+    private String getName() {
+        return name.get();
     }
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);
         Preconditions.checkArgument(!name.isEmpty());
-        this.name = name;
+        this.name.set(name);
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public StringProperty nameProperty() {
+        return name;
     }
 
-    public void addMoney(BigDecimal delta){
-        Preconditions.checkNotNull(delta);
-        Preconditions.checkArgument(delta.compareTo(BigDecimal.ZERO) >= 0);
-        balance = balance.add(delta);
+
+
+    @Column(nullable = false)
+    private BigDecimal getInitialBalance() {
+        return initialBalance.get();
     }
 
-    public void subtractMoney(BigDecimal delta){
-        Preconditions.checkNotNull(delta);
-        Preconditions.checkArgument(delta.compareTo(BigDecimal.ZERO) >= 0);
-        balance = balance.subtract(delta);
+    public void setInitialBalance(BigDecimal initialBalance){
+        Preconditions.checkNotNull(initialBalance);
+        Preconditions.checkArgument(initialBalance.compareTo(BigDecimal.ZERO) >= 0);
+        this.initialBalance.set(initialBalance);
     }
 
-    public Set<Transaction> getTransactionHistory() {
-        return Collections.unmodifiableSet(transactionHistory);
+    public ObjectProperty<BigDecimal> initialBalanceProperty() {
+        return this.initialBalance;
     }
 
-    public boolean addTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.add(transaction);
+
+
+    @OneToMany(mappedBy = "destinationAccount")
+    private Set<InternalTransaction> getInternalTransactionHistory() {
+        return Collections.unmodifiableSet(internalTransactionHistory);
     }
 
-    public boolean removeTransaction(Transaction transaction){
-        Preconditions.checkNotNull(transaction);
-        return transactionHistory.remove(transaction);
+    private void setInternalTransactionHistory(Set<InternalTransaction> internalTransactionHistory){
+        this.internalTransactionHistory.addAll(internalTransactionHistory);
     }
+
+    public boolean addInternalTransaction(InternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return internalTransactionHistory.add(internalTransaction);
+    }
+
+    public boolean removeInternalTransaction(InternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return internalTransactionHistory.remove(internalTransaction);
+    }
+
+    public ObservableSet<InternalTransaction> internalTransactionHistoryObservableSet() {
+        return internalTransactionHistory;
+    }
+
+
+
+    @OneToMany(mappedBy = "destinationAccount")
+    private Set<ExternalTransaction> getExternalTransactionHistory() {
+        return Collections.unmodifiableSet(externalTransactionHistory);
+    }
+
+    private void setExternalTransactionHistory(Set<ExternalTransaction> externalTransactionHistory){
+        this.externalTransactionHistory.addAll(externalTransactionHistory);
+    }
+
+    public boolean addExternalTransaction(ExternalTransaction externalTransaction){
+        Preconditions.checkNotNull(externalTransaction);
+        return externalTransactionHistory.add(externalTransaction);
+    }
+
+    public boolean removeExternalTransaction(ExternalTransaction internalTransaction){
+        Preconditions.checkNotNull(internalTransaction);
+        return externalTransactionHistory.remove(internalTransaction);
+    }
+
+    public ObservableSet<ExternalTransaction> externalTransactionHistoryObservableSet() {
+        return externalTransactionHistory;
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -1,16 +1,18 @@
 package pl.edu.agh.iisg.to.to2project.service.generic;
 
+import javafx.collections.ObservableList;
+import pl.edu.agh.iisg.to.to2project.domain.AbstractEntity;
+
 import java.io.Serializable;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
  */
-public interface CRUDService<T, ID extends Serializable> {
+public interface CRUDService<T extends AbstractEntity, ID extends Serializable> {
     Optional<T> getByPK(ID pk);
 
-    List<T> getList();
+    ObservableList<T> getList();
 
     void save(T entity);
 

@@ -1,27 +1,32 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * @author Wojciech Pachuta.
  */
 @MappedSuperclass
+@Access(AccessType.PROPERTY)
 public abstract class AbstractEntity implements Serializable {
+
+    protected final LongProperty id;
+
+    public AbstractEntity() {
+        this.id = new SimpleLongProperty(this, "id");
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    protected Long id;
-
     public Long getId() {
-        return id;
+        return id.get();
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     @Override
@@ -31,12 +36,12 @@ public abstract class AbstractEntity implements Serializable {
 
         AbstractEntity that = (AbstractEntity) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return id.equals(that.id);
 
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 }
