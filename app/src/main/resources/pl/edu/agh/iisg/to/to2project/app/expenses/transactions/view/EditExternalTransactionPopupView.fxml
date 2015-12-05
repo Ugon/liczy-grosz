@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.ExternalTransactionPopupController">
+            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.EditTransactionPopupController">
     <VBox spacing="15">
         <HBox>
             <GridPane>
@@ -63,8 +63,8 @@
             <padding>
                 <Insets top="15" left="65" right="65"/>
             </padding>
-            <Button minWidth="75" text="OK" fx:id="cancelButton" onAction="#handleOKButtonClick"/>
-            <Button minWidth="75" text="Cancel" fx:id="OKButton" onAction="#handleCancelButtonClick"/>
+            <Button minWidth="75" text="OK" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
         </HBox>
     </VBox>
 </BorderPane>

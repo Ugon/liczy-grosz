@@ -7,12 +7,11 @@
 <?import javafx.scene.control.Button?>
 
 <BorderPane fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller.AccountsController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-
     <center>
         <TableView fx:id="accountsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Account Name"/>
-                <TableColumn fx:id="balanceColumn" prefWidth="100.0" text="Balance"/>
+                <TableColumn fx:id="nameColumn" prefWidth="300.0" text="Account Name"/>
+                <TableColumn fx:id="balanceColumn" prefWidth="500.0" text="Balance"/>
             </columns>
         </TableView>
     </center>

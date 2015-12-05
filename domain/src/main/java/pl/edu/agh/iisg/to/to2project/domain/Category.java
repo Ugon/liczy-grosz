@@ -14,8 +14,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+
 /**
  * @author Wojciech Pachuta.
+ * @author Bartłomiej Grochal.
  */
 @Entity
 @Table
@@ -31,12 +35,15 @@ public class Category extends AbstractEntity {
 
     private final ObservableSet<ExternalTransaction> externalTransactions;
 
+    private final ObjectProperty<Optional<String>> description;
+
     Category() {
         this.name = new SimpleStringProperty();
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.description = new SimpleObjectProperty<>();
     }
 
     public Category(String name) {
@@ -47,6 +54,20 @@ public class Category extends AbstractEntity {
         this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.description = new SimpleObjectProperty<>();
+    }
+
+    public Category(String name, String description) {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkArgument(!name.isEmpty());
+        Preconditions.checkNotNull(description);
+        Preconditions.checkArgument(!description.isEmpty());
+        this.name = new SimpleStringProperty(name);
+        this.subCategories = FXCollections.observableSet(new HashSet<>());
+        this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
+        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.description = new SimpleObjectProperty<>(of(description));
     }
 
     public Category(String name, Category parentCategory) {
@@ -55,10 +76,26 @@ public class Category extends AbstractEntity {
         Preconditions.checkNotNull(parentCategory);
         this.name = new SimpleStringProperty(name);
         this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(Optional.of(parentCategory));
+        this.parentCategory = new SimpleObjectProperty<>(of(parentCategory));
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.description = new SimpleObjectProperty<>();
     }
+
+    public Category(String name, Category parentCategory, String description) {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkArgument(!name.isEmpty());
+        Preconditions.checkNotNull(parentCategory);
+        Preconditions.checkNotNull(description);
+        Preconditions.checkArgument(!description.isEmpty());
+        this.name = new SimpleStringProperty(name);
+        this.subCategories = FXCollections.observableSet(new HashSet<>());
+        this.parentCategory = new SimpleObjectProperty<>(of(parentCategory));
+        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.description = new SimpleObjectProperty<>(of(description));
+    }
+
 
 
 
@@ -113,7 +150,7 @@ public class Category extends AbstractEntity {
     }
 
     private void setParentCategory(Category parentCategory){
-        this.parentCategory.set(Optional.ofNullable(parentCategory));
+        this.parentCategory.set(ofNullable(parentCategory));
     }
 
     private void removeParentCategory(){
@@ -172,6 +209,28 @@ public class Category extends AbstractEntity {
 
     public ObservableSet<InternalTransaction> internalTransactionObservableSet() {
         return internalTransactions;
+    }
+
+
+
+    @Column(name = "description", nullable = true)
+    private String getDescription() {
+        return description.get().orElse("");
+    }
+
+    @Column(name = "description", nullable = true)
+    private void setDescriptionHibernate(String description) {
+        this.description.set(ofNullable(description));
+    }
+
+    public void setDescription(String description) {
+        Preconditions.checkNotNull(description);
+        Preconditions.checkArgument(!description.isEmpty());
+        this.description.set(of(description));
+    }
+
+    public ObjectProperty<Optional<String>> descriptionProperty() {
+        return description;
     }
 
 

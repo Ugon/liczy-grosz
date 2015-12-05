@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="330" prefWidth="320"
-            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.EditTransactionPopupController">
+            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.SelfTransactionPopupController">
     <VBox spacing="15">
         <padding>
             <Insets top="20" left="10" right="10"/>

@@ -6,17 +6,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.TransactionButtonsHandlers">
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.TransactionsController">
     <center>
-        <TableView prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
+        <TableView fx:id="transactionsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
-                <TableColumn prefWidth="150.0" text="Account Name"/>
-                <TableColumn prefWidth="100.0" text="Transfer"/>
-                <TableColumn prefWidth="100.0" text="Actual Balance"/>
-                <TableColumn prefWidth="100.0" text="Date"/>
-                <TableColumn prefWidth="100.0" text="Category"/>
-                <TableColumn prefWidth="100.0" text="Payee"/>
-                <TableColumn prefWidth="150.0" text="Comment"/>
+                <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Account Name"/>
+                <TableColumn fx:id="transferColumn" prefWidth="100.0" text="Transfer"/>
+                <TableColumn fx:id="balanceColumn" prefWidth="100.0" text="Actual Balance"/>
+                <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date"/>
+                <TableColumn fx:id="categoryColumn" prefWidth="100.0" text="Category"/>
+                <TableColumn fx:id="payeeColumn" prefWidth="100.0" text="Payee"/>
+                <TableColumn fx:id="commentColumn" prefWidth="150.0" text="Comment"/>
             </columns>
         </TableView>
     </center>

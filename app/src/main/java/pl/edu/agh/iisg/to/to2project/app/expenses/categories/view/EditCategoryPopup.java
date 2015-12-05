@@ -1,12 +1,16 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.view;
 
-import pl.edu.agh.iisg.to.to2project.app.core.utils.SpringFXMLLoader;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.EditCategoryPopupController;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.view.Popup;
 
 /**
  * @author Bartłomiej Grochal
  */
-public class EditCategoryPopup extends Popup {
+@Component
+@Scope("prototype")
+public class EditCategoryPopup extends Popup<EditCategoryPopupController> {
 
     @Override
     public String getPopupTitle() {
@@ -15,7 +19,7 @@ public class EditCategoryPopup extends Popup {
 
     @Override
     public String getFullyQualifiedResource() {
-        return "EditCategoryPopupView.fxml";
+        return "/pl/edu/agh/iisg/to/to2project/app/expenses/categories/view/EditCategoryPopupView.fxml";
     }
 
 }

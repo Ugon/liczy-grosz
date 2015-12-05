@@ -17,6 +17,8 @@ import pl.edu.agh.iisg.to.to2project.service.AccountService;
 
 import java.math.BigDecimal;
 
+import static javafx.scene.control.SelectionMode.SINGLE;
+
 /**
  * @author Bartłomiej Grochal
  * @author Wojciech Pachuta
@@ -46,7 +48,7 @@ public class AccountsController {
         data = accountService.getList();
         accountsTable.setItems(data);
 
-        accountsTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        accountsTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());

@@ -13,11 +13,11 @@
             </Tab>
             <Tab text="Transactions" closable="false">
                 <!--<AnchorPane id="Content"/>-->
-                <!--<fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/transactions/view/TransactionsView.fxml"/>-->
+                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/transactions/view/TransactionsView.fxml"/>
             </Tab>
             <Tab text="Categories" closable="false">
                 <!--<AnchorPane id="Content"/>-->
-                <!--<fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/categories/view/CategoriesView.fxml"/>-->
+                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/categories/view/CategoriesView.fxml"/>
             </Tab>
         </TabPane>
     </center>
