@@ -18,6 +18,8 @@ import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 @Scope("prototype")
 public class NewCategoryPopupController extends PopupController {
 
+    private static final Category NO_CATEGORY = new Category("None");
+
     @Autowired
     private CategoryService categoryService;
 
@@ -25,22 +27,19 @@ public class NewCategoryPopupController extends PopupController {
     private TextField categoryNameTextField;
 
     @FXML
-    private ComboBox parentCategoryCombo;
+    private ComboBox<Category> parentCategoryCombo;
 
     @FXML
     private TextField descriptionTextField;
 
-    private Category defaultCategory;
     private Category newCategory;
 
 
     @FXML
     public void initialize() {
-        defaultCategory = new Category("None");
-
         parentCategoryCombo.getItems().addAll(categoryService.getList());
-        parentCategoryCombo.getItems().add(defaultCategory);
-        parentCategoryCombo.setValue(defaultCategory);
+        parentCategoryCombo.getItems().add(NO_CATEGORY);
+        parentCategoryCombo.setValue(NO_CATEGORY);
     }
 
     @FXML
@@ -51,15 +50,16 @@ public class NewCategoryPopupController extends PopupController {
     }
 
     private void updateModel() {
-        Category parentCategory = (Category) parentCategoryCombo.getSelectionModel().getSelectedItem();
         String categoryName = categoryNameTextField.getText();
+        Category parentCategory = parentCategoryCombo.getSelectionModel().getSelectedItem();
         String description = descriptionTextField.getText();
 
-        if(!parentCategory.equals(defaultCategory)) {
-            newCategory = new Category(categoryName, parentCategory, description);
+        newCategory = new Category(categoryName);
+        if(!parentCategory.equals(NO_CATEGORY)){
+            parentCategory.addSubCategory(newCategory);
         }
-        else {
-            newCategory = new Category(categoryName, description);
+        if(!description.isEmpty()){
+            newCategory.setDescription(description);
         }
 
         categoryService.save(newCategory);

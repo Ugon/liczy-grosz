@@ -109,11 +109,10 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
 
     @Column(name = "comment", nullable = true)
-    private String getComment() {
+    private String getCommentHibernate() {
         return comment.get().orElse(null);
     }
 
-    @Column(name = "comment", nullable = true)
     private void setCommentHibernate(String comment) {
         this.comment.set(Optional.ofNullable(comment));
     }
