@@ -21,8 +21,8 @@
             <padding>
                 <Insets top="15" left="65" right="65"/>
             </padding>
-            <Button fx:id="OKButton" minWidth="75" text="Proceed" onAction="#handleOKButtonClick"/>
-            <Button fx:id="cancelButton" minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
+            <Button minWidth="75" text="Proceed" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
         </HBox>
     </VBox>
 </BorderPane>

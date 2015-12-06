@@ -11,12 +11,6 @@ import javafx.stage.Stage;
  */
 public abstract class PopupController {
 
-    @FXML
-    protected Button cancelButton;
-
-    @FXML
-    protected Button OKButton;
-
     protected Stage dialogStage;
 
     @FXML

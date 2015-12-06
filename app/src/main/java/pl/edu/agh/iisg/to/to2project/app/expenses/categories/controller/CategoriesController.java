@@ -1,5 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,8 +14,6 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.EditCategoryPo
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.NewCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.domain.Category;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
-
-import java.util.Optional;
 
 import static javafx.scene.control.SelectionMode.SINGLE;
 
@@ -40,7 +39,7 @@ public class CategoriesController {
     private TableColumn<Category, String> parentColumn;
 
     @FXML
-    private TableColumn<Category, Optional<String>> descriptionColumn;
+    private TableColumn<Category, String> descriptionColumn;
 
     private ObservableList<Category> data;
 
@@ -53,8 +52,8 @@ public class CategoriesController {
         categoriesTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
-        parentColumn.setCellValueFactory(dataValue -> dataValue.getValue().parentCategoryProperty().getValue().get().nameProperty());
-        descriptionColumn.setCellValueFactory(dataValue -> dataValue.getValue().descriptionProperty());
+        parentColumn.setCellValueFactory(dataValue -> dataValue.getValue().parentCategoryProperty().getValue().orElse(new Category("None")).nameProperty());
+        descriptionColumn.setCellValueFactory(dataValue -> dataValue.getValue().descriptionProperty().getValue().orElse(new SimpleStringProperty("")));
     }
 
 
@@ -87,4 +86,5 @@ public class CategoriesController {
             contoller.deleteCategory(selectedCategory);
         }
     }
+
 }

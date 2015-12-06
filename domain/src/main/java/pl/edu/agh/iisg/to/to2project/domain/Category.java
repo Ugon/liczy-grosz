@@ -5,6 +5,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
@@ -35,7 +37,7 @@ public class Category extends AbstractEntity {
 
     private final ObservableSet<ExternalTransaction> externalTransactions;
 
-    private final ObjectProperty<Optional<String>> description;
+    private final ObjectProperty<Optional<StringProperty>> description;
 
     Category() {
         this.name = new SimpleStringProperty();
@@ -67,7 +69,7 @@ public class Category extends AbstractEntity {
         this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>(of(description));
+        this.description = new SimpleObjectProperty<>(of(new SimpleStringProperty(description)));
     }
 
     public Category(String name, Category parentCategory) {
@@ -87,13 +89,12 @@ public class Category extends AbstractEntity {
         Preconditions.checkArgument(!name.isEmpty());
         Preconditions.checkNotNull(parentCategory);
         Preconditions.checkNotNull(description);
-        Preconditions.checkArgument(!description.isEmpty());
         this.name = new SimpleStringProperty(name);
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>(of(parentCategory));
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>(of(description));
+        this.description = new SimpleObjectProperty<>(of(new SimpleStringProperty(description)));
     }
 
 
@@ -153,7 +154,7 @@ public class Category extends AbstractEntity {
         this.parentCategory.set(ofNullable(parentCategory));
     }
 
-    private void removeParentCategory(){
+    public void removeParentCategory(){
         this.parentCategory.set(Optional.empty());
     }
 
@@ -215,21 +216,20 @@ public class Category extends AbstractEntity {
 
     @Column(name = "description", nullable = true)
     private String getDescription() {
-        return description.get().orElse("");
+        return (description.get().orElse(new SimpleStringProperty("")).getValue());
     }
 
     @Column(name = "description", nullable = true)
     private void setDescriptionHibernate(String description) {
-        this.description.set(ofNullable(description));
+        this.description.set(ofNullable(new SimpleStringProperty(description)));
     }
 
     public void setDescription(String description) {
         Preconditions.checkNotNull(description);
-        Preconditions.checkArgument(!description.isEmpty());
-        this.description.set(of(description));
+        this.description.set(of(new SimpleStringProperty(description)));
     }
 
-    public ObjectProperty<Optional<String>> descriptionProperty() {
+    public ObjectProperty<Optional<StringProperty>> descriptionProperty() {
         return description;
     }
 
@@ -252,5 +252,10 @@ public class Category extends AbstractEntity {
         int result = super.hashCode();
         result = 31 * result + name.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }

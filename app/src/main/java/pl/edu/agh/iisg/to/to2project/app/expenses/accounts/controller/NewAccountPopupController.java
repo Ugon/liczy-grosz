@@ -44,14 +44,8 @@ public class NewAccountPopupController extends PopupController {
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
-        if(isInputValid()){
-            updateModel();
-        }
+        updateModel();
         dialogStage.close();
-    }
-
-    private boolean isInputValid(){
-        return true;
     }
 
     private void updateModel(){
