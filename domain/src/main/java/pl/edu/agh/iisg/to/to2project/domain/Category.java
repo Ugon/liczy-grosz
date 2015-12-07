@@ -81,11 +81,10 @@ public class Category extends AbstractEntity {
         this.subCategories.addAll(subCategories);
     }
 
-    //todo: check for cycles
     public boolean addSubCategory(Category category){
         Preconditions.checkNotNull(category);
         Preconditions.checkArgument(category.parentCategoryProperty().get() == null);
-        Preconditions.checkArgument(!category.equals(this));
+        Preconditions.checkArgument(canAddSubcategoryWithoutCausingCycles(category));
         category.setParentCategory(this);
         return subCategories.add(category);
     }
@@ -97,8 +96,20 @@ public class Category extends AbstractEntity {
         return subCategories.remove(category);
     }
 
-    public Set<Category> subCategoriesObservableSet() {
-        return Collections.unmodifiableSet(subCategories);
+    public ObservableSet<Category> subCategoriesObservableSet() {
+        return FXCollections.unmodifiableObservableSet(subCategories);
+    }
+
+    public Set<Category> deepSubCategoriesSet() {
+        Set<Category> set = FXCollections.observableSet(this);
+        subCategoriesObservableSet().stream()
+                .map(Category::deepSubCategoriesSet)
+                .forEach(set::addAll);
+        return set;
+    }
+
+    private boolean canAddSubcategoryWithoutCausingCycles(Category subCategory){
+        return subCategory.parentCategoryProperty().get() == null && !subCategory.deepSubCategoriesSet().contains(this);
     }
 
 

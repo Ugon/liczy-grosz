@@ -74,7 +74,7 @@ public class EditCategoryPopupController extends PopupController {
     }
 
     private void adaptComboBox(Category category) {
-        parentCategoryCombo.getItems().remove(category);
+        parentCategoryCombo.getItems().removeAll(category.deepSubCategoriesSet());
     }
 
     public void editCategory(Category category) {
