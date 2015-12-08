@@ -14,8 +14,8 @@ import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.core.utils.ObservableMerge;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.ExternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.SelfTransactionPopup;
+import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
+import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.Category;
 import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
@@ -98,17 +98,17 @@ public class TransactionsController {
 
 
     @FXML
-    private void handleSelfTransactionClick(ActionEvent actionEvent) {
-        SelfTransactionPopup popup = context.getBean(SelfTransactionPopup.class);
-        SelfTransactionPopupController controller = popup.getController();
+    private void handleInternalTransactionClick(ActionEvent actionEvent) {
+        NewInternalTransactionPopup popup = context.getBean(NewInternalTransactionPopup.class);
+        NewInternalTransactionPopupController controller = popup.getController();
 
-        controller.addSelfTransaction();
+        controller.addInternalTransaction();
     }
 
     @FXML
     private void handleExternalTransactionClick(ActionEvent actionEvent) {
-        ExternalTransactionPopup popup = context.getBean(ExternalTransactionPopup.class);
-        ExternalTransactionPopupController controller = popup.getController();
+        NewExternalTransactionPopup popup = context.getBean(NewExternalTransactionPopup.class);
+        NewExternalTransactionPopupController controller = popup.getController();
 
         controller.addExternalTransaction();
     }

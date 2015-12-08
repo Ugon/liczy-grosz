@@ -6,7 +6,7 @@
 
 <?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="360" prefWidth="320"
-            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.ExternalTransactionPopupController">
+            fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.NewExternalTransactionPopupController">
     <VBox spacing="15">
         <padding>
             <Insets top="20" left="10" right="10"/>

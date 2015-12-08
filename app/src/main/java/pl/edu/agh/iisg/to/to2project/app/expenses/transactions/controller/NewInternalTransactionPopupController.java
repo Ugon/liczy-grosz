@@ -4,7 +4,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +16,16 @@ import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
 import pl.edu.agh.iisg.to.to2project.domain.Account;
 import pl.edu.agh.iisg.to.to2project.domain.Category;
-import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
-import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
+import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import static java.math.BigDecimal.ZERO;
 import static java.time.LocalTime.now;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Date.from;
@@ -33,10 +35,10 @@ import static java.util.Date.from;
  */
 @Controller
 @Scope("prototype")
-public class ExternalTransactionPopupController extends PopupController {
+public class NewInternalTransactionPopupController extends PopupController {
 
     @Autowired
-    private ExternalTransactionService externalTransactionService;
+    private InternalTransactionService internalTransactionService;
 
     @Autowired
     private CategoryService categoryService;
@@ -45,25 +47,16 @@ public class ExternalTransactionPopupController extends PopupController {
     private AccountService accountService;
 
     @FXML
-    private ComboBox<Account> accountNameCombo;
+    private ComboBox<Account> sourceAccountCombo;
 
     @FXML
-    private TextField payeeTextField;
+    private ComboBox<Account> targetAccountCombo;
 
     @FXML
     private ComboBox<Category> categoryCombo;
 
     @FXML
     private TextField transferTextField;
-
-    @FXML
-    private RadioButton incomeRadioButton;
-
-    @FXML
-    private RadioButton expenditureRadioButton;
-
-    @FXML
-    private ToggleGroup transferTypeGroup;
 
     @FXML
     private DatePicker transactionDatePicker;
@@ -75,19 +68,20 @@ public class ExternalTransactionPopupController extends PopupController {
     private Text errorLabel;
 
     private DecimalFormat decimalFormat;
-    private ExternalTransaction newTransaction;
+    private InternalTransaction newTransaction;
     private static final Category NO_CATEGORY = new Category("None");
 
 
     @FXML
     public void initialize() {
-        accountNameCombo.getItems().addAll(accountService.getList());
+        sourceAccountCombo.getItems().addAll(accountService.getList());
+        targetAccountCombo.getItems().addAll(accountService.getList());
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
         categoryCombo.setValue(NO_CATEGORY);
 
-        accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
-        payeeTextField.textProperty().addListener(new AccountChangeListener<>());
+        sourceAccountCombo.valueProperty().addListener(new AccountChangeListener());
+        targetAccountCombo.valueProperty().addListener(new AccountChangeListener());
         errorLabel.setText("");
 
         decimalFormat = new DecimalFormat();
@@ -112,31 +106,23 @@ public class ExternalTransactionPopupController extends PopupController {
             errorLabel.setText("You are not able to create transaction with given amount of money.");
             return false;
         }
-        if(!isTransferTypeValid()) {
-            errorLabel.setText("You are not able to create transaction with this type of transaction.");
-            return false;
-        }
 
         return true;
     }
 
     private boolean isAccountValid() {
-        return accountNameCombo.getSelectionModel().getSelectedItem() != null &&
-                !payeeTextField.getText().isEmpty() &&
-                accountNameCombo.getSelectionModel().getSelectedItem().nameProperty().getValue() != payeeTextField.getText();
+        return sourceAccountCombo.getSelectionModel().getSelectedItem() != null &&
+                targetAccountCombo.getSelectionModel().getSelectedItem() != null &&
+                !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(targetAccountCombo.getSelectionModel().getSelectedItem());
     }
 
     private boolean isTransferValueValid() {
         return transferTextField.getText().matches("^\\-?\\d+$");
     }
 
-    private boolean isTransferTypeValid() {
-        return transferTypeGroup.getSelectedToggle() != null;
-    }
-
     private void updateModel() {
-        Account sourceAccount = accountNameCombo.getSelectionModel().getSelectedItem();
-        String payee = payeeTextField.getText();
+        Account sourceAccount = sourceAccountCombo.getSelectionModel().getSelectedItem();
+        Account destinationAccount = targetAccountCombo.getSelectionModel().getSelectedItem();
         Category category = categoryCombo.getSelectionModel().getSelectedItem();
 
         BigDecimal transfer = null;
@@ -147,19 +133,12 @@ public class ExternalTransactionPopupController extends PopupController {
             exc.printStackTrace();
         }
 
-        if(transferTypeGroup.getSelectedToggle().equals(incomeRadioButton)) {
-            transfer = transfer.compareTo(ZERO) >= 0 ? transfer : transfer.multiply(new BigDecimal(-1));
-        }
-        else if(transferTypeGroup.getSelectedToggle().equals(expenditureRadioButton)) {
-            transfer = transfer.compareTo(ZERO) <= 0 ? transfer : transfer.multiply(new BigDecimal(-1));
-        }
-
         Date transferDateUtil =  from(transactionDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
         DateTime transferDateTime = new DateTime(transferDateUtil);
 
         String comment = commentTextArea.getText();
 
-        newTransaction = new ExternalTransaction(payee, sourceAccount, transfer, transferDateTime);
+        newTransaction = new InternalTransaction(sourceAccount, destinationAccount, transfer, transferDateTime);
         if (!category.equals(NO_CATEGORY)) {
             newTransaction.setCategory(category);
         }
@@ -167,18 +146,18 @@ public class ExternalTransactionPopupController extends PopupController {
             newTransaction.setComment(comment);
         }
 
-        externalTransactionService.save(newTransaction);
+        internalTransactionService.save(newTransaction);
     }
 
-    public void addExternalTransaction() {
+    public void addInternalTransaction() {
         showDialog();
     }
 
 
 
-    private class AccountChangeListener<T> implements ChangeListener<T> {
+    private class AccountChangeListener implements ChangeListener<Account> {
         @Override
-        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+        public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
             errorLabel.setText("");
         }
     }

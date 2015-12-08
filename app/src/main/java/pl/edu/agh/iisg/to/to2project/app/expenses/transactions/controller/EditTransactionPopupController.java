@@ -25,6 +25,7 @@ public class EditTransactionPopupController extends PopupController {
     private Pane EditTransactionPopupContent;
 
 
+
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
@@ -45,7 +46,7 @@ public class EditTransactionPopupController extends PopupController {
     private void selfAccountsTransactionChecked(ActionEvent actionEvent) {
         EditTransactionPopupContent.getChildren().clear();
         try {
-            EditTransactionPopupContent.getChildren().add(FXMLLoader.load(getClass().getResource("../view/EditSelfTransactionPopupView.fxml")));
+            EditTransactionPopupContent.getChildren().add(FXMLLoader.load(getClass().getResource("../view/EditInternalTransactionPopupView.fxml")));
         } catch (IOException e) {
             Logger.getLogger("GUI").log(ALL, "Cannot instantiate Transaction Edit Popup Window view.");
             e.printStackTrace();
@@ -53,6 +54,6 @@ public class EditTransactionPopupController extends PopupController {
     }
 
     public void editTransaction(AbstractTransaction transaction) {
-
+        showDialog();
     }
 }
