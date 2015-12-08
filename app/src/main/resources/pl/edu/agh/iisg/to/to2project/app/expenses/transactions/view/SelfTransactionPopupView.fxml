@@ -4,7 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="330" prefWidth="320"
+<?import javafx.scene.text.Text?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="370" prefWidth="320"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.SelfTransactionPopupController">
     <VBox spacing="15">
         <padding>
@@ -37,7 +38,7 @@
         <HBox>
             <GridPane>
                 <Label text="Date:" minWidth="130" GridPane.columnIndex="0"/>
-                <DatePicker fx:id="transferDatePicker" minWidth="170" GridPane.columnIndex="1"/>
+                <DatePicker fx:id="transactionDatePicker" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
@@ -54,5 +55,6 @@
             <Button minWidth="75" text="OK" onAction="#handleOKButtonClick"/>
             <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
         </HBox>
+        <Text fx:id="errorLabel" style="-fx-text-alignment: justify; -fx-fill: red;" wrappingWidth="300"/>
     </VBox>
 </BorderPane>

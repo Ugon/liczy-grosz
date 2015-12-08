@@ -1,11 +1,14 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -56,15 +59,16 @@ public class SelfTransactionPopupController extends PopupController {
     private TextField transferTextField;
 
     @FXML
-    private DatePicker transferDatePicker;
+    private DatePicker transactionDatePicker;
 
     @FXML
     private TextArea commentTextArea;
 
+    @FXML
+    private Text errorLabel;
+
     private DecimalFormat decimalFormat;
-
     private InternalTransaction newTransaction;
-
     private static final Category NO_CATEGORY = new Category("None");
 
 
@@ -75,6 +79,10 @@ public class SelfTransactionPopupController extends PopupController {
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
         categoryCombo.setValue(NO_CATEGORY);
+
+        sourceAccountCombo.valueProperty().addListener(new AccountChangeListener());
+        targetAccountCombo.valueProperty().addListener(new AccountChangeListener());
+        errorLabel.setText("");
 
         decimalFormat = new DecimalFormat();
         decimalFormat.setParseBigDecimal(true);
@@ -90,9 +98,26 @@ public class SelfTransactionPopupController extends PopupController {
     }
 
     private boolean isInputValid() {
+        if(!isAccountValid()) {
+            errorLabel.setText("You are not able to create transaction between these accounts.");
+            return false;
+        }
+        if(!isTransferValueValid()) {
+            errorLabel.setText("You are not able to create transaction with given amount of money.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isAccountValid() {
         return sourceAccountCombo.getSelectionModel().getSelectedItem() != null &&
                 targetAccountCombo.getSelectionModel().getSelectedItem() != null &&
                 !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(targetAccountCombo.getSelectionModel().getSelectedItem());
+    }
+
+    private boolean isTransferValueValid() {
+        return transferTextField.getText().matches("^\\-?\\d+$");
     }
 
     private void updateModel() {
@@ -108,7 +133,7 @@ public class SelfTransactionPopupController extends PopupController {
             exc.printStackTrace();
         }
 
-        Date transferDateUtil =  from(transferDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
+        Date transferDateUtil =  from(transactionDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
         DateTime transferDateTime = new DateTime(transferDateUtil);
 
         String comment = commentTextArea.getText();
@@ -126,5 +151,14 @@ public class SelfTransactionPopupController extends PopupController {
 
     public void addSelfTransaction() {
         showDialog();
+    }
+
+
+
+    private class AccountChangeListener implements ChangeListener<Account> {
+        @Override
+        public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
+            errorLabel.setText("");
+        }
     }
 }
