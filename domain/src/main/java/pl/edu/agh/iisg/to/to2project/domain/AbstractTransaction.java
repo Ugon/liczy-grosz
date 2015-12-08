@@ -8,10 +8,10 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
+ * @author Bartłomiej Grochal.
  */
 @MappedSuperclass
 @Access(AccessType.PROPERTY)
@@ -23,11 +23,11 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     private final ObjectProperty<DateTime> dateTime;
 
-    final ObjectProperty<Optional<Category>> category;
+    final ObjectProperty<Category> category;
 
-    private final ObjectProperty<Optional<String>> comment;
+    private final ObjectProperty<String> comment;
 
-    AbstractTransaction(){
+    AbstractTransaction() {
         this(null, null, null);
     }
 
@@ -90,11 +90,11 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Category getCategoryColumn() {
-        return category.get().orElse(null);
+        return category.get();
     }
 
     private void setCategoryColumn(Category category) {
-        this.category.set(Optional.of(category));
+        this.category.set(category);
     }
 
     @Transient
@@ -102,7 +102,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     public abstract void removeCategory();
 
-    public ObjectProperty<Optional<Category>> categoryProperty() {
+    public ObjectProperty<Category> categoryProperty() {
         return category;
     }
 
@@ -110,25 +110,25 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     @Column(name = "comment", nullable = true)
     private String getCommentHibernate() {
-        return comment.get().orElse(null);
+        return comment.get();
     }
 
     private void setCommentHibernate(String comment) {
-        this.comment.set(Optional.ofNullable(comment));
+        this.comment.set(comment);
     }
 
     @Transient
     public void setComment(String comment) {
         Preconditions.checkNotNull(comment);
         Preconditions.checkArgument(!comment.isEmpty());
-        this.comment.set(Optional.of(comment));
+        this.comment.set(comment);
     }
 
-    public void removeComment(String comment) {
-        this.comment.set(Optional.empty());
+    public void removeCommentIfPresent() {
+        this.comment.set(null);
     }
 
-    public ObjectProperty<Optional<String>> commentProperty() {
+    public ObjectProperty<String> commentProperty() {
         return comment;
     }
 

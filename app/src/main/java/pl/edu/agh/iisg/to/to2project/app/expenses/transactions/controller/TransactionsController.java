@@ -4,7 +4,6 @@ import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.joda.time.DateTime;
@@ -15,12 +14,13 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransa
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.ExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.SelfTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.domain.*;
+import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static javafx.scene.control.SelectionMode.SINGLE;
 
@@ -61,7 +61,7 @@ public class TransactionsController {
     private TableColumn<AbstractTransaction, String> payeeColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, Optional<String>> commentColumn;
+    private TableColumn<AbstractTransaction, String> commentColumn;
 
     private ObservableList<AbstractTransaction> data;
 
@@ -79,12 +79,14 @@ public class TransactionsController {
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
-        categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryProperty().getValue().get().nameProperty());
+        // TODO: NULL-check
+        categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryProperty().getValue().nameProperty());
         payeeColumn.setCellValueFactory(
                 dataValue -> dataValue.getValue() instanceof ExternalTransaction ?
                         ((ExternalTransaction) dataValue.getValue()).sourceProperty() :
                         ((InternalTransaction) dataValue.getValue()).sourceAccountProperty().getValue().nameProperty()
         );
+        // TODO: NULL-check
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
     }
 

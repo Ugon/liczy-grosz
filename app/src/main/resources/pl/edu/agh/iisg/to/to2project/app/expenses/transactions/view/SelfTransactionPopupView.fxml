@@ -13,40 +13,37 @@
         <HBox>
             <GridPane>
                 <Label text="Source Account:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="sourceAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Target Account:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="targetAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Category:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox minWidth="170" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="categoryCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Transfer:" minWidth="130" GridPane.columnIndex="0"/>
-                <HBox spacing="10" GridPane.columnIndex="1">
-                    <TextField minWidth="100"/>
-                    <TextField minWidth="60"/>
-                </HBox>
+                <TextField fx:id="transferTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Date:" minWidth="130" GridPane.columnIndex="0"/>
-                <DatePicker minWidth="170" GridPane.columnIndex="1"/>
+                <DatePicker fx:id="transferDatePicker" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Comment:" minWidth="130" GridPane.columnIndex="0"/>
-                <TextArea minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
+                <TextArea fx:id="commentTextArea" minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
                           style="-fx-font-size: 10"/>
             </GridPane>
         </HBox>

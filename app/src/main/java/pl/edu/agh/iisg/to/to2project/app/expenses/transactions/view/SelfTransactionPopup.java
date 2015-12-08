@@ -15,7 +15,7 @@ public class SelfTransactionPopup extends Popup<SelfTransactionPopupController> 
 
     @Override
     public String getPopupTitle() {
-        return "Transaction Between Your Accounts";
+        return "Transaction Between My Accounts";
     }
 
     @Override

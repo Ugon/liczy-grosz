@@ -7,10 +7,10 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 /**
  * @author Wojciech Pachuta.
+ * @author Bartłomiej Grochal.
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sourceAccount_id", "destinationAccount_id", "delta", "dateTime"}))
@@ -18,6 +18,7 @@ import java.util.Optional;
 public class InternalTransaction extends AbstractTransaction {
 
     private final ObjectProperty<Account> sourceAccount;
+    private static final Category NO_CATEGORY = new Category("None");
 
     InternalTransaction() {
         super();
@@ -53,15 +54,15 @@ public class InternalTransaction extends AbstractTransaction {
     public void setCategory(Category category) {
         Preconditions.checkNotNull(category);
         category.addInternalTransaction(this);
-        this.category.set(Optional.of(category));
+        this.category.set(category);
     }
 
     @Override
     public void removeCategory() {
-        if(this.category.get().isPresent()){
-            Category category = this.category.get().get();
+        if(!this.category.get().equals(NO_CATEGORY)) {
+            Category category = this.category.get();
             category.removeInternalTransaction(this);
-            this.category.set(Optional.empty());
+            this.category.set(NO_CATEGORY);
         }
     }
 
