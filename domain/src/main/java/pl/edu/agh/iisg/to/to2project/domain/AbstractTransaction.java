@@ -3,6 +3,7 @@ package pl.edu.agh.iisg.to.to2project.domain;
 import com.google.common.base.Preconditions;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -131,6 +132,9 @@ public abstract class AbstractTransaction extends AbstractEntity {
     public ObjectProperty<String> commentProperty() {
         return comment;
     }
+
+
+    public abstract StringProperty sourcePropertyAsString();
 
 
     @Override

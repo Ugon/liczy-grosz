@@ -67,6 +67,13 @@ public class ExternalTransaction extends AbstractTransaction {
     }
 
 
+
+    @Override
+    public StringProperty sourcePropertyAsString() {
+        return source;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

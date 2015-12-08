@@ -37,8 +37,8 @@ public class Category extends AbstractEntity {
         this.name = new SimpleStringProperty();
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>();
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.internalTransactions = FXCollections.observableSet();
+        this.externalTransactions = FXCollections.observableSet();
         this.description = new SimpleObjectProperty<>();
     }
 

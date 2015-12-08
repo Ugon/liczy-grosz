@@ -2,6 +2,7 @@ package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import javax.persistence.*;
@@ -29,8 +30,8 @@ public class Account extends AbstractEntity{
         super();
         this.name = new SimpleStringProperty();
         this.initialBalance = new SimpleObjectProperty<>();
-        this.internalTransactionHistory = new SimpleSetProperty<>();
-        this.externalTransactionHistory = new SimpleSetProperty<>();
+        this.internalTransactionHistory = FXCollections.observableSet();
+        this.externalTransactionHistory = FXCollections.observableSet();
     }
 
     public Account(String name, BigDecimal balance) {

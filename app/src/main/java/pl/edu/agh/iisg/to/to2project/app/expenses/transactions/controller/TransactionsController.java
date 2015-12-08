@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.property.ReadOnlyListWrapper;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,11 +11,13 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import pl.edu.agh.iisg.to.to2project.app.core.utils.ObservableMerge;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.ExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.SelfTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.Category;
 import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
@@ -63,15 +66,17 @@ public class TransactionsController {
     @FXML
     private TableColumn<AbstractTransaction, String> commentColumn;
 
-    private ObservableList<AbstractTransaction> data;
-
+    private ObservableList<InternalTransaction> internalTransactions;
+    private ObservableList<ExternalTransaction> externalTransactions;
+    private ObservableList<AbstractTransaction> allTransactions;
 
     @FXML
     public void initialize() {
-        data = new ReadOnlyListWrapper<>();
-        data.addAll(externalTransactionService.getList());
-        data.addAll(internalTransactionService.getList());
-        transactionsTable.setItems(data);
+        internalTransactions = internalTransactionService.getList();
+        externalTransactions = externalTransactionService.getList();
+        allTransactions = ObservableMerge.merge(internalTransactions, externalTransactions);
+
+        transactionsTable.setItems(allTransactions);
 
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
 
@@ -80,12 +85,13 @@ public class TransactionsController {
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         // TODO: NULL-check
-        categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryProperty().getValue().nameProperty());
-        payeeColumn.setCellValueFactory(
-                dataValue -> dataValue.getValue() instanceof ExternalTransaction ?
-                        ((ExternalTransaction) dataValue.getValue()).sourceProperty() :
-                        ((InternalTransaction) dataValue.getValue()).sourceAccountProperty().getValue().nameProperty()
-        );
+        categoryColumn.setCellValueFactory(dataValue -> {
+            ObjectProperty<Category> category = dataValue.getValue().categoryProperty();
+            return Bindings.createStringBinding(() ->
+                    category.get() == null ? "": category.getValue().nameProperty().getValue(), category);
+        });
+
+        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsString());
         // TODO: NULL-check
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
     }

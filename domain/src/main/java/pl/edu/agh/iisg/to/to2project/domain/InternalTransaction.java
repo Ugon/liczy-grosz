@@ -3,6 +3,7 @@ package pl.edu.agh.iisg.to.to2project.domain;
 import com.google.common.base.Preconditions;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -66,6 +67,12 @@ public class InternalTransaction extends AbstractTransaction {
         }
     }
 
+
+
+    @Override
+    public StringProperty sourcePropertyAsString() {
+        return sourceAccount.get().nameProperty();
+    }
 
 
     @Override
