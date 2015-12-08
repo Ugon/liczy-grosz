@@ -2,7 +2,6 @@ package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -35,18 +34,16 @@ public class DeleteCategoryPopupController extends PopupController {
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
-        if(deletedCategory.subCategoriesObservableSet().isEmpty()) {
-            if(deletedCategory.externalTransactionsObservableSet().isEmpty() && deletedCategory.internalTransactionObservableSet().isEmpty()) {
-                categoryService.remove(deletedCategory);
-                dialogStage.close();
-            }
-            else {
-                errorLabel.setText("You are not able to delete this category, because it contains transactions.");
-            }
-
-        }
-        else {
+        if(!deletedCategory.subCategoriesObservableSet().isEmpty()){
             errorLabel.setText("You are not able to delete this category, because it contains subcategories.");
+        }
+        else if(!deletedCategory.externalTransactionsObservableSet().isEmpty() ||
+                !deletedCategory.internalTransactionObservableSet().isEmpty()){
+            errorLabel.setText("You are not able to delete this category, because it contains transactions.");
+        }
+        else{
+            categoryService.remove(deletedCategory);
+            dialogStage.close();
         }
     }
 

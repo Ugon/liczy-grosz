@@ -19,10 +19,6 @@ public abstract class CRUDServiceGeneric<T extends AbstractEntity, ID extends Se
     @Autowired
     protected TransactionalGenericCachingDAO<T, ID> dao;
 
-//    protected void setDao(TransactionalGenericDAO<T, ID> dao){
-//        this.dao = dao;
-//    }
-
     protected TransactionalGenericCachingDAO<T, ID> getDao(){
         return dao;
     }

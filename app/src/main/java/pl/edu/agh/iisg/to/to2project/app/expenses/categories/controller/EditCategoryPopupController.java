@@ -18,6 +18,8 @@ import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 @Scope("prototype")
 public class EditCategoryPopupController extends PopupController {
 
+    private static final Category NO_CATEGORY = new Category("None");
+
     @Autowired
     private CategoryService categoryService;
 
@@ -25,22 +27,19 @@ public class EditCategoryPopupController extends PopupController {
     private TextField categoryNameTextField;
 
     @FXML
-    private ComboBox parentCategoryCombo;
+    private ComboBox<Category> parentCategoryCombo;
 
     @FXML
     private TextField descriptionTextField;
 
-    private Category defaultCategory;
     private Category editedCategory;
 
 
     @FXML
     public void initialize() {
-        defaultCategory = new Category("None");
-
         parentCategoryCombo.getItems().addAll(categoryService.getList());
-        parentCategoryCombo.getItems().add(defaultCategory);
-        parentCategoryCombo.setValue(defaultCategory);
+        parentCategoryCombo.getItems().add(NO_CATEGORY);
+        parentCategoryCombo.setValue(NO_CATEGORY);
     }
 
     @FXML
@@ -51,40 +50,36 @@ public class EditCategoryPopupController extends PopupController {
     }
 
     private void updateModel() {
-        Category parentCategory = (Category) parentCategoryCombo.getSelectionModel().getSelectedItem();
+        Category parentCategory = parentCategoryCombo.getSelectionModel().getSelectedItem();
         String categoryName = categoryNameTextField.getText();
         String description = descriptionTextField.getText();
 
-        Category currentParentCategory = editedCategory.parentCategoryProperty().getValue().get();
         editedCategory.setName(categoryName);
-        editedCategory.setDescription(description);
+        if(description.isEmpty()){
+            editedCategory.removeDescriptionIfPresent();
+        }
+        else{
+            editedCategory.setDescription(description);
+        }
 
-        if(!parentCategory.equals(defaultCategory)) {
-            if(!currentParentCategory.equals(parentCategory)) {
-                currentParentCategory.removeSubCategory(editedCategory);
-                parentCategory.addSubCategory(editedCategory);
-            }
+        if(parentCategory.equals(NO_CATEGORY)) {
+            editedCategory.removeParentCategoryIfPresent();
         }
         else {
-            if(!currentParentCategory.equals(parentCategory)) {
-                currentParentCategory.removeSubCategory(editedCategory);
-                editedCategory.removeParentCategory();
-            }
+            editedCategory.removeParentCategoryIfPresent();
+            parentCategory.addSubCategory(editedCategory);
         }
 
         categoryService.save(editedCategory);
     }
 
-    private void adaptCombobox(Category category) {
-        parentCategoryCombo.getItems().remove(category);
-        for(Category child : category.subCategoriesObservableSet()) {
-            adaptCombobox(child);
-        }
+    private void adaptComboBox(Category category) {
+        parentCategoryCombo.getItems().removeAll(category.deepSubCategoriesSet());
     }
 
     public void editCategory(Category category) {
         editedCategory = category;
-        adaptCombobox(editedCategory);
+        adaptComboBox(editedCategory);
         showDialog();
     }
 }

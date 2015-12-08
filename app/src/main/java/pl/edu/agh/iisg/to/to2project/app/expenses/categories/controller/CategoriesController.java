@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,8 +53,17 @@ public class CategoriesController {
         categoriesTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
-        parentColumn.setCellValueFactory(dataValue -> dataValue.getValue().parentCategoryProperty().getValue().orElse(new Category("None")).nameProperty());
-        descriptionColumn.setCellValueFactory(dataValue -> dataValue.getValue().descriptionProperty().getValue().orElse(new SimpleStringProperty("")));
+        parentColumn.setCellValueFactory(dataValue -> {
+            ObjectProperty<Category> parentCategory = dataValue.getValue().parentCategoryProperty();
+            return Bindings.createStringBinding(() ->
+                    parentCategory.get() == null ? "" : parentCategory.getValue().nameProperty().getValue(),
+                    parentCategory);
+        });
+        descriptionColumn.setCellValueFactory(dataValue ->
+                Bindings.when(dataValue.getValue().descriptionProperty().isNotNull())
+                        .then(dataValue.getValue().descriptionProperty())
+                        .otherwise("")
+        );
     }
 
 
@@ -79,11 +89,11 @@ public class CategoriesController {
     @FXML
     private void handleDeleteCategoryClick(ActionEvent actionEvent) {
         DeleteCategoryPopup popup = context.getBean(DeleteCategoryPopup.class);
-        DeleteCategoryPopupController contoller = popup.getController();
+        DeleteCategoryPopupController controller = popup.getController();
 
         Category selectedCategory = categoriesTable.getSelectionModel().getSelectedItem();
         if(selectedCategory != null) {
-            contoller.deleteCategory(selectedCategory);
+            controller.deleteCategory(selectedCategory);
         }
     }
 

@@ -5,19 +5,13 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-
-import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
 
 /**
  * @author Wojciech Pachuta.
@@ -31,18 +25,18 @@ public class Category extends AbstractEntity {
 
     private final ObservableSet<Category> subCategories;
 
-    private final ObjectProperty<Optional<Category>> parentCategory;
+    private final ObjectProperty<Category> parentCategory;
 
     private final ObservableSet<InternalTransaction> internalTransactions;
 
     private final ObservableSet<ExternalTransaction> externalTransactions;
 
-    private final ObjectProperty<Optional<StringProperty>> description;
+    private final ObjectProperty<String> description;
 
     Category() {
         this.name = new SimpleStringProperty();
         this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
+        this.parentCategory = new SimpleObjectProperty<>();
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
         this.description = new SimpleObjectProperty<>();
@@ -53,55 +47,16 @@ public class Category extends AbstractEntity {
         Preconditions.checkArgument(!name.isEmpty());
         this.name = new SimpleStringProperty(name);
         this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
+        this.parentCategory = new SimpleObjectProperty<>();
         this.internalTransactions = FXCollections.observableSet(new HashSet<>());
         this.externalTransactions = FXCollections.observableSet(new HashSet<>());
         this.description = new SimpleObjectProperty<>();
     }
-
-    public Category(String name, String description) {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkArgument(!name.isEmpty());
-        Preconditions.checkNotNull(description);
-        Preconditions.checkArgument(!description.isEmpty());
-        this.name = new SimpleStringProperty(name);
-        this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(Optional.empty());
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>(of(new SimpleStringProperty(description)));
-    }
-
-    public Category(String name, Category parentCategory) {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkArgument(!name.isEmpty());
-        Preconditions.checkNotNull(parentCategory);
-        this.name = new SimpleStringProperty(name);
-        this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(of(parentCategory));
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>();
-    }
-
-    public Category(String name, Category parentCategory, String description) {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkArgument(!name.isEmpty());
-        Preconditions.checkNotNull(parentCategory);
-        Preconditions.checkNotNull(description);
-        this.name = new SimpleStringProperty(name);
-        this.subCategories = FXCollections.observableSet(new HashSet<>());
-        this.parentCategory = new SimpleObjectProperty<>(of(parentCategory));
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>(of(new SimpleStringProperty(description)));
-    }
-
 
 
 
     @Column(unique = true, nullable = false)
-    public String getName() {
+    private String getName() {
         return name.get();
     }
 
@@ -128,37 +83,53 @@ public class Category extends AbstractEntity {
 
     public boolean addSubCategory(Category category){
         Preconditions.checkNotNull(category);
+        Preconditions.checkArgument(category.parentCategoryProperty().get() == null);
+        Preconditions.checkArgument(canAddSubcategoryWithoutCausingCycles(category));
         category.setParentCategory(this);
         return subCategories.add(category);
     }
 
     public boolean removeSubCategory(Category category){
         Preconditions.checkNotNull(category);
-        Preconditions.checkArgument(this.equals(category.getParentCategory()));
-        category.removeParentCategory();
+        Preconditions.checkArgument(category.parentCategoryProperty().get() == this);
+        category.parentCategory.set(null);
         return subCategories.remove(category);
     }
 
-    public Set<Category> subCategoriesObservableSet() {
-        return Collections.unmodifiableSet(subCategories);
+    public ObservableSet<Category> subCategoriesObservableSet() {
+        return FXCollections.unmodifiableObservableSet(subCategories);
+    }
+
+    public Set<Category> deepSubCategoriesSet() {
+        Set<Category> set = FXCollections.observableSet(this);
+        subCategoriesObservableSet().stream()
+                .map(Category::deepSubCategoriesSet)
+                .forEach(set::addAll);
+        return set;
+    }
+
+    private boolean canAddSubcategoryWithoutCausingCycles(Category subCategory){
+        return subCategory.parentCategoryProperty().get() == null && !subCategory.deepSubCategoriesSet().contains(this);
     }
 
 
 
     @OneToOne(optional = true, fetch = FetchType.EAGER)
     private Category getParentCategory(){
-        return parentCategory.get().orElse(null);
+        return parentCategory.get();
     }
 
     private void setParentCategory(Category parentCategory){
-        this.parentCategory.set(ofNullable(parentCategory));
+        this.parentCategory.set(parentCategory);
     }
 
-    public void removeParentCategory(){
-        this.parentCategory.set(Optional.empty());
+    public void removeParentCategoryIfPresent(){
+        if(this.parentCategory.get() != null) {
+            this.parentCategory.get().removeSubCategory(this);
+        }
     }
 
-    public ObjectProperty<Optional<Category>> parentCategoryProperty(){
+    public ObjectProperty<Category> parentCategoryProperty(){
         return this.parentCategory;
     }
 
@@ -214,22 +185,26 @@ public class Category extends AbstractEntity {
 
 
 
-    @Column(name = "description", nullable = true)
-    private String getDescription() {
-        return (description.get().orElse(new SimpleStringProperty("")).getValue());
+    @Column(name = "description")
+    private String getDescriptionHibernate() {
+        return description.get();
     }
 
-    @Column(name = "description", nullable = true)
     private void setDescriptionHibernate(String description) {
-        this.description.set(ofNullable(new SimpleStringProperty(description)));
+        this.description.set(description);
     }
 
     public void setDescription(String description) {
         Preconditions.checkNotNull(description);
-        this.description.set(of(new SimpleStringProperty(description)));
+        Preconditions.checkArgument(!description.isEmpty());
+        this.description.set(description);
     }
 
-    public ObjectProperty<Optional<StringProperty>> descriptionProperty() {
+    public void removeDescriptionIfPresent() {
+        description.set(null);
+    }
+
+    public ObjectProperty<String> descriptionProperty() {
         return description;
     }
 
