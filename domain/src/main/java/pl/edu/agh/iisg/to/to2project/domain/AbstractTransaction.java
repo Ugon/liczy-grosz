@@ -101,7 +101,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
     @Transient
     public abstract void setCategory(Category category);
 
-    public abstract void removeCategory();
+    public abstract void removeCategoryIfPresent();
 
     public ObjectProperty<Category> categoryProperty() {
         return category;

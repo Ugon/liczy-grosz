@@ -36,6 +36,8 @@ import static java.util.Date.from;
 @Scope("prototype")
 public class EditExternalTransactionPopupController extends PopupController {
 
+    private static final Category NO_CATEGORY = new Category("None");
+
     @Autowired
     private ExternalTransactionService externalTransactionService;
 
@@ -74,17 +76,15 @@ public class EditExternalTransactionPopupController extends PopupController {
 
     @FXML
     private Text errorLabel;
-
     private DecimalFormat decimalFormat;
     private ExternalTransaction editedTransaction;
-    private static final Category NO_CATEGORY = new Category("None");
 
 
 
     @FXML
     public void initialize() {
-        accountNameCombo.getItems().addAll(accountService.getList());
-        categoryCombo.getItems().addAll(categoryService.getList());
+        accountNameCombo.setItems(accountService.getList());
+        categoryCombo.setItems(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
 
         accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
@@ -150,6 +150,7 @@ public class EditExternalTransactionPopupController extends PopupController {
             transfer = (BigDecimal) decimalFormat.parse(transferTextField.getText());
         }
         catch (ParseException exc) {
+            //todo: what next?
             exc.printStackTrace();
         }
 
@@ -168,12 +169,17 @@ public class EditExternalTransactionPopupController extends PopupController {
         editedTransaction.setDestinationAccount(sourceAccount);
         editedTransaction.setSource(payee);
 
-        editedTransaction.removeCategory();
-        editedTransaction.setCategory(category);
-
+        editedTransaction.removeCategoryIfPresent();
+        if(!category.equals(NO_CATEGORY)){
+            editedTransaction.setCategory(category);
+        }
         editedTransaction.setDelta(transfer);
         editedTransaction.setDateTime(transferDateTime);
-        editedTransaction.setComment(comment);
+
+        editedTransaction.removeCommentIfPresent();
+        if(!comment.isEmpty()) {
+            editedTransaction.setComment(comment);
+        }
 
         externalTransactionService.save(editedTransaction);
     }

@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 public class ExternalTransaction extends AbstractTransaction {
 
     private final StringProperty source;
-    private static final Category NO_CATEGORY = new Category("None");
 
     ExternalTransaction() {
         super();
@@ -53,16 +52,17 @@ public class ExternalTransaction extends AbstractTransaction {
     @Transient
     public void setCategory(Category category) {
         Preconditions.checkNotNull(category);
+        Preconditions.checkState(categoryProperty().get() == null);
         category.addExternalTransaction(this);
         this.category.set(category);
     }
 
     @Override
-    public void removeCategory() {
-        if(!this.category.get().equals(NO_CATEGORY)){
-            Category category = this.category.get();
+    public void removeCategoryIfPresent() {
+        Category category = this.categoryProperty().get();
+        if(category != null){
             category.removeExternalTransaction(this);
-            this.category.set(NO_CATEGORY);
+            this.category.set(null);
         }
     }
 

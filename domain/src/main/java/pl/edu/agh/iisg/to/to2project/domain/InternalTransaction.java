@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 public class InternalTransaction extends AbstractTransaction {
 
     private final ObjectProperty<Account> sourceAccount;
-    private static final Category NO_CATEGORY = new Category("None");
 
     InternalTransaction() {
         super();
@@ -54,16 +53,17 @@ public class InternalTransaction extends AbstractTransaction {
     @Transient
     public void setCategory(Category category) {
         Preconditions.checkNotNull(category);
+        Preconditions.checkState(categoryProperty().get() == null);
         category.addInternalTransaction(this);
         this.category.set(category);
     }
 
     @Override
-    public void removeCategory() {
-        if(!this.category.get().equals(NO_CATEGORY)) {
-            Category category = this.category.get();
+    public void removeCategoryIfPresent() {
+        Category category = this.category.get();
+        if(category != null) {
             category.removeInternalTransaction(this);
-            this.category.set(NO_CATEGORY);
+            this.category.set(null);
         }
     }
 
