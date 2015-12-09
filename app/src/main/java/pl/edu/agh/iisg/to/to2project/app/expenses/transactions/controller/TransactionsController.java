@@ -84,7 +84,6 @@ public class TransactionsController {
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
-        // TODO: NULL-check
         categoryColumn.setCellValueFactory(dataValue -> {
             ObjectProperty<Category> category = dataValue.getValue().categoryProperty();
             return Bindings.createStringBinding(() ->
@@ -92,7 +91,6 @@ public class TransactionsController {
         });
 
         payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsString());
-        // TODO: NULL-check
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
     }
 

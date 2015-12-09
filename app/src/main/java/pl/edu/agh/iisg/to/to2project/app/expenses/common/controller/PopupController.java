@@ -25,6 +25,10 @@ public abstract class PopupController {
         this.dialogStage = dialogStage;
     }
 
+    public Stage getDialogStage() {
+        return dialogStage;
+    }
+
     protected void showDialog(){
         dialogStage.show();
     }

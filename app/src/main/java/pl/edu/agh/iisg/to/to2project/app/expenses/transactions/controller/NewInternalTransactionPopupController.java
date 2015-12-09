@@ -117,7 +117,7 @@ public class NewInternalTransactionPopupController extends PopupController {
     }
 
     private boolean isTransferValueValid() {
-        return transferTextField.getText().matches("^\\-?\\d+$");
+        return transferTextField.getText().matches("^\\-?\\d+(?:.\\d+)?$");
     }
 
     private void updateModel() {
