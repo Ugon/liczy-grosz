@@ -1,9 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -42,7 +40,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "destinationAccount_id")
     private Account getDestinationAccount() {
         return destinationAccount.get();
@@ -52,7 +50,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.destinationAccount.set(destinationAccount);
     }
 
-    public ObjectProperty<Account> destinationAccountProperty() {
+    public ReadOnlyObjectProperty<Account> destinationAccountProperty() {
         return destinationAccount;
     }
 
@@ -67,7 +65,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.delta.set(delta);
     }
 
-    public ObjectProperty<BigDecimal> deltaProperty() {
+    public ReadOnlyObjectProperty<BigDecimal> deltaProperty() {
         return delta;
     }
 
@@ -83,13 +81,13 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.dateTime.set(dateTime);
     }
 
-    public ObjectProperty<DateTime> dateTimeProperty() {
+    public ReadOnlyObjectProperty<DateTime> dateTimeProperty() {
         return dateTime;
     }
 
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     private Category getCategoryColumn() {
         return category.get();
     }
@@ -103,7 +101,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
 
     public abstract void removeCategoryIfPresent();
 
-    public ObjectProperty<Category> categoryProperty() {
+    public ReadOnlyObjectProperty<Category> categoryProperty() {
         return category;
     }
 
@@ -129,12 +127,13 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.comment.set(null);
     }
 
-    public ObjectProperty<String> commentProperty() {
+    public ReadOnlyObjectProperty<String> commentProperty() {
         return comment;
     }
 
 
-    public abstract StringProperty sourcePropertyAsString();
+    public abstract ReadOnlyProperty sourceProperty();
+    public abstract ReadOnlyStringProperty sourcePropertyAsString();
 
 
     @Override

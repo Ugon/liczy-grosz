@@ -10,4 +10,10 @@ import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGe
  */
 @Repository
 public class AccountDAOImpl extends TransactionalGenericCachingDAOImpl<Account, Long> implements AccountDAO {
+
+    @Override
+    protected Class<Account> getPersistentType() {
+        return Account.class;
+    }
+
 }

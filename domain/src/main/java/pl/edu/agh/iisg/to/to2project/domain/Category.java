@@ -1,10 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
@@ -48,8 +45,8 @@ public class Category extends AbstractEntity {
         this.name = new SimpleStringProperty(name);
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>();
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
+        this.internalTransactions = FXCollections.observableSet();
+        this.externalTransactions = FXCollections.observableSet();
         this.description = new SimpleObjectProperty<>();
     }
 
@@ -66,7 +63,7 @@ public class Category extends AbstractEntity {
         this.name.set(name);
     }
 
-    public StringProperty nameProperty() {
+    public ReadOnlyStringProperty nameProperty() {
         return name;
     }
 
@@ -78,7 +75,10 @@ public class Category extends AbstractEntity {
     }
 
     private void setSubCategories(Set<Category> subCategories){
-        this.subCategories.addAll(subCategories);
+        this.subCategories.clear();
+        if(subCategories != null) {
+            this.subCategories.addAll(subCategories);
+        }
     }
 
     public boolean addSubCategory(Category category){
@@ -129,7 +129,7 @@ public class Category extends AbstractEntity {
         }
     }
 
-    public ObjectProperty<Category> parentCategoryProperty(){
+    public ReadOnlyObjectProperty<Category> parentCategoryProperty(){
         return this.parentCategory;
     }
 
@@ -141,6 +141,7 @@ public class Category extends AbstractEntity {
     }
 
     private void setExternalTransactions(Set<ExternalTransaction> externalTransactions){
+        this.externalTransactions.clear();
         this.externalTransactions.addAll(externalTransactions);
     }
 
@@ -155,7 +156,7 @@ public class Category extends AbstractEntity {
     }
 
     public ObservableSet<ExternalTransaction> externalTransactionsObservableSet() {
-        return externalTransactions;
+        return FXCollections.unmodifiableObservableSet(externalTransactions);
     }
 
 
@@ -166,6 +167,7 @@ public class Category extends AbstractEntity {
     }
 
     private void setInternalTransactions(Set<InternalTransaction> internalTransactions){
+        this.internalTransactions.clear();
         this.internalTransactions.addAll(internalTransactions);
     }
 
@@ -180,7 +182,7 @@ public class Category extends AbstractEntity {
     }
 
     public ObservableSet<InternalTransaction> internalTransactionObservableSet() {
-        return internalTransactions;
+        return FXCollections.unmodifiableObservableSet(internalTransactions);
     }
 
 
@@ -204,7 +206,7 @@ public class Category extends AbstractEntity {
         description.set(null);
     }
 
-    public ObjectProperty<String> descriptionProperty() {
+    public ReadOnlyObjectProperty<String> descriptionProperty() {
         return description;
     }
 

@@ -1,9 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -32,8 +30,8 @@ public class InternalTransaction extends AbstractTransaction {
 
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    public Account getSourceAccount() {
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    private Account getSourceAccount() {
         return sourceAccount.get();
     }
 
@@ -42,7 +40,7 @@ public class InternalTransaction extends AbstractTransaction {
         this.sourceAccount.set(sourceAccount);
     }
 
-    public ObjectProperty<Account> sourceAccountProperty() {
+    public ReadOnlyObjectProperty<Account> sourceAccountProperty() {
         return sourceAccount;
     }
 
@@ -70,9 +68,16 @@ public class InternalTransaction extends AbstractTransaction {
 
 
     @Override
-    public StringProperty sourcePropertyAsString() {
+    public ReadOnlyProperty sourceProperty() {
+        return sourceAccount;
+    }
+
+    @Override
+    public ReadOnlyStringProperty sourcePropertyAsString() {
         return sourceAccount.get().nameProperty();
     }
+
+
 
 
     @Override

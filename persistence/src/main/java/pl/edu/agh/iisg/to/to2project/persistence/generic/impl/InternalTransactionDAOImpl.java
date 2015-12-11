@@ -10,4 +10,10 @@ import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGe
  */
 @Repository
 public class InternalTransactionDAOImpl extends TransactionalGenericCachingDAOImpl<InternalTransaction, Long> implements InternalTransactionDAO {
+
+    @Override
+    protected Class<InternalTransaction> getPersistentType() {
+        return InternalTransaction.class;
+    }
+
 }

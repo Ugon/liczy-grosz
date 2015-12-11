@@ -4,20 +4,17 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.ExpensesController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <center>
-        <TabPane side="TOP">
-            <Tab text="Accounts" closable="false">
-                <!--<AnchorPane id="Content"/>-->
-                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/accounts/view/AccountsView.fxml"/>
+        <TabPane fx:id="tabPane" side="TOP">
+            <Tab id="accountsTab" text="Accounts" closable="false">
+                <fx:include fx:id="accounts" source="/pl/edu/agh/iisg/to/to2project/app/expenses/accounts/view/AccountsView.fxml"/>
             </Tab>
-            <Tab text="Transactions" closable="false">
-                <!--<AnchorPane id="Content"/>-->
-                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/transactions/view/TransactionsView.fxml"/>
+            <Tab id="transactionsTab" text="Transactions" closable="false">
+                <fx:include fx:id="transactions" source="/pl/edu/agh/iisg/to/to2project/app/expenses/transactions/view/TransactionsView.fxml"/>
             </Tab>
-            <Tab text="Categories" closable="false">
-                <!--<AnchorPane id="Content"/>-->
-                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/categories/view/CategoriesView.fxml"/>
+            <Tab id="categoriesTab" text="Categories" closable="false">
+                <fx:include fx:id="categories" source="/pl/edu/agh/iisg/to/to2project/app/expenses/categories/view/CategoriesView.fxml"/>
             </Tab>
         </TabPane>
     </center>

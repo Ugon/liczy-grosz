@@ -1,6 +1,8 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.joda.time.DateTime;
@@ -41,7 +43,7 @@ public class ExternalTransaction extends AbstractTransaction {
         this.source.set(source);
     }
 
-    public StringProperty sourceProperty() {
+    public ReadOnlyStringProperty sourcePayeeProperty() {
         return source;
     }
 
@@ -69,7 +71,12 @@ public class ExternalTransaction extends AbstractTransaction {
 
 
     @Override
-    public StringProperty sourcePropertyAsString() {
+    public ReadOnlyProperty sourceProperty() {
+        return source;
+    }
+
+    @Override
+    public ReadOnlyStringProperty sourcePropertyAsString() {
         return source;
     }
 

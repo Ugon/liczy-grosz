@@ -56,7 +56,7 @@ public class Account extends AbstractEntity{
         this.name.set(name);
     }
 
-    public StringProperty nameProperty() {
+    public ReadOnlyStringProperty nameProperty() {
         return name;
     }
 
@@ -73,7 +73,7 @@ public class Account extends AbstractEntity{
         this.initialBalance.set(initialBalance);
     }
 
-    public ObjectProperty<BigDecimal> initialBalanceProperty() {
+    public ReadOnlyObjectProperty<BigDecimal> initialBalanceProperty() {
         return this.initialBalance;
     }
 
@@ -85,6 +85,7 @@ public class Account extends AbstractEntity{
     }
 
     private void setInternalTransactionHistory(Set<InternalTransaction> internalTransactionHistory){
+        this.internalTransactionHistory.clear();
         this.internalTransactionHistory.addAll(internalTransactionHistory);
     }
 
@@ -99,7 +100,7 @@ public class Account extends AbstractEntity{
     }
 
     public ObservableSet<InternalTransaction> internalTransactionHistoryObservableSet() {
-        return internalTransactionHistory;
+        return FXCollections.unmodifiableObservableSet(internalTransactionHistory);
     }
 
 
@@ -110,6 +111,7 @@ public class Account extends AbstractEntity{
     }
 
     private void setExternalTransactionHistory(Set<ExternalTransaction> externalTransactionHistory){
+        this.externalTransactionHistory.clear();
         this.externalTransactionHistory.addAll(externalTransactionHistory);
     }
 
@@ -124,7 +126,7 @@ public class Account extends AbstractEntity{
     }
 
     public ObservableSet<ExternalTransaction> externalTransactionHistoryObservableSet() {
-        return externalTransactionHistory;
+        return FXCollections.unmodifiableObservableSet(externalTransactionHistory);
     }
 
 

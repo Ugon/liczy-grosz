@@ -8,6 +8,7 @@ import java.io.Serializable;
 /**
  * @author Wojciech Pachuta.
  */
+@SuppressWarnings("unchecked")
 public interface TransactionalGenericCachingDAO<T extends AbstractEntity, ID extends Serializable> {
     ObservableList<T> findAll();
 
@@ -17,7 +18,7 @@ public interface TransactionalGenericCachingDAO<T extends AbstractEntity, ID ext
 
     T find(ID id);
 
-    void flush();
-
     void refresh(T entity);
+
+    void refreshCache();
 }

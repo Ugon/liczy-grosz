@@ -10,4 +10,10 @@ import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGe
  */
 @Repository
 public class ExternalTransactionDAOImpl extends TransactionalGenericCachingDAOImpl<ExternalTransaction, Long> implements ExternalTransactionDAO {
+
+    @Override
+    protected Class<ExternalTransaction> getPersistentType() {
+        return ExternalTransaction.class;
+    }
+
 }

@@ -1,7 +1,9 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,10 +18,7 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransa
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
-import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.*;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
@@ -79,18 +78,28 @@ public class TransactionsController {
         transactionsTable.setItems(allTransactions);
 
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
-
-        nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().nameProperty());
+        nameColumn.setCellValueFactory(dataValue -> {
+            ReadOnlyObjectProperty<Account> accountProperty = dataValue.getValue().destinationAccountProperty();
+            ReadOnlyStringProperty nameProperty = accountProperty.get().nameProperty();
+            return Bindings.createStringBinding(nameProperty::get, accountProperty, nameProperty);
+        });
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
+        //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         categoryColumn.setCellValueFactory(dataValue -> {
-            ObjectProperty<Category> category = dataValue.getValue().categoryProperty();
+            ReadOnlyObjectProperty<Category> categoryProperty = dataValue.getValue().categoryProperty();
             return Bindings.createStringBinding(() ->
-                    category.get() == null ? "": category.getValue().nameProperty().getValue(), category);
+                    categoryProperty.get() == null ? "": categoryProperty.getValue().nameProperty().get(), categoryProperty);
+        });
+        payeeColumn.setCellValueFactory(dataValue -> {
+            ReadOnlyProperty sourceProperty = dataValue.getValue().sourceProperty();
+            ReadOnlyStringProperty sourceStringProperty = dataValue.getValue().sourcePropertyAsString();
+            return Bindings.createStringBinding(sourceStringProperty::get, sourceProperty, sourceStringProperty);
         });
 
-        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsString());
+
+//                dataValue.getValue().sourcePropertyAsString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
     }
 
@@ -131,5 +140,12 @@ public class TransactionsController {
         if(selectedTransaction != null) {
             controller.deleteTransaction(selectedTransaction);
         }
+    }
+
+    public void refreshContent() {
+        externalTransactionService.refreshCache();
+        internalTransactionService.refreshCache();
+
+        internalTransactions.forEach(elem -> System.out.println(elem.categoryProperty().get() == null ? "" : elem.categoryProperty().get().nameProperty()));
     }
 }

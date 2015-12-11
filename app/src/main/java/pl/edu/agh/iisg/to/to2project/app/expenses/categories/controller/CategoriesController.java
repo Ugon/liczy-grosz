@@ -1,7 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,7 +54,7 @@ public class CategoriesController {
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
         parentColumn.setCellValueFactory(dataValue -> {
-            ObjectProperty<Category> parentCategory = dataValue.getValue().parentCategoryProperty();
+            ReadOnlyObjectProperty<Category> parentCategory = dataValue.getValue().parentCategoryProperty();
             return Bindings.createStringBinding(() ->
                     parentCategory.get() == null ? "" : parentCategory.getValue().nameProperty().getValue(),
                     parentCategory);
@@ -97,4 +97,7 @@ public class CategoriesController {
         }
     }
 
+    public void refreshContent() {
+        categoryService.refreshCache();
+    }
 }

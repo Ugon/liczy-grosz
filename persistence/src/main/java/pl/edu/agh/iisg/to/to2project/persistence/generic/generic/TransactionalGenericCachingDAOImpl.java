@@ -1,10 +1,10 @@
 package pl.edu.agh.iisg.to.to2project.persistence.generic.generic;
 
-import com.googlecode.genericdao.dao.DAOUtil;
-import com.googlecode.genericdao.dao.hibernate.HibernateBaseDAO;
-import javafx.beans.property.ReadOnlyListWrapper;
+import com.google.common.base.Preconditions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,47 +17,45 @@ import java.util.List;
 /**
  * @author Wojciech Pachuta.
  */
-public class TransactionalGenericCachingDAOImpl<T extends AbstractEntity, ID extends Serializable> extends HibernateBaseDAO implements TransactionalGenericCachingDAO<T, ID> {
+public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntity, ID extends Serializable> implements TransactionalGenericCachingDAO<T, ID> {
 
-    @SuppressWarnings("unchecked")
-    protected Class<T> persistentClass = (Class<T>) DAOUtil.getTypeArguments(TransactionalGenericCachingDAOImpl.class, this.getClass()).get(0);
+    private SessionFactory sessionFactory;
 
     private ObservableList<T> cache;
 
     @Autowired
-    @Override
-    public void setSessionFactory(SessionFactory sessionFactory){
-        super.setSessionFactory(sessionFactory);
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    @SuppressWarnings("unchecked")
-    private void populateCache(){
-        cache = FXCollections.observableArrayList(_all(persistentClass));
+    protected abstract Class<T> getPersistentType();
+
+    private void populateCache() {
+        Session session = sessionFactory.getCurrentSession();
+        List<T> list = session.createCriteria(getPersistentType()).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+        cache = FXCollections.observableArrayList(list);
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public ObservableList<T> findAll() {
-        if(cache == null){
+        if (cache == null) {
             populateCache();
         }
-        return new ReadOnlyListWrapper<>(cache);
+        return FXCollections.unmodifiableObservableList(cache);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void saveOrUpdate(T entity) {
-        _saveOrUpdate(entity);
-        if(cache != null){
-            if(entity.getId() == null) {
-                _flush();
-                _refresh(entity);
-            }
+        Session session = sessionFactory.getCurrentSession();
+        session.saveOrUpdate(entity);
+        session.flush();
+        if (cache != null) {
+            refresh(entity);
+            session.flush();
             List<T> cachedEntity = cache.filtered(elem -> elem.getId().equals(entity.getId()));
-            if (!cachedEntity.isEmpty()) {
-                cache.removeAll(cachedEntity);
-            }
+            cache.removeAll(cachedEntity);
             cache.add(entity);
         }
     }
@@ -65,10 +63,13 @@ public class TransactionalGenericCachingDAOImpl<T extends AbstractEntity, ID ext
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void remove(T entity) {
-        if(entity != null) {
-            _deleteEntity(entity);
-            if(cache != null) {
-                cache.remove(entity);
+        if (entity != null) {
+            Session session = sessionFactory.getCurrentSession();
+            session.delete(entity);
+            session.flush();
+            if (cache != null) {
+                List<T> cachedEntity = cache.filtered(elem -> elem.getId().equals(entity.getId()));
+                cache.removeAll(cachedEntity);
             }
         }
     }
@@ -76,18 +77,29 @@ public class TransactionalGenericCachingDAOImpl<T extends AbstractEntity, ID ext
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public T find(ID id) {
-        return _get(persistentClass, id);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void flush() {
-        _flush();
+        Preconditions.checkNotNull(id);
+        Session session = sessionFactory.getCurrentSession();
+        T object = (T) session.get(getPersistentType(), id);
+        return object;
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void refresh(T entity) {
-        _refresh(entity);
+        Session session = sessionFactory.getCurrentSession();
+        session.refresh(entity);
+        session.flush();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void refreshCache() {
+        if (cache == null) {
+            populateCache();
+        } else {
+            Session session = sessionFactory.getCurrentSession();
+            cache.forEach(session::refresh);
+            session.flush();
+        }
     }
 }
