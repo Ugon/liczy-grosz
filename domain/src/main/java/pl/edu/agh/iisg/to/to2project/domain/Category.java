@@ -100,8 +100,25 @@ public class Category extends AbstractEntity {
 
     @PrePersist
     @PreUpdate
+    @PreRemove
     private void updatePOJOs(){
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
+        System.err.println(getId());
         namePOJO = name.get();
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
+        System.out.println(namePOJO);
         parentCategoryEntity = parentCategory.get();
         descriptionPOJO = description.get();
         if(externalTransactionsPOJO == null) {

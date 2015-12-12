@@ -65,8 +65,8 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
     public void remove(T entity) {
         if (entity != null) {
             Session session = sessionFactory.getCurrentSession();
-            Object merged = session.merge(entity);
-            session.delete(merged);
+            session.createQuery("delete from " + getPersistentType().getName() + " where id = :id")
+                    .setParameter("id", entity.getId()).executeUpdate();
             if (cache != null) {
                 List<T> cachedEntity = cache.filtered(elem -> elem.getId().equals(entity.getId()));
                 cache.removeAll(cachedEntity);

@@ -157,6 +157,6 @@ public class Account extends AbstractEntity {
 
     @Override
     public String toString() {
-        return name.toString();
+        return nameProperty().get();
     }
 }
