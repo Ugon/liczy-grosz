@@ -2,6 +2,8 @@ package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.*;
+import org.fxmisc.easybind.EasyBind;
+import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -13,41 +15,88 @@ import java.math.BigDecimal;
  * @author Bartłomiej Grochal.
  */
 @MappedSuperclass
-@Access(AccessType.PROPERTY)
 public abstract class AbstractTransaction extends AbstractEntity {
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "destinationAccount")
+    private Account destinationAccountEntity;
+
+    @Column(name = "delta", nullable = false)
+    private BigDecimal deltaPOJO;
+
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    @Column(name = "dateTime", nullable = false)
+    private DateTime dateTimePOJO;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "category")
+    protected Category categoryEntity;
+
+    @Column(name = "comment", nullable = true)
+    private String commentPOJO;
+
+    @Transient
     private final ObjectProperty<Account> destinationAccount;
 
+    @Transient
     private final ObjectProperty<BigDecimal> delta;
 
+    @Transient
     private final ObjectProperty<DateTime> dateTime;
 
-    final ObjectProperty<Category> category;
+    @Transient
+    protected final ObjectProperty<Category> category;
 
-    private final ObjectProperty<String> comment;
+    @Transient
+    private final MonadicObservableValue<Category> categoryMonadic;
+
+    @Transient
+    private final StringProperty comment;
+
+    @Transient
+    private final MonadicObservableValue<String> commentMonadic;
 
     AbstractTransaction() {
-        this(null, null, null);
-    }
-
-    public AbstractTransaction(Account account, BigDecimal delta, DateTime dateTime) {
-        this.destinationAccount = new SimpleObjectProperty<>(account);
-        this.delta = new SimpleObjectProperty<>(delta);
-        this.dateTime = new SimpleObjectProperty<>(dateTime);
+        this.destinationAccount = new SimpleObjectProperty<>();
+        this.delta = new SimpleObjectProperty<>();
+        this.dateTime = new SimpleObjectProperty<>();
         this.category = new SimpleObjectProperty<>();
-        this.comment = new SimpleObjectProperty<>();
+        this.categoryMonadic = EasyBind.monadic(category);
+        this.comment = new SimpleStringProperty();
+        this.commentMonadic = EasyBind.monadic(comment);
+    }
+
+    public AbstractTransaction(Account destinationAccount, BigDecimal delta, DateTime dateTime) {
+        this();
+        setDelta(delta);
+        setDateTime(dateTime);
+        setDestinationAccount(destinationAccount);
+    }
+
+    void initProperties() {
+        destinationAccount.setValue(destinationAccountEntity);
+        delta.setValue(deltaPOJO);
+        dateTime.setValue(dateTimePOJO);
+        category.setValue(categoryEntity);
+        comment.setValue(commentPOJO);
+    }
+
+    void updatePOJOs(){
+        destinationAccountEntity = destinationAccount.get();
+        deltaPOJO = delta.get();
+        dateTimePOJO = dateTime.get();
+        categoryEntity = categoryMonadic.getOrElse(null);
+        commentPOJO = commentMonadic.getOrElse(null);
     }
 
 
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "destinationAccount_id")
-    private Account getDestinationAccount() {
-        return destinationAccount.get();
-    }
+    abstract void updateDestinationAccounts(Account oldDestinationAccount, Account newDestinationAccount);
 
     public void setDestinationAccount(Account destinationAccount) {
+        Preconditions.checkNotNull(destinationAccount);
+        Account oldDestinationAccount = this.destinationAccount.get();
         this.destinationAccount.set(destinationAccount);
+        updateDestinationAccounts(oldDestinationAccount, destinationAccount);
     }
 
     public ReadOnlyObjectProperty<Account> destinationAccountProperty() {
@@ -55,13 +104,8 @@ public abstract class AbstractTransaction extends AbstractEntity {
     }
 
 
-
-    @Column(nullable = false)
-    private BigDecimal getDelta() {
-        return delta.get();
-    }
-
     public void setDelta(BigDecimal delta) {
+        Preconditions.checkNotNull(delta);
         this.delta.set(delta);
     }
 
@@ -70,14 +114,8 @@ public abstract class AbstractTransaction extends AbstractEntity {
     }
 
 
-
-    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @Column(nullable = false)
-    private DateTime getDateTime() {
-        return dateTime.get();
-    }
-
     public void setDateTime(DateTime dateTime) {
+        Preconditions.checkNotNull(dateTime);
         this.dateTime.set(dateTime);
     }
 
@@ -86,37 +124,31 @@ public abstract class AbstractTransaction extends AbstractEntity {
     }
 
 
+    abstract void updateCategorySet(Category oldCategory, Category newCategory);
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    private Category getCategoryColumn() {
-        return category.get();
-    }
+    abstract void updateCategoryRemove(Category removedCategory);
 
-    private void setCategoryColumn(Category category) {
+    public void setCategory(Category category){
+        Preconditions.checkNotNull(category);
+        Preconditions.checkState(categoryMonadicProperty().isEmpty());
+        Category oldCategory = this.category.get();
         this.category.set(category);
+        updateCategorySet(oldCategory, category);
     }
 
-    @Transient
-    public abstract void setCategory(Category category);
+    public void removeCategoryIfPresent(){
+        if(categoryMonadicProperty().isPresent()){
+            Category removedCategory = categoryMonadicProperty().get();
+            this.category.set(null);
+            updateCategoryRemove(removedCategory);
+        }
+    }
 
-    public abstract void removeCategoryIfPresent();
-
-    public ReadOnlyObjectProperty<Category> categoryProperty() {
-        return category;
+    public MonadicObservableValue<Category> categoryMonadicProperty() {
+        return categoryMonadic;
     }
 
 
-
-    @Column(name = "comment", nullable = true)
-    private String getCommentHibernate() {
-        return comment.get();
-    }
-
-    private void setCommentHibernate(String comment) {
-        this.comment.set(comment);
-    }
-
-    @Transient
     public void setComment(String comment) {
         Preconditions.checkNotNull(comment);
         Preconditions.checkArgument(!comment.isEmpty());
@@ -124,38 +156,16 @@ public abstract class AbstractTransaction extends AbstractEntity {
     }
 
     public void removeCommentIfPresent() {
-        this.comment.set(null);
+        if (categoryMonadicProperty().isPresent()) {
+            this.comment.set(null);
+        }
     }
 
-    public ReadOnlyObjectProperty<String> commentProperty() {
-        return comment;
+    public MonadicObservableValue<String> commentMonadicProperty() {
+        return commentMonadic;
     }
 
 
-    public abstract ReadOnlyProperty sourceProperty();
-    public abstract ReadOnlyStringProperty sourcePropertyAsString();
+    public abstract MonadicObservableValue<String> sourcePropertyAsMonadicString();
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        AbstractTransaction that = (AbstractTransaction) o;
-
-        if (!destinationAccount.equals(that.destinationAccount)) return false;
-        if (!delta.equals(that.delta)) return false;
-        return dateTime.equals(that.dateTime);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + destinationAccount.hashCode();
-        result = 31 * result + delta.hashCode();
-        result = 31 * result + dateTime.hashCode();
-        return result;
-    }
 }

@@ -4,7 +4,7 @@
        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:properties/hibernate.properties"/>
+        <property name="location" value="classpath:pl/agh/edu/iisg/to/to2project/persistence/properties/hibernate.properties"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

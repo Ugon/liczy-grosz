@@ -52,7 +52,7 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
         session.saveOrUpdate(entity);
         session.flush();
         if (cache != null) {
-            refresh(entity);
+            session.refresh(entity);
             session.flush();
             List<T> cachedEntity = cache.filtered(elem -> elem.getId().equals(entity.getId()));
             cache.removeAll(cachedEntity);
@@ -65,8 +65,8 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
     public void remove(T entity) {
         if (entity != null) {
             Session session = sessionFactory.getCurrentSession();
-            session.delete(entity);
-            session.flush();
+            Object merged = session.merge(entity);
+            session.delete(merged);
             if (cache != null) {
                 List<T> cachedEntity = cache.filtered(elem -> elem.getId().equals(entity.getId()));
                 cache.removeAll(cachedEntity);
@@ -79,27 +79,17 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
     public T find(ID id) {
         Preconditions.checkNotNull(id);
         Session session = sessionFactory.getCurrentSession();
-        T object = (T) session.get(getPersistentType(), id);
-        return object;
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void refresh(T entity) {
-        Session session = sessionFactory.getCurrentSession();
-        session.refresh(entity);
-        session.flush();
+        return (T) session.get(getPersistentType(), id);
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void refreshCache() {
-        if (cache == null) {
-            populateCache();
-        } else {
-            Session session = sessionFactory.getCurrentSession();
-            cache.forEach(session::refresh);
-            session.flush();
+        if (cache != null) {
+            cache.clear();
         }
+        List<T> list = sessionFactory.getCurrentSession()
+                .createCriteria(getPersistentType()).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+        cache.addAll(list);
     }
 }

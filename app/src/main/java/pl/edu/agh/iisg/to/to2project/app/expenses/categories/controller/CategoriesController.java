@@ -1,7 +1,5 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,17 +51,8 @@ public class CategoriesController {
         categoriesTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
-        parentColumn.setCellValueFactory(dataValue -> {
-            ReadOnlyObjectProperty<Category> parentCategory = dataValue.getValue().parentCategoryProperty();
-            return Bindings.createStringBinding(() ->
-                    parentCategory.get() == null ? "" : parentCategory.getValue().nameProperty().getValue(),
-                    parentCategory);
-        });
-        descriptionColumn.setCellValueFactory(dataValue ->
-                Bindings.when(dataValue.getValue().descriptionProperty().isNotNull())
-                        .then(dataValue.getValue().descriptionProperty())
-                        .otherwise("")
-        );
+        parentColumn.setCellValueFactory(dataValue -> dataValue.getValue().parentCategoryMonadicProperty().flatMap(Category::nameProperty));
+        descriptionColumn.setCellValueFactory(dataValue -> dataValue.getValue().descriptionMonadicProperty());
     }
 
 

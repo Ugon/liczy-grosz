@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <import resource="classpath:database/DataSource.xml"/>
+    <import resource="classpath:pl/agh/edu/iisg/to/to2project/persistence/database/DataSource.xml"/>
 
     <!-- Hibernate session factory -->
     <bean id="sessionFactory"
@@ -32,5 +32,6 @@
     <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+
 
 </beans>

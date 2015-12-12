@@ -7,6 +7,7 @@
        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="pl.edu.agh.iisg.to.to2project.domain"/>
-    <import resource="classpath:database/Hibernate.xml"/>
+    <context:component-scan base-package="pl.edu.agh.iisg.to.to2project.persistence"/>
+    <import resource="classpath:pl/agh/edu/iisg/to/to2project/persistence/database/Hibernate.xml"/>
 
 </beans>

@@ -1,10 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.fxmisc.easybind.EasyBind;
+import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -15,10 +16,13 @@ import java.math.BigDecimal;
  * @author Bartłomiej Grochal.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"source", "destinationAccount_id", "delta", "dateTime"}))
-@Access(AccessType.PROPERTY)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"source", "destinationAccount", "delta", "dateTime"}))
 public class ExternalTransaction extends AbstractTransaction {
 
+    @Column(name = "source", nullable = false)
+    protected String sourcePOJO;
+
+    @Transient
     private final StringProperty source;
 
     ExternalTransaction() {
@@ -28,15 +32,33 @@ public class ExternalTransaction extends AbstractTransaction {
 
     public ExternalTransaction(String source, Account destinationAccount, BigDecimal delta, DateTime dateTime) {
         super(destinationAccount, delta, dateTime);
-        this.source = new SimpleStringProperty(source);
+        this.source = new SimpleStringProperty();
+        setSource(source);
     }
 
-
-
-    @Column(nullable = false)
-    public String getSource() {
-        return source.get();
+    @Override
+    @PostLoad
+    protected void initProperties(){
+        super.initProperties();
+        source.setValue(sourcePOJO);
     }
+
+    @Override
+    @PrePersist
+    @PreUpdate
+    protected void updatePOJOs() {
+        super.updatePOJOs();
+        sourcePOJO = source.get();
+    }
+
+    @Override
+    protected void updateDestinationAccounts(Account oldDestinationAccount, Account newDestinationAccount) {
+        if(oldDestinationAccount != null) {
+            oldDestinationAccount.removeAsExternalTransactionDestination(this);
+        }
+        newDestinationAccount.addAsExternalTransactionDestination(this);
+    }
+
 
     public void setSource(String source) {
         Preconditions.checkNotNull(source);
@@ -48,55 +70,24 @@ public class ExternalTransaction extends AbstractTransaction {
     }
 
 
-
-
     @Override
-    @Transient
-    public void setCategory(Category category) {
-        Preconditions.checkNotNull(category);
-        Preconditions.checkState(categoryProperty().get() == null);
-        category.addExternalTransaction(this);
-        this.category.set(category);
+    protected void updateCategorySet(Category oldCategory, Category newCategory) {
+        if(oldCategory != null) {
+            oldCategory.removeExternalTransaction(this);
+        }
+        newCategory.addExternalTransaction(this);
     }
 
     @Override
-    public void removeCategoryIfPresent() {
-        Category category = this.categoryProperty().get();
-        if(category != null){
-            category.removeExternalTransaction(this);
-            this.category.set(null);
+    protected void updateCategoryRemove(Category removedCategory) {
+        if(removedCategory != null) {
+            removedCategory.removeExternalTransaction(this);
         }
     }
 
-
-
     @Override
-    public ReadOnlyProperty sourceProperty() {
-        return source;
+    public MonadicObservableValue<String> sourcePropertyAsMonadicString() {
+        return EasyBind.monadic(source);
     }
 
-    @Override
-    public ReadOnlyStringProperty sourcePropertyAsString() {
-        return source;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        ExternalTransaction that = (ExternalTransaction) o;
-
-        return source.equals(that.source);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + source.hashCode();
-        return result;
-    }
 }

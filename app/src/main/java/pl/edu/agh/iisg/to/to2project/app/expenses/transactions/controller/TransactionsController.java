@@ -1,14 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.fxmisc.easybind.EasyBind;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -78,29 +75,16 @@ public class TransactionsController {
         transactionsTable.setItems(allTransactions);
 
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
-        nameColumn.setCellValueFactory(dataValue -> {
-            ReadOnlyObjectProperty<Account> accountProperty = dataValue.getValue().destinationAccountProperty();
-            ReadOnlyStringProperty nameProperty = accountProperty.get().nameProperty();
-            return Bindings.createStringBinding(nameProperty::get, accountProperty, nameProperty);
-        });
+        nameColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
+
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
+
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
-        categoryColumn.setCellValueFactory(dataValue -> {
-            ReadOnlyObjectProperty<Category> categoryProperty = dataValue.getValue().categoryProperty();
-            return Bindings.createStringBinding(() ->
-                    categoryProperty.get() == null ? "": categoryProperty.getValue().nameProperty().get(), categoryProperty);
-        });
-        payeeColumn.setCellValueFactory(dataValue -> {
-            ReadOnlyProperty sourceProperty = dataValue.getValue().sourceProperty();
-            ReadOnlyStringProperty sourceStringProperty = dataValue.getValue().sourcePropertyAsString();
-            return Bindings.createStringBinding(sourceStringProperty::get, sourceProperty, sourceStringProperty);
-        });
-
-
-//                dataValue.getValue().sourcePropertyAsString());
-        commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
+        categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
+        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
     }
 
 
@@ -145,7 +129,5 @@ public class TransactionsController {
     public void refreshContent() {
         externalTransactionService.refreshCache();
         internalTransactionService.refreshCache();
-
-        internalTransactions.forEach(elem -> System.out.println(elem.categoryProperty().get() == null ? "" : elem.categoryProperty().get().nameProperty()));
     }
 }
