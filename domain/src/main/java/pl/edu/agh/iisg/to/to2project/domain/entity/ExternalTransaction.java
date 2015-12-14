@@ -66,6 +66,7 @@ public class ExternalTransaction extends AbstractTransaction implements IExterna
         this.source.set(source);
     }
 
+    @Override
     public ReadOnlyStringProperty sourcePayeeProperty() {
         return source;
     }

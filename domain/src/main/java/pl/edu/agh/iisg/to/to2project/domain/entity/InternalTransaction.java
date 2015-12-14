@@ -84,11 +84,13 @@ public class InternalTransaction extends AbstractTransaction implements IInterna
         sourceAccount.addAsInternalTransactionSource(this);
     }
 
+    @Override
     public ReadOnlyObjectProperty<Account> sourceAccountProperty() {
         return sourceAccount;
     }
 
 
+    @Override
     public IInternalTransaction getTransactionInverse(){
         return transactionInverse;
     }

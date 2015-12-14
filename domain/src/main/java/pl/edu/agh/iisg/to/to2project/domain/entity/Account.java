@@ -2,8 +2,13 @@ package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import org.fxmisc.easybind.EasyBind;
+import org.fxmisc.easybind.monadic.MonadicObservableValue;
+import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -28,7 +33,7 @@ public class Account extends AbstractEntity {
     @OneToMany(mappedBy = "destinationAccountEntity")
     private Set<ExternalTransaction> externalTransactionDestinationSetPOJO;
 
-    @OneToMany(mappedBy = "destinationAccountEntity")
+    @OneToMany(mappedBy = "sourceAccountEntity")
     private Set<InternalTransaction> internalTransactionSourceSetPOJO;
 
     @Transient
@@ -82,7 +87,7 @@ public class Account extends AbstractEntity {
         namePOJO = name.get();
         initialBalancePOJO = initialBalance.get();
         if(internalTransactionDestinationSetPOJO == null) {
-            internalTransactionDestinationSetPOJO = internalTransactionSourceSet;
+            internalTransactionDestinationSetPOJO = internalTransactionDestinationSet;
         }
         else {
             internalTransactionDestinationSetPOJO.clear();
@@ -130,6 +135,21 @@ public class Account extends AbstractEntity {
     }
 
 
+    public MonadicObservableValue<BigDecimal> currentBalance(){
+        ObservableList<InternalTransaction> intTransDest = ObservableUtils.observableList(internalTransactionDestinationSet);
+        ObservableList<InternalTransaction> intTransSrc = ObservableUtils.observableList(internalTransactionSourceSet);
+        ObservableList<ExternalTransaction> extTransDest = ObservableUtils.observableList(externalTransactionDestinationSet);
+
+        ObservableList<ObservableValue<BigDecimal>> internalIncomes = EasyBind.map(intTransDest, AbstractTransaction::deltaProperty);
+        ObservableList<ObservableValue<BigDecimal>> externalIncomes = EasyBind.map(extTransDest, AbstractTransaction::deltaProperty);
+        ObservableList<ObservableValue<BigDecimal>> internalOutcomes = EasyBind.map(intTransSrc, AbstractTransaction::deltaProperty);
+
+        ObservableValue<BigDecimal> internalIncome = EasyBind.combine(internalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+        ObservableValue<BigDecimal> externalIncome = EasyBind.combine(externalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+        ObservableValue<BigDecimal> internalOutcome = EasyBind.combine(internalOutcomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+
+        return EasyBind.combine(initialBalance, internalIncome, externalIncome, internalOutcome, (a, b, c, d) -> a.add(b).add(c).subtract(d));
+    }
 
     void addAsInternalTransactionDestination(InternalTransaction transaction){
         internalTransactionDestinationSet.add(transaction);

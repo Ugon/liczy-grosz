@@ -6,6 +6,7 @@ import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import pl.edu.agh.iisg.to.to2project.domain.ITransaction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
  * @author Bartłomiej Grochal.
  */
 @MappedSuperclass
-public abstract class AbstractTransaction extends AbstractEntity {
+public abstract class AbstractTransaction extends AbstractEntity implements ITransaction{
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "destinationAccount")
@@ -99,6 +100,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         updateDestinationAccounts(oldDestinationAccount, destinationAccount);
     }
 
+    @Override
     public ReadOnlyObjectProperty<Account> destinationAccountProperty() {
         return destinationAccount;
     }
@@ -109,6 +111,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.delta.set(delta);
     }
 
+    @Override
     public MonadicObservableValue<BigDecimal> deltaProperty() {
         return EasyBind.monadic(delta);
     }
@@ -119,6 +122,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.dateTime.set(dateTime);
     }
 
+    @Override
     public ReadOnlyObjectProperty<DateTime> dateTimeProperty() {
         return dateTime;
     }
@@ -144,6 +148,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         }
     }
 
+    @Override
     public MonadicObservableValue<Category> categoryMonadicProperty() {
         return categoryMonadic;
     }
@@ -161,6 +166,7 @@ public abstract class AbstractTransaction extends AbstractEntity {
         }
     }
 
+    @Override
     public MonadicObservableValue<String> commentMonadicProperty() {
         return commentMonadic;
     }

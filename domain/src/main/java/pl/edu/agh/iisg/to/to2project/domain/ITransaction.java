@@ -24,4 +24,5 @@ public interface ITransaction {
     MonadicObservableValue<String> commentMonadicProperty();
 
     MonadicObservableValue<String> sourcePropertyAsMonadicString();
+
 }

@@ -38,7 +38,10 @@ public class AccountsController {
     private TableColumn<Account, String> nameColumn;
 
     @FXML
-    private TableColumn<Account, BigDecimal> balanceColumn;
+    private TableColumn<Account, BigDecimal> initialBalanceColumn;
+
+    @FXML
+    private TableColumn<Account, BigDecimal> currentBalanceColumn;
 
     private ObservableList<Account> data;
 
@@ -50,7 +53,8 @@ public class AccountsController {
         accountsTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
-        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());
+        initialBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());
+        currentBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().currentBalance());
     }
 
     @FXML

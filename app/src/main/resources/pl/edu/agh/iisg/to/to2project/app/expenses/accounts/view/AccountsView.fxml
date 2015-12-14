@@ -11,7 +11,8 @@
         <TableView fx:id="accountsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
                 <TableColumn fx:id="nameColumn" prefWidth="300.0" text="Account Name"/>
-                <TableColumn fx:id="balanceColumn" prefWidth="500.0" text="Balance"/>
+                <TableColumn fx:id="initialBalanceColumn" prefWidth="150.0" text="initialBalance"/>
+                <TableColumn fx:id="currentBalanceColumn" prefWidth="150.0" text="currentBalance"/>
             </columns>
         </TableView>
     </center>

@@ -10,7 +10,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.app.core.utils.ObservableMerge;
+import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
@@ -75,7 +75,7 @@ public class TransactionsController {
         internalTransactions = internalTransactionService.getList();
         externalTransactions = externalTransactionService.getList();
         internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
-        allTransactions = ObservableMerge.merge(internalTransactions, externalTransactions, internalTransactionInverses);
+        allTransactions = ObservableUtils.merge(internalTransactions, externalTransactions, internalTransactionInverses);
 
         transactionsTable.setItems(allTransactions);
 
