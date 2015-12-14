@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.DeleteAccountPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.EditAccountPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.NewAccountPopup;
-import pl.edu.agh.iisg.to.to2project.domain.Account;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 
 import java.math.BigDecimal;

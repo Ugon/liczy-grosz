@@ -7,9 +7,8 @@ import javafx.scene.layout.VBox;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 
 /**
  * @author Bartłomiej Grochal
@@ -33,35 +32,41 @@ public class EditTransactionPopupController extends PopupController {
     @FXML
     private EditExternalTransactionPopupController externalController;
 
-    private AbstractTransaction editedTransaction;
+    private InternalTransaction internalTransaction;
+    private ExternalTransaction externalTransaction;
 
 
 
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
-        if(editedTransaction instanceof InternalTransaction) {
-            internalController.handleOKButtonClick(actionEvent, editedTransaction);
+        if(internalTransaction != null) {
+            internalController.handleOKButtonClick(actionEvent, internalTransaction);
         }
-        else if(editedTransaction instanceof ExternalTransaction) {
-            externalController.handleOKButtonClick(actionEvent, editedTransaction);
+        else if(externalTransaction != null) {
+            externalController.handleOKButtonClick(actionEvent, externalTransaction);
         }
 
         dialogStage.close();
     }
 
-    public void editTransaction(AbstractTransaction transaction) {
-        editedTransaction = transaction;
-        prepareDialog();
+    public void editTransaction(InternalTransaction transaction) {
+        internalTransaction = transaction;
+        prepareDialog(internalTransaction);
         showDialog();
     }
 
-    private void prepareDialog() {
-        if(editedTransaction instanceof InternalTransaction) {
-            conditionalBox.getChildren().remove(editExternalTransactionPopupContent);
-        }
-        else if (editedTransaction instanceof ExternalTransaction) {
-            conditionalBox.getChildren().remove(editInternalTransactionPopupContent);
-        }
+    public void editTransaction(ExternalTransaction transaction) {
+        externalTransaction = transaction;
+        prepareDialog(externalTransaction);
+        showDialog();
+    }
+
+    private void prepareDialog(InternalTransaction transaction) {
+        conditionalBox.getChildren().remove(editExternalTransactionPopupContent);
+    }
+
+    private void prepareDialog(ExternalTransaction transaction) {
+        conditionalBox.getChildren().remove(editInternalTransactionPopupContent);
     }
 }

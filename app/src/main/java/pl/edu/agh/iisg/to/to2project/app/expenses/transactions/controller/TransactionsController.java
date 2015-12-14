@@ -16,6 +16,8 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransact
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.domain.*;
+import pl.edu.agh.iisg.to.to2project.domain.entity.*;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransactionInverse;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
@@ -25,6 +27,7 @@ import static javafx.scene.control.SelectionMode.SINGLE;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
 @Controller
 public class TransactionsController {
@@ -39,38 +42,40 @@ public class TransactionsController {
     private InternalTransactionService internalTransactionService;
 
     @FXML
-    private TableView<AbstractTransaction> transactionsTable;
+    private TableView<ITransaction> transactionsTable;
 
     @FXML
-    private TableColumn<AbstractTransaction, String> nameColumn;
+    private TableColumn<ITransaction, String> nameColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, BigDecimal> transferColumn;
+    private TableColumn<ITransaction, BigDecimal> transferColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, BigDecimal> balanceColumn;
+    private TableColumn<ITransaction, BigDecimal> balanceColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, DateTime> dateColumn;
+    private TableColumn<ITransaction, DateTime> dateColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, String> categoryColumn;
+    private TableColumn<ITransaction, String> categoryColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, String> payeeColumn;
+    private TableColumn<ITransaction, String> sourceColumn;
 
     @FXML
-    private TableColumn<AbstractTransaction, String> commentColumn;
+    private TableColumn<ITransaction, String> commentColumn;
 
-    private ObservableList<InternalTransaction> internalTransactions;
-    private ObservableList<ExternalTransaction> externalTransactions;
-    private ObservableList<AbstractTransaction> allTransactions;
+    private ObservableList<? extends IInternalTransaction> internalTransactions;
+    private ObservableList<? extends IExternalTransaction> externalTransactions;
+    private ObservableList<? extends IInternalTransaction> internalTransactionInverses;
+    private ObservableList<ITransaction> allTransactions;
 
     @FXML
     public void initialize() {
         internalTransactions = internalTransactionService.getList();
         externalTransactions = externalTransactionService.getList();
-        allTransactions = ObservableMerge.merge(internalTransactions, externalTransactions);
+        internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
+        allTransactions = ObservableMerge.merge(internalTransactions, externalTransactions, internalTransactionInverses);
 
         transactionsTable.setItems(allTransactions);
 
@@ -83,7 +88,7 @@ public class TransactionsController {
 
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
-        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        sourceColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
     }
 
@@ -109,9 +114,18 @@ public class TransactionsController {
         EditTransactionPopup popup = context.getBean(EditTransactionPopup.class);
         EditTransactionPopupController controller = popup.getController();
 
-        AbstractTransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
-        if(selectedTransaction != null) {
-            controller.editTransaction(selectedTransaction);
+        ITransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
+
+        if (selectedTransaction != null && selectedTransaction instanceof InternalTransaction){
+            controller.editTransaction((InternalTransaction) selectedTransaction);
+        }
+        else if (selectedTransaction != null && selectedTransaction instanceof ExternalTransaction){
+            controller.editTransaction((ExternalTransaction) selectedTransaction);
+        }
+        else if (selectedTransaction != null && selectedTransaction instanceof InternalTransactionInverse){
+            InternalTransactionInverse internalTransactionInverse = (InternalTransactionInverse)selectedTransaction;
+            InternalTransaction internalTransaction = (InternalTransaction) internalTransactionInverse.getTransactionInverse();
+            controller.editTransaction(internalTransaction);
         }
     }
 
@@ -120,9 +134,18 @@ public class TransactionsController {
         DeleteTransactionPopup popup = context.getBean(DeleteTransactionPopup.class);
         DeleteTransactionPopupController controller = popup.getController();
 
-        AbstractTransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
-        if(selectedTransaction != null) {
-            controller.deleteTransaction(selectedTransaction);
+        ITransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
+
+        if (selectedTransaction != null && selectedTransaction instanceof InternalTransaction){
+            controller.deleteTransaction((InternalTransaction) selectedTransaction);
+        }
+        else if (selectedTransaction != null && selectedTransaction instanceof ExternalTransaction){
+            controller.deleteTransaction((ExternalTransaction) selectedTransaction);
+        }
+        else if (selectedTransaction != null && selectedTransaction instanceof InternalTransactionInverse){
+            InternalTransactionInverse internalTransactionInverse = (InternalTransactionInverse)selectedTransaction;
+            InternalTransaction internalTransaction = (InternalTransaction) internalTransactionInverse.getTransactionInverse();
+            controller.deleteTransaction(internalTransaction);
         }
     }
 

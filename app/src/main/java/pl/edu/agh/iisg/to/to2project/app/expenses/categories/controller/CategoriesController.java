@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.DeleteCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.EditCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.NewCategoryPopup;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 
 import static javafx.scene.control.SelectionMode.SINGLE;

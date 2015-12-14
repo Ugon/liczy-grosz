@@ -1,7 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.service.impl;
 
 import org.springframework.stereotype.Service;
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 

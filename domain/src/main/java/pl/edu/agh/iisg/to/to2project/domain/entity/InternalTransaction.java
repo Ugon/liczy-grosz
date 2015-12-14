@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain;
+package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.ObjectProperty;
@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.joda.time.DateTime;
+import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sourceAccount", "destinationAccount", "delta", "dateTime"}))
-public class InternalTransaction extends AbstractTransaction {
+public class InternalTransaction extends AbstractTransaction implements IInternalTransaction {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "sourceAccount")
@@ -29,16 +30,21 @@ public class InternalTransaction extends AbstractTransaction {
     @Transient
     private final MonadicObservableValue<String> sourceMonadicString;
 
+    @Transient
+    private final InternalTransactionInverse transactionInverse;
+
     InternalTransaction() {
         super();
         this.sourceAccount = new SimpleObjectProperty<>();
         this.sourceMonadicString = EasyBind.map(sourceAccount, elem -> elem.nameProperty().get());
+        this.transactionInverse = new InternalTransactionInverse(this);
     }
 
     public InternalTransaction(Account sourceAccount, Account destinationAccount, BigDecimal delta, DateTime dateTime) {
         super(destinationAccount, delta, dateTime);
         this.sourceAccount = new SimpleObjectProperty<>();
         this.sourceMonadicString = EasyBind.map(this.sourceAccount, elem -> elem.nameProperty().get());
+        this.transactionInverse = new InternalTransactionInverse(this);
         setSourceAccount(sourceAccount);
     }
 
@@ -80,6 +86,11 @@ public class InternalTransaction extends AbstractTransaction {
 
     public ReadOnlyObjectProperty<Account> sourceAccountProperty() {
         return sourceAccount;
+    }
+
+
+    public IInternalTransaction getTransactionInverse(){
+        return transactionInverse;
     }
 
 

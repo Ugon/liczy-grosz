@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
-import pl.edu.agh.iisg.to.to2project.domain.*;
+import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
@@ -78,6 +81,7 @@ public class EditInternalTransactionPopupController extends PopupController {
         targetAccountCombo.setItems(accountService.getList());
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
+        categoryCombo.setValue(NO_CATEGORY);
 
         sourceAccountCombo.valueProperty().addListener(new AccountChangeListener());
         targetAccountCombo.valueProperty().addListener(new AccountChangeListener());

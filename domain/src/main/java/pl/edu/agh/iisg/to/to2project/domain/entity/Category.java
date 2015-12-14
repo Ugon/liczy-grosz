@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain;
+package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.*;

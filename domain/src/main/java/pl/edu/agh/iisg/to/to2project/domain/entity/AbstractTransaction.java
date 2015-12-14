@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain;
+package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.*;
@@ -109,8 +109,8 @@ public abstract class AbstractTransaction extends AbstractEntity {
         this.delta.set(delta);
     }
 
-    public ReadOnlyObjectProperty<BigDecimal> deltaProperty() {
-        return delta;
+    public MonadicObservableValue<BigDecimal> deltaProperty() {
+        return EasyBind.monadic(delta);
     }
 
 

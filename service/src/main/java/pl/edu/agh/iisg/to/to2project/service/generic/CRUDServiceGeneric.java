@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractEntity;
+import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractEntity;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericCachingDAO;
 
 import java.io.Serializable;

@@ -1,7 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.persistence.generic.impl;
 
 import org.springframework.stereotype.Repository;
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.InternalTransactionDAO;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericCachingDAOImpl;
 

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 
