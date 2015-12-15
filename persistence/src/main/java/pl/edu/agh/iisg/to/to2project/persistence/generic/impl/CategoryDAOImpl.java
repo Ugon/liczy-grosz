@@ -1,7 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.persistence.generic.impl;
 
 import org.springframework.stereotype.Repository;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.CategoryDAO;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericCachingDAOImpl;
 

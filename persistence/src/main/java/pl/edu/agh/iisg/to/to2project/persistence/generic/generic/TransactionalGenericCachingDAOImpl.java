@@ -9,7 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractEntity;
+import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractEntity;
 
 import java.io.Serializable;
 import java.util.List;

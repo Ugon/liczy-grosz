@@ -1,6 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.persistence.generic;
 
-import pl.edu.agh.iisg.to.to2project.domain.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGenericCachingDAO;
 
 /**

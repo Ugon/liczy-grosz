@@ -1,6 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.service;
 
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.generic.CRUDService;
 
 /**

@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain;
+package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -7,6 +7,7 @@ import javafx.beans.property.StringProperty;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.joda.time.DateTime;
+import pl.edu.agh.iisg.to.to2project.domain.IExternalTransaction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"source", "destinationAccount", "delta", "dateTime"}))
-public class ExternalTransaction extends AbstractTransaction {
+public class ExternalTransaction extends AbstractTransaction implements IExternalTransaction {
 
     @Column(name = "source", nullable = false)
     protected String sourcePOJO;
@@ -65,6 +66,7 @@ public class ExternalTransaction extends AbstractTransaction {
         this.source.set(source);
     }
 
+    @Override
     public ReadOnlyStringProperty sourcePayeeProperty() {
         return source;
     }

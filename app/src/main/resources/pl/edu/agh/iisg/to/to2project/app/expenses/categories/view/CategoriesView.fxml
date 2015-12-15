@@ -10,9 +10,9 @@
     <center>
         <TableView fx:id="categoriesTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="100.0" text="Category"/>
-                <TableColumn fx:id="parentColumn" prefWidth="100.0" text="Parent Category"/>
-                <TableColumn fx:id="descriptionColumn" prefWidth="600.0" text="Description"/>
+                <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Category"/>
+                <TableColumn fx:id="parentColumn" prefWidth="200.0" text="Parent Category"/>
+                <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="Description"/>
             </columns>
         </TableView>
     </center>

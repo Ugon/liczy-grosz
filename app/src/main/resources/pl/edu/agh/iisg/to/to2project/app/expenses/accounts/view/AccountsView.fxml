@@ -10,8 +10,9 @@
     <center>
         <TableView fx:id="accountsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="300.0" text="Account Name"/>
-                <TableColumn fx:id="balanceColumn" prefWidth="500.0" text="Balance"/>
+                <TableColumn fx:id="nameColumn" prefWidth="400.0" text="Account Name"/>
+                <TableColumn fx:id="initialBalanceColumn" prefWidth="200.0" text="Initial Balance"/>
+                <TableColumn fx:id="currentBalanceColumn" prefWidth="200.0" text="Current Balance"/>
             </columns>
         </TableView>
     </center>

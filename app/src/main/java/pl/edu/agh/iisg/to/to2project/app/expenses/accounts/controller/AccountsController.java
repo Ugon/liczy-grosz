@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.DeleteAccountPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.EditAccountPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.view.NewAccountPopup;
-import pl.edu.agh.iisg.to.to2project.domain.Account;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 
 import java.math.BigDecimal;
@@ -38,7 +38,10 @@ public class AccountsController {
     private TableColumn<Account, String> nameColumn;
 
     @FXML
-    private TableColumn<Account, BigDecimal> balanceColumn;
+    private TableColumn<Account, BigDecimal> initialBalanceColumn;
+
+    @FXML
+    private TableColumn<Account, BigDecimal> currentBalanceColumn;
 
     private ObservableList<Account> data;
 
@@ -50,7 +53,8 @@ public class AccountsController {
         accountsTable.getSelectionModel().setSelectionMode(SINGLE);
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
-        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());
+        initialBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());
+        currentBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().currentBalance());
     }
 
     @FXML
@@ -85,5 +89,6 @@ public class AccountsController {
 
     public void refreshContent() {
         accountService.refreshCache();
+        accountsTable.refresh();
     }
 }

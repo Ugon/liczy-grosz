@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain;
+package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;

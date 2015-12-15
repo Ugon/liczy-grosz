@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.Account;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
-import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
+import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
@@ -86,6 +86,7 @@ public class EditExternalTransactionPopupController extends PopupController {
         accountNameCombo.setItems(accountService.getList());
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
+        categoryCombo.setValue(NO_CATEGORY);
 
         accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
         payeeTextField.textProperty().addListener(new AccountChangeListener<>());

@@ -1,13 +1,12 @@
-package pl.edu.agh.iisg.to.to2project.app.core.utils;
+package pl.edu.agh.iisg.to.to2project.domain.utils;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 
 /**
  * @author Wojciech Pachuta.
  */
-public class ObservableMerge {
+public class ObservableUtils {
+
     @SafeVarargs
     public static <T> ObservableList<T> merge(ObservableList<? extends T>... lists) {
         final ObservableList<T> list = FXCollections.observableArrayList();
@@ -26,4 +25,19 @@ public class ObservableMerge {
         }
         return list;
     }
+
+    public static <T> ObservableList<T> observableList(ObservableSet<T> set) {
+        final ObservableList<T> list = FXCollections.observableArrayList();
+        list.addAll(set);
+        set.addListener((SetChangeListener<T>) c -> {
+            if (c.wasAdded()) {
+                list.add(c.getElementAdded());
+            }
+            if (c.wasRemoved()) {
+                list.remove(c.getElementRemoved());
+            }
+        });
+        return list;
+    }
+
 }
