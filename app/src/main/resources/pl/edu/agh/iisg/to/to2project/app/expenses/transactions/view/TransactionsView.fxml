@@ -10,11 +10,11 @@
     <center>
         <TableView fx:id="transactionsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
             <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Account Name"/>
-                <TableColumn fx:id="sourceColumn" prefWidth="100.0" text="Source"/>
-                <TableColumn fx:id="transferColumn" prefWidth="100.0" text="Transfer"/>
-                <TableColumn fx:id="balanceColumn" prefWidth="100.0" text="Balance After"/>
-                <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date"/>
+                <TableColumn fx:id="fromAccountColumn" prefWidth="150.0" text="From Account"/>
+                <TableColumn fx:id="toAccountColumn" prefWidth="150.0" text="To Account"/>
+                <TableColumn fx:id="transferColumn" prefWidth="75.0" text="Transfer"/>
+                <TableColumn fx:id="balanceColumn" prefWidth="90.0" text="Balance After"/>
+                <TableColumn fx:id="dateColumn" prefWidth="85.0" text="Date"/>
                 <TableColumn fx:id="categoryColumn" prefWidth="100.0" text="Category"/>
                 <TableColumn fx:id="commentColumn" prefWidth="150.0" text="Comment"/>
             </columns>

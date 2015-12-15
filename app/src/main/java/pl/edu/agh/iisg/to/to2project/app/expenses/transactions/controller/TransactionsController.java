@@ -45,7 +45,7 @@ public class TransactionsController {
     private TableView<ITransaction> transactionsTable;
 
     @FXML
-    private TableColumn<ITransaction, String> nameColumn;
+    private TableColumn<ITransaction, String> fromAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, BigDecimal> transferColumn;
@@ -60,7 +60,7 @@ public class TransactionsController {
     private TableColumn<ITransaction, String> categoryColumn;
 
     @FXML
-    private TableColumn<ITransaction, String> sourceColumn;
+    private TableColumn<ITransaction, String> toAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, String> commentColumn;
@@ -80,7 +80,7 @@ public class TransactionsController {
         transactionsTable.setItems(allTransactions);
 
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
-        nameColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
+        fromAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
 
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
@@ -88,7 +88,7 @@ public class TransactionsController {
 
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
-        sourceColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
     }
 
