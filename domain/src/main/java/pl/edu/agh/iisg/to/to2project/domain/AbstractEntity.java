@@ -7,17 +7,16 @@ import java.io.Serializable;
  * @author Wojciech Pachuta.
  */
 @MappedSuperclass
-@Access(AccessType.PROPERTY)
 public abstract class AbstractEntity implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
 
     public AbstractEntity() {
         this.id = null;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
         return id;
     }

@@ -1,12 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.fxmisc.easybind.EasyBind;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,10 +15,7 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransa
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.domain.AbstractTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.Category;
-import pl.edu.agh.iisg.to.to2project.domain.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.domain.InternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.*;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
@@ -79,19 +75,16 @@ public class TransactionsController {
         transactionsTable.setItems(allTransactions);
 
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
-
-        nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().nameProperty());
+        nameColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
-        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
-        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
-        categoryColumn.setCellValueFactory(dataValue -> {
-            ObjectProperty<Category> category = dataValue.getValue().categoryProperty();
-            return Bindings.createStringBinding(() ->
-                    category.get() == null ? "": category.getValue().nameProperty().getValue(), category);
-        });
 
-        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsString());
-        commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentProperty());
+        //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
+        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
+
+        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
+        categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
+        payeeColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
     }
 
 
@@ -131,5 +124,10 @@ public class TransactionsController {
         if(selectedTransaction != null) {
             controller.deleteTransaction(selectedTransaction);
         }
+    }
+
+    public void refreshContent() {
+        externalTransactionService.refreshCache();
+        internalTransactionService.refreshCache();
     }
 }

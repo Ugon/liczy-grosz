@@ -10,4 +10,10 @@ import pl.edu.agh.iisg.to.to2project.persistence.generic.generic.TransactionalGe
  */
 @Repository
 public class CategoryDAOImpl extends TransactionalGenericCachingDAOImpl<Category, Long> implements CategoryDAO {
+
+    @Override
+    protected Class<Category> getPersistentType() {
+        return Category.class;
+    }
+
 }

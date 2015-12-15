@@ -20,5 +20,5 @@ public interface CRUDService<T extends AbstractEntity, ID extends Serializable> 
 
     void remove(T entity);
 
-    void removeByPK(ID pk);
+    void refreshCache();
 }

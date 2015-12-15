@@ -3,7 +3,6 @@ package pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +81,9 @@ public class AccountsController {
         if(selectedAccount != null){
             controller.deleteAccount(selectedAccount);
         }
+    }
+
+    public void refreshContent() {
+        accountService.refreshCache();
     }
 }

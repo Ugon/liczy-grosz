@@ -7,7 +7,6 @@ import javafx.collections.ObservableSet;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -15,23 +14,45 @@ import java.util.Set;
  */
 @Entity
 @Table
-@Access(AccessType.PROPERTY)
-public class Account extends AbstractEntity{
+public class Account extends AbstractEntity {
 
+    @Column(name = "name", nullable = false, unique = true)
+    private String namePOJO;
+
+    @Column(name = "initialBalance", nullable = false)
+    private BigDecimal initialBalancePOJO;
+
+    @OneToMany(mappedBy = "destinationAccountEntity")
+    private Set<InternalTransaction> internalTransactionDestinationSetPOJO;
+
+    @OneToMany(mappedBy = "destinationAccountEntity")
+    private Set<ExternalTransaction> externalTransactionDestinationSetPOJO;
+
+    @OneToMany(mappedBy = "destinationAccountEntity")
+    private Set<InternalTransaction> internalTransactionSourceSetPOJO;
+
+    @Transient
     private final StringProperty name;
 
+    @Transient
     private final ObjectProperty<BigDecimal> initialBalance;
 
-    private final ObservableSet<InternalTransaction> internalTransactionHistory;
+    @Transient
+    private final ObservableSet<InternalTransaction> internalTransactionDestinationSet;
 
-    private final ObservableSet<ExternalTransaction> externalTransactionHistory;
+    @Transient
+    private final ObservableSet<ExternalTransaction> externalTransactionDestinationSet;
+
+    @Transient
+    private final ObservableSet<InternalTransaction> internalTransactionSourceSet;
 
     Account() {
         super();
         this.name = new SimpleStringProperty();
         this.initialBalance = new SimpleObjectProperty<>();
-        this.internalTransactionHistory = FXCollections.observableSet();
-        this.externalTransactionHistory = FXCollections.observableSet();
+        this.internalTransactionDestinationSet = FXCollections.observableSet();
+        this.externalTransactionDestinationSet = FXCollections.observableSet();
+        this.internalTransactionSourceSet = FXCollections.observableSet();
     }
 
     public Account(String name, BigDecimal balance) {
@@ -40,15 +61,51 @@ public class Account extends AbstractEntity{
         Preconditions.checkArgument(!name.isEmpty());
         Preconditions.checkNotNull(balance);
         setName(name);
-        this.initialBalance.set(balance);
+        setInitialBalance(balance);
     }
 
-
-
-    @Column(nullable = false, unique = true)
-    private String getName() {
-        return name.get();
+    @PostLoad
+    private void initProperties(){
+        name.set(namePOJO);
+        initialBalance.setValue(initialBalancePOJO);
+        internalTransactionDestinationSet.clear();
+        internalTransactionDestinationSet.addAll(internalTransactionDestinationSetPOJO);
+        externalTransactionDestinationSet.clear();
+        externalTransactionDestinationSet.addAll(externalTransactionDestinationSetPOJO);
+        internalTransactionSourceSet.clear();
+        internalTransactionSourceSet.addAll(internalTransactionSourceSetPOJO);
     }
+
+    @PrePersist
+    @PreUpdate
+    private void updatePOJOs(){
+        namePOJO = name.get();
+        initialBalancePOJO = initialBalance.get();
+        if(internalTransactionDestinationSetPOJO == null) {
+            internalTransactionDestinationSetPOJO = internalTransactionSourceSet;
+        }
+        else {
+            internalTransactionDestinationSetPOJO.clear();
+            internalTransactionDestinationSetPOJO.addAll(internalTransactionDestinationSet);
+        }
+
+        if(externalTransactionDestinationSetPOJO == null) {
+            externalTransactionDestinationSetPOJO = externalTransactionDestinationSet;
+        }
+        else {
+            externalTransactionDestinationSetPOJO.clear();
+            externalTransactionDestinationSetPOJO.addAll(externalTransactionDestinationSet);
+        }
+
+        if(internalTransactionSourceSetPOJO == null) {
+            internalTransactionSourceSetPOJO = internalTransactionSourceSet;
+        }
+        else {
+            internalTransactionSourceSetPOJO.clear();
+            internalTransactionSourceSetPOJO.addAll(internalTransactionSourceSet);
+        }
+    }
+
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);
@@ -56,16 +113,11 @@ public class Account extends AbstractEntity{
         this.name.set(name);
     }
 
-    public StringProperty nameProperty() {
+    public ReadOnlyStringProperty nameProperty() {
         return name;
     }
 
 
-
-    @Column(nullable = false)
-    private BigDecimal getInitialBalance() {
-        return initialBalance.get();
-    }
 
     public void setInitialBalance(BigDecimal initialBalance){
         Preconditions.checkNotNull(initialBalance);
@@ -73,83 +125,38 @@ public class Account extends AbstractEntity{
         this.initialBalance.set(initialBalance);
     }
 
-    public ObjectProperty<BigDecimal> initialBalanceProperty() {
+    public ReadOnlyObjectProperty<BigDecimal> initialBalanceProperty() {
         return this.initialBalance;
     }
 
 
 
-    @OneToMany(mappedBy = "destinationAccount")
-    private Set<InternalTransaction> getInternalTransactionHistory() {
-        return Collections.unmodifiableSet(internalTransactionHistory);
+    void addAsInternalTransactionDestination(InternalTransaction transaction){
+        internalTransactionDestinationSet.add(transaction);
     }
 
-    private void setInternalTransactionHistory(Set<InternalTransaction> internalTransactionHistory){
-        this.internalTransactionHistory.addAll(internalTransactionHistory);
+    void removeAsInternalTransactionDestination(InternalTransaction transaction){
+        internalTransactionDestinationSet.remove(transaction);
     }
 
-    public boolean addInternalTransaction(InternalTransaction internalTransaction){
-        Preconditions.checkNotNull(internalTransaction);
-        return internalTransactionHistory.add(internalTransaction);
+    void addAsExternalTransactionDestination(ExternalTransaction transaction){
+        externalTransactionDestinationSet.add(transaction);
     }
 
-    public boolean removeInternalTransaction(InternalTransaction internalTransaction){
-        Preconditions.checkNotNull(internalTransaction);
-        return internalTransactionHistory.remove(internalTransaction);
+    void removeAsExternalTransactionDestination(ExternalTransaction transaction){
+        externalTransactionDestinationSet.remove(transaction);
     }
 
-    public ObservableSet<InternalTransaction> internalTransactionHistoryObservableSet() {
-        return internalTransactionHistory;
+    void addAsInternalTransactionSource(InternalTransaction transaction){
+        internalTransactionSourceSet.add(transaction);
     }
 
-
-
-    @OneToMany(mappedBy = "destinationAccount")
-    private Set<ExternalTransaction> getExternalTransactionHistory() {
-        return Collections.unmodifiableSet(externalTransactionHistory);
-    }
-
-    private void setExternalTransactionHistory(Set<ExternalTransaction> externalTransactionHistory){
-        this.externalTransactionHistory.addAll(externalTransactionHistory);
-    }
-
-    public boolean addExternalTransaction(ExternalTransaction externalTransaction){
-        Preconditions.checkNotNull(externalTransaction);
-        return externalTransactionHistory.add(externalTransaction);
-    }
-
-    public boolean removeExternalTransaction(ExternalTransaction internalTransaction){
-        Preconditions.checkNotNull(internalTransaction);
-        return externalTransactionHistory.remove(internalTransaction);
-    }
-
-    public ObservableSet<ExternalTransaction> externalTransactionHistoryObservableSet() {
-        return externalTransactionHistory;
-    }
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Account account = (Account) o;
-
-        return name.equals(account.name);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
+    void removeAsInternalTransactionSource(InternalTransaction transaction){
+        internalTransactionSourceSet.remove(transaction);
     }
 
     @Override
     public String toString() {
-        return name.getValue();
+        return nameProperty().get();
     }
 }

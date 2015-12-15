@@ -55,7 +55,7 @@ public abstract class CRUDServiceGeneric<T extends AbstractEntity, ID extends Se
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
-    public void removeByPK(ID pk) {
-//        dao.removeById(pk);
+    public void refreshCache() {
+        dao.refreshCache();
     }
 }

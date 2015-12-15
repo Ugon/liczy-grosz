@@ -1,15 +1,13 @@
 package pl.edu.agh.iisg.to.to2project.domain;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import org.fxmisc.easybind.EasyBind;
+import org.fxmisc.easybind.monadic.MonadicObservableValue;
 
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,25 +19,57 @@ import java.util.Set;
 @Table
 public class Category extends AbstractEntity {
 
+    @Column(name = "name", unique = true, nullable = false)
+    private String namePOJO;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategoryEntity", cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    private Set<Category> subCategoriesPOJO;
+
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    private Category parentCategoryEntity;
+
+    @OneToMany(mappedBy = "categoryEntity")
+    private Set<InternalTransaction> internalTransactionsPOJO;
+
+    @OneToMany(mappedBy = "categoryEntity")
+    private Set<ExternalTransaction> externalTransactionsPOJO;
+
+    @Column(name = "description")
+    private String descriptionPOJO;
+
+    @Transient
     private final StringProperty name;
 
+    @Transient
     private final ObservableSet<Category> subCategories;
 
+    @Transient
     private final ObjectProperty<Category> parentCategory;
 
+    @Transient
+    private final MonadicObservableValue<Category> parentCategoryMonadic;
+
+    @Transient
     private final ObservableSet<InternalTransaction> internalTransactions;
 
+    @Transient
     private final ObservableSet<ExternalTransaction> externalTransactions;
 
-    private final ObjectProperty<String> description;
+    @Transient
+    private final StringProperty description;
+
+    @Transient
+    private final MonadicObservableValue<String> descriptionMonadic;
 
     Category() {
         this.name = new SimpleStringProperty();
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>();
+        this.parentCategoryMonadic = EasyBind.monadic(parentCategory);
         this.internalTransactions = FXCollections.observableSet();
         this.externalTransactions = FXCollections.observableSet();
-        this.description = new SimpleObjectProperty<>();
+        this.description = new SimpleStringProperty();
+        this.descriptionMonadic = EasyBind.monadic(description);
     }
 
     public Category(String name) {
@@ -48,17 +78,57 @@ public class Category extends AbstractEntity {
         this.name = new SimpleStringProperty(name);
         this.subCategories = FXCollections.observableSet(new HashSet<>());
         this.parentCategory = new SimpleObjectProperty<>();
-        this.internalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.externalTransactions = FXCollections.observableSet(new HashSet<>());
-        this.description = new SimpleObjectProperty<>();
+        this.parentCategoryMonadic = EasyBind.monadic(parentCategory);
+        this.internalTransactions = FXCollections.observableSet();
+        this.externalTransactions = FXCollections.observableSet();
+        this.description = new SimpleStringProperty();
+        this.descriptionMonadic = EasyBind.monadic(description);
     }
 
-
-
-    @Column(unique = true, nullable = false)
-    private String getName() {
-        return name.get();
+    @PostLoad
+    private void initProperties(){
+        subCategories.clear();
+        subCategories.addAll(subCategoriesPOJO);
+        externalTransactions.clear();
+        externalTransactions.addAll(externalTransactionsPOJO);
+        internalTransactions.clear();
+        internalTransactions.addAll(internalTransactionsPOJO);
+        name.set(namePOJO);
+        parentCategory.set(parentCategoryEntity);
+        description.set(descriptionPOJO);
     }
+
+    @PrePersist
+    @PreUpdate
+    private void updatePOJOs(){
+        namePOJO = name.get();
+        parentCategoryEntity = parentCategory.get();
+        descriptionPOJO = description.get();
+        if(externalTransactionsPOJO == null) {
+            externalTransactionsPOJO = new HashSet<>(externalTransactions);
+        }
+        else{
+            externalTransactionsPOJO.clear();
+            externalTransactionsPOJO.addAll(externalTransactions);
+        }
+
+        if(internalTransactionsPOJO == null) {
+            internalTransactionsPOJO = new HashSet<>(internalTransactions);
+        }
+        else{
+            internalTransactionsPOJO.clear();
+            internalTransactionsPOJO.addAll(internalTransactions);
+        }
+
+        if(subCategoriesPOJO == null){
+            subCategoriesPOJO = new HashSet<>(subCategories);
+        }
+        else {
+            subCategoriesPOJO.clear();
+            subCategoriesPOJO.addAll(subCategories);
+        }
+    }
+
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);
@@ -66,34 +136,24 @@ public class Category extends AbstractEntity {
         this.name.set(name);
     }
 
-    public StringProperty nameProperty() {
+    public ReadOnlyStringProperty nameProperty() {
         return name;
     }
 
 
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategory")
-    private Set<Category> getSubCategories(){
-        return this.subCategories;
-    }
-
-    private void setSubCategories(Set<Category> subCategories){
-        this.subCategories.addAll(subCategories);
-    }
-
-    public boolean addSubCategory(Category category){
+    public void addSubCategory(Category category) {
         Preconditions.checkNotNull(category);
-        Preconditions.checkArgument(category.parentCategoryProperty().get() == null);
+        Preconditions.checkArgument(category.parentCategory.get() == null);
         Preconditions.checkArgument(canAddSubcategoryWithoutCausingCycles(category));
-        category.setParentCategory(this);
-        return subCategories.add(category);
+        category.parentCategory.set(this);
+        subCategories.add(category);
     }
 
-    public boolean removeSubCategory(Category category){
+    public void removeSubCategory(Category category) {
         Preconditions.checkNotNull(category);
-        Preconditions.checkArgument(category.parentCategoryProperty().get() == this);
+        Preconditions.checkArgument(category.parentCategory.get() == this);
         category.parentCategory.set(null);
-        return subCategories.remove(category);
+        subCategories.remove(category);
     }
 
     public ObservableSet<Category> subCategoriesObservableSet() {
@@ -108,91 +168,51 @@ public class Category extends AbstractEntity {
         return set;
     }
 
-    private boolean canAddSubcategoryWithoutCausingCycles(Category subCategory){
-        return subCategory.parentCategoryProperty().get() == null && !subCategory.deepSubCategoriesSet().contains(this);
+    private boolean canAddSubcategoryWithoutCausingCycles(Category subCategory) {
+        return subCategory.parentCategoryMonadicProperty().isEmpty() && !subCategory.deepSubCategoriesSet().contains(this);
     }
 
 
-
-    @OneToOne(optional = true, fetch = FetchType.EAGER)
-    private Category getParentCategory(){
-        return parentCategory.get();
-    }
-
-    private void setParentCategory(Category parentCategory){
-        this.parentCategory.set(parentCategory);
-    }
-
-    public void removeParentCategoryIfPresent(){
-        if(this.parentCategory.get() != null) {
+    public void removeParentCategoryIfPresent() {
+        if (this.parentCategory.get() != null) {
             this.parentCategory.get().removeSubCategory(this);
         }
     }
 
-    public ObjectProperty<Category> parentCategoryProperty(){
-        return this.parentCategory;
+    public MonadicObservableValue<Category> parentCategoryMonadicProperty() {
+        return this.parentCategoryMonadic;
     }
 
 
-
-    @OneToMany(mappedBy = "categoryColumn")
-    private Set<ExternalTransaction> getExternalTransactions() {
-        return Collections.unmodifiableSet(externalTransactions);
-    }
-
-    private void setExternalTransactions(Set<ExternalTransaction> externalTransactions){
-        this.externalTransactions.addAll(externalTransactions);
-    }
-
-    boolean addExternalTransaction(ExternalTransaction externalTransaction){
+    void addExternalTransaction(ExternalTransaction externalTransaction) {
         Preconditions.checkNotNull(externalTransaction);
-        return externalTransactions.add(externalTransaction);
+        externalTransactions.add(externalTransaction);
     }
 
-    boolean removeExternalTransaction(ExternalTransaction internalTransaction){
+    void removeExternalTransaction(ExternalTransaction internalTransaction) {
         Preconditions.checkNotNull(internalTransaction);
-        return externalTransactions.remove(internalTransaction);
+        externalTransactions.remove(internalTransaction);
     }
 
     public ObservableSet<ExternalTransaction> externalTransactionsObservableSet() {
-        return externalTransactions;
+        return FXCollections.unmodifiableObservableSet(externalTransactions);
     }
 
 
-
-    @OneToMany(mappedBy = "categoryColumn")
-    private Set<InternalTransaction> getInternalTransactions() {
-        return Collections.unmodifiableSet(internalTransactions);
-    }
-
-    private void setInternalTransactions(Set<InternalTransaction> internalTransactions){
-        this.internalTransactions.addAll(internalTransactions);
-    }
-
-    boolean addInternalTransaction(InternalTransaction internalTransaction){
+    void addInternalTransaction(InternalTransaction internalTransaction) {
         Preconditions.checkNotNull(internalTransaction);
-        return internalTransactions.add(internalTransaction);
+        internalTransactions.add(internalTransaction);
     }
 
-    boolean removeInternalTransaction(InternalTransaction internalTransaction){
+    void removeInternalTransaction(InternalTransaction internalTransaction) {
         Preconditions.checkNotNull(internalTransaction);
-        return internalTransactions.remove(internalTransaction);
+        internalTransactions.remove(internalTransaction);
     }
 
     public ObservableSet<InternalTransaction> internalTransactionObservableSet() {
-        return internalTransactions;
+        return FXCollections.unmodifiableObservableSet(internalTransactions);
     }
 
-
-
-    @Column(name = "description")
-    private String getDescriptionHibernate() {
-        return description.get();
-    }
-
-    private void setDescriptionHibernate(String description) {
-        this.description.set(description);
-    }
 
     public void setDescription(String description) {
         Preconditions.checkNotNull(description);
@@ -204,33 +224,12 @@ public class Category extends AbstractEntity {
         description.set(null);
     }
 
-    public ObjectProperty<String> descriptionProperty() {
-        return description;
-    }
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
-        Category category = (Category) o;
-
-        return name.equals(category.name);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
+    public MonadicObservableValue<String> descriptionMonadicProperty() {
+        return descriptionMonadic;
     }
 
     @Override
     public String toString() {
-        return getName();
+        return nameProperty().get();
     }
 }

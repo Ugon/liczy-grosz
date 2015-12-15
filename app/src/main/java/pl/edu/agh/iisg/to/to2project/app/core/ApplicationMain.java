@@ -15,7 +15,7 @@ import pl.edu.agh.iisg.to.to2project.app.core.utils.SpringFXMLLoader;
  * @author Wojciech Pachuta
  */
 @SpringBootApplication
-@ImportResource({"classpath:persistenceContext.xml"})
+@ImportResource({"classpath:pl/agh/edu/iisg/to/to2project/persistence/persistenceContext.xml"})
 @ComponentScan({"pl.edu.agh.iisg.to.to2project"})
 public class ApplicationMain extends Application {
 

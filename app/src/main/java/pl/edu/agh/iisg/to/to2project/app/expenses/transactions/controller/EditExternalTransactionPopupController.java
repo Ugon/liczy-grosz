@@ -84,7 +84,7 @@ public class EditExternalTransactionPopupController extends PopupController {
     @FXML
     public void initialize() {
         accountNameCombo.setItems(accountService.getList());
-        categoryCombo.setItems(categoryService.getList());
+        categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
 
         accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
