@@ -6,19 +6,32 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ComboBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.TransactionsController">
     <center>
-        <TableView fx:id="transactionsTable" prefWidth="800" maxHeight="470" BorderPane.alignment="TOP_CENTER">
-            <columns>
-                <TableColumn fx:id="fromAccountColumn" prefWidth="150.0" text="From Account"/>
-                <TableColumn fx:id="toAccountColumn" prefWidth="150.0" text="To Account"/>
-                <TableColumn fx:id="transferColumn" prefWidth="75.0" text="Transfer"/>
-                <TableColumn fx:id="balanceColumn" prefWidth="90.0" text="Balance After"/>
-                <TableColumn fx:id="dateColumn" prefWidth="85.0" text="Date"/>
-                <TableColumn fx:id="categoryColumn" prefWidth="100.0" text="Category"/>
-                <TableColumn fx:id="commentColumn" prefWidth="150.0" text="Comment"/>
-            </columns>
-        </TableView>
+        <VBox spacing="10" maxHeight="470">
+            <TableView fx:id="transactionsTable" prefWidth="800" maxHeight="440" BorderPane.alignment="TOP_CENTER">
+                <columns>
+                    <TableColumn fx:id="fromAccountColumn" prefWidth="150.0" text="Your Account"/>
+                    <TableColumn fx:id="toAccountColumn" prefWidth="150.0" text="Payee"/>
+                    <TableColumn fx:id="transferColumn" prefWidth="75.0" text="Transfer"/>
+                    <TableColumn fx:id="balanceColumn" prefWidth="90.0" text="Balance After"/>
+                    <TableColumn fx:id="dateColumn" prefWidth="85.0" text="Date"/>
+                    <TableColumn fx:id="categoryColumn" prefWidth="100.0" text="Category"/>
+                    <TableColumn fx:id="commentColumn" prefWidth="150.0" text="Comment"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="10" maxHeight="20" alignment="CENTER">
+                <GridPane>
+                    <Label text="Choose an account to filter transactions by:" minWidth="250" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="accountsFilterCombo" minWidth="170" GridPane.columnIndex="1"/>
+                </GridPane>
+            </HBox>
+        </VBox>
     </center>
 
     <bottom>

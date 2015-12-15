@@ -1,8 +1,13 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.fxmisc.easybind.EasyBind;
@@ -10,19 +15,24 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.domain.*;
+import pl.edu.agh.iisg.to.to2project.domain.IExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
+import pl.edu.agh.iisg.to.to2project.domain.ITransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.*;
-import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransactionInverse;
+import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
+import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
+import java.util.ConcurrentModificationException;
+import java.util.logging.Logger;
 
+import static java.util.logging.Level.INFO;
 import static javafx.scene.control.SelectionMode.SINGLE;
 
 /**
@@ -40,6 +50,9 @@ public class TransactionsController {
 
     @Autowired
     private InternalTransactionService internalTransactionService;
+
+    @Autowired
+    private AccountService accountService;
 
     @FXML
     private TableView<ITransaction> transactionsTable;
@@ -65,10 +78,16 @@ public class TransactionsController {
     @FXML
     private TableColumn<ITransaction, String> commentColumn;
 
+    @FXML
+    private ComboBox<Account> accountsFilterCombo;
+
     private ObservableList<? extends IInternalTransaction> internalTransactions;
     private ObservableList<? extends IExternalTransaction> externalTransactions;
     private ObservableList<? extends IInternalTransaction> internalTransactionInverses;
     private ObservableList<ITransaction> allTransactions;
+
+    private FilteredList<ITransaction> filteredTransactions;
+    private static final Account ALL_ACCOUNTS = new Account("All Accounts", new BigDecimal(0));
 
     @FXML
     public void initialize() {
@@ -90,6 +109,16 @@ public class TransactionsController {
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
         toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
+
+        filteredTransactions = new FilteredList<>(allTransactions, p -> true);
+        SortedList<ITransaction> bindableFilteredList = new SortedList<>(filteredTransactions);
+        bindableFilteredList.comparatorProperty().bind(transactionsTable.comparatorProperty());
+        transactionsTable.setItems(bindableFilteredList);
+
+        accountsFilterCombo.valueProperty().addListener(new AccountChangeListener<>());
+        accountsFilterCombo.getItems().addAll(accountService.getList());
+        accountsFilterCombo.getItems().set(0, ALL_ACCOUNTS);
+        accountsFilterCombo.setValue(ALL_ACCOUNTS);
     }
 
 
@@ -152,5 +181,42 @@ public class TransactionsController {
     public void refreshContent() {
         externalTransactionService.refreshCache();
         internalTransactionService.refreshCache();
+        accountService.refreshCache();
+        updateAccountsComboItems();
+    }
+
+    private void updateAccountsComboItems() {
+        for(Account account : accountService.getList()) {
+            if(!accountsFilterCombo.getItems().contains(account)) {
+                accountsFilterCombo.getItems().add(account);
+            }
+        }
+
+        try {
+            for (Account account : accountsFilterCombo.getItems()) {
+                if (!accountService.getList().contains(account) && !account.equals(ALL_ACCOUNTS)) {
+                    accountsFilterCombo.getItems().remove(account);
+                }
+            }
+        }
+        catch(ConcurrentModificationException exc) {
+            Logger.getLogger("GUI").log(INFO, "Removed account used as a filter.");
+            accountsFilterCombo.setValue(ALL_ACCOUNTS);
+        }
+    }
+
+
+
+    private class AccountChangeListener<T> implements ChangeListener<T> {
+        @Override
+        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+            if(oldValue != null && oldValue.equals(newValue)) {
+                return;
+            }
+
+            filteredTransactions.setPredicate(transaction ->
+                    newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue)
+            );
+        }
     }
 }
