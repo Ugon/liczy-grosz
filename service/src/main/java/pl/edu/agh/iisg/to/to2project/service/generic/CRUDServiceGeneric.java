@@ -17,7 +17,7 @@ import java.util.Optional;
 public abstract class CRUDServiceGeneric<T extends AbstractEntity, ID extends Serializable> implements CRUDService<T, ID> {
 
     @Autowired
-    protected TransactionalGenericCachingDAO<T, ID> dao;
+    private TransactionalGenericCachingDAO<T, ID> dao;
 
     protected TransactionalGenericCachingDAO<T, ID> getDao(){
         return dao;

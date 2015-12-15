@@ -1,7 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -81,46 +80,44 @@ public class TransactionsController {
     @FXML
     private ComboBox<Account> accountsFilterCombo;
 
-    private ObservableList<? extends IInternalTransaction> internalTransactions;
-    private ObservableList<? extends IExternalTransaction> externalTransactions;
-    private ObservableList<? extends IInternalTransaction> internalTransactionInverses;
-    private ObservableList<ITransaction> allTransactions;
+    private SortedList<ITransaction> sortedFilteredTransactions;
+    private ObservableList<Account> accounts;
 
-    private FilteredList<ITransaction> filteredTransactions;
     private static final Account ALL_ACCOUNTS = new Account("All Accounts", new BigDecimal(0));
 
     @FXML
     public void initialize() {
-        internalTransactions = internalTransactionService.getList();
-        externalTransactions = externalTransactionService.getList();
-        internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
-        allTransactions = ObservableUtils.merge(internalTransactions, externalTransactions, internalTransactionInverses);
+        final ObservableList<? extends IInternalTransaction> internalTransactions = internalTransactionService.getList();
+        final ObservableList<? extends IExternalTransaction> externalTransactions = externalTransactionService.getList();
+        final ObservableList<? extends IInternalTransaction> internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
+        final ObservableList<ITransaction> allTransactions = ObservableUtils.merge(internalTransactions, externalTransactions, internalTransactionInverses);
 
-        transactionsTable.setItems(allTransactions);
+        final FilteredList<ITransaction> filteredTransactions = allTransactions.filtered(p -> true);
 
+        sortedFilteredTransactions = filteredTransactions.sorted();
+        sortedFilteredTransactions.comparatorProperty().bind(transactionsTable.comparatorProperty());
+
+        transactionsTable.setItems(sortedFilteredTransactions);
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
+
         fromAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
-
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
-
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
         toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
 
-        filteredTransactions = new FilteredList<>(allTransactions, p -> true);
-        SortedList<ITransaction> bindableFilteredList = new SortedList<>(filteredTransactions);
-        bindableFilteredList.comparatorProperty().bind(transactionsTable.comparatorProperty());
-        transactionsTable.setItems(bindableFilteredList);
-
-        accountsFilterCombo.valueProperty().addListener(new AccountChangeListener<>());
-        accountsFilterCombo.getItems().addAll(accountService.getList());
-        accountsFilterCombo.getItems().set(0, ALL_ACCOUNTS);
+        accounts = ObservableUtils.merge(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
+        accountsFilterCombo.setItems(accounts);
         accountsFilterCombo.setValue(ALL_ACCOUNTS);
+        accountsFilterCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(oldValue == null || !oldValue.equals(newValue)){
+                filteredTransactions.setPredicate(transaction ->
+                        newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue));
+            }});
     }
-
 
     @FXML
     private void handleInternalTransactionClick(ActionEvent actionEvent) {
@@ -182,6 +179,7 @@ public class TransactionsController {
         externalTransactionService.refreshCache();
         internalTransactionService.refreshCache();
         accountService.refreshCache();
+        transactionsTable.refresh();
         updateAccountsComboItems();
     }
 
@@ -202,21 +200,6 @@ public class TransactionsController {
         catch(ConcurrentModificationException exc) {
             Logger.getLogger("GUI").log(INFO, "Removed account used as a filter.");
             accountsFilterCombo.setValue(ALL_ACCOUNTS);
-        }
-    }
-
-
-
-    private class AccountChangeListener<T> implements ChangeListener<T> {
-        @Override
-        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-            if(oldValue != null && oldValue.equals(newValue)) {
-                return;
-            }
-
-            filteredTransactions.setPredicate(transaction ->
-                    newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue)
-            );
         }
     }
 }

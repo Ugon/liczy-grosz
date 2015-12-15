@@ -88,5 +88,6 @@ public class CategoriesController {
 
     public void refreshContent() {
         categoryService.refreshCache();
+        categoriesTable.refresh();
     }
 }

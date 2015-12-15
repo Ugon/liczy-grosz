@@ -22,10 +22,10 @@ public class SpringFXMLLoader {
     private FXMLLoader loader;
 
     public Object load(final String fullyQualifiedResource) throws IOException {
-            InputStream fxmlStream = getClass().getResourceAsStream(fullyQualifiedResource);
-            loader = new FXMLLoader();
-            loader.setControllerFactory(context::getBean);
-            return loader.load(fxmlStream);
+        InputStream fxmlStream = getClass().getResourceAsStream(fullyQualifiedResource);
+        loader = new FXMLLoader();
+        loader.setControllerFactory(context::getBean);
+        return loader.load(fxmlStream);
     }
 
     public Object getController(){

@@ -10,6 +10,7 @@ import java.util.Optional;
  * @author Wojciech Pachuta.
  */
 public interface CRUDService<T extends AbstractEntity, ID extends Serializable> {
+
     Optional<T> getByPK(ID pk);
 
     ObservableList<T> getList();
@@ -21,4 +22,5 @@ public interface CRUDService<T extends AbstractEntity, ID extends Serializable> 
     void remove(T entity);
 
     void refreshCache();
+
 }

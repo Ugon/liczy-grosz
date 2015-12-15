@@ -89,5 +89,6 @@ public class AccountsController {
 
     public void refreshContent() {
         accountService.refreshCache();
+        accountsTable.refresh();
     }
 }
