@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -111,6 +112,10 @@ public class Account extends AbstractEntity {
         }
     }
 
+    @Override
+    public Observable[] extractObservables() {
+        return new Observable[] {name, initialBalance};
+    }
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);

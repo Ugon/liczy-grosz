@@ -1,5 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity;
 
+import pl.edu.agh.iisg.to.to2project.domain.ExtractableEntity;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -7,7 +9,7 @@ import java.io.Serializable;
  * @author Wojciech Pachuta.
  */
 @MappedSuperclass
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntity implements Serializable, ExtractableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

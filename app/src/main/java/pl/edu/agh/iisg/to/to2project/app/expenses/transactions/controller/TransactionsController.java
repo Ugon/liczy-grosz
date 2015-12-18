@@ -112,10 +112,11 @@ public class TransactionsController {
         accounts = ObservableUtils.merge(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
         accountsFilterCombo.setItems(accounts);
         accountsFilterCombo.setValue(ALL_ACCOUNTS);
+
         accountsFilterCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue == null || !oldValue.equals(newValue)){
                 filteredTransactions.setPredicate(transaction ->
-                        newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue));
+                        newValue == null || newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue));
             }});
     }
 
@@ -180,26 +181,5 @@ public class TransactionsController {
         internalTransactionService.refreshCache();
         accountService.refreshCache();
         transactionsTable.refresh();
-        updateAccountsComboItems();
-    }
-
-    private void updateAccountsComboItems() {
-        for(Account account : accountService.getList()) {
-            if(!accountsFilterCombo.getItems().contains(account)) {
-                accountsFilterCombo.getItems().add(account);
-            }
-        }
-
-        try {
-            for (Account account : accountsFilterCombo.getItems()) {
-                if (!accountService.getList().contains(account) && !account.equals(ALL_ACCOUNTS)) {
-                    accountsFilterCombo.getItems().remove(account);
-                }
-            }
-        }
-        catch(ConcurrentModificationException exc) {
-            Logger.getLogger("GUI").log(INFO, "Removed account used as a filter.");
-            accountsFilterCombo.setValue(ALL_ACCOUNTS);
-        }
     }
 }

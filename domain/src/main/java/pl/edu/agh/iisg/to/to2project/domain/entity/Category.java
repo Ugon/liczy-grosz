@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -129,6 +130,10 @@ public class Category extends AbstractEntity {
         }
     }
 
+    @Override
+    public Observable[] extractObservables() {
+        return new Observable[] {name, parentCategoryMonadic, descriptionMonadic};
+    }
 
     public void setName(String name) {
         Preconditions.checkNotNull(name);

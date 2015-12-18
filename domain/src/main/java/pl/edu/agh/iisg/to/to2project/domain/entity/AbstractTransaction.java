@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
@@ -88,6 +89,12 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
         dateTimePOJO = dateTime.get();
         categoryEntity = categoryMonadic.getOrElse(null);
         commentPOJO = commentMonadic.getOrElse(null);
+    }
+
+
+    @Override
+    public Observable[] extractObservables() {
+        return new Observable[] {destinationAccount, delta, dateTime, categoryMonadic, commentMonadic, sourcePropertyAsMonadicString()};
     }
 
 
