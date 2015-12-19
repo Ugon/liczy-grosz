@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import pl.edu.agh.iisg.to.to2project.domain.IExternalTransaction;
 
 import javax.persistence.*;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * @author Bartłomiej Grochal.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"source", "destinationAccount", "delta", "dateTime"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"source", "destinationAccount", "delta", "date"}))
 public class ExternalTransaction extends AbstractTransaction implements IExternalTransaction {
 
     @Column(name = "source", nullable = false)
@@ -31,8 +31,8 @@ public class ExternalTransaction extends AbstractTransaction implements IExterna
         this.source = new SimpleStringProperty();
     }
 
-    public ExternalTransaction(String source, Account destinationAccount, BigDecimal delta, DateTime dateTime) {
-        super(destinationAccount, delta, dateTime);
+    public ExternalTransaction(String source, Account destinationAccount, BigDecimal delta, LocalDate date) {
+        super(destinationAccount, delta, date);
         this.source = new SimpleStringProperty();
         setSource(source);
     }

@@ -9,7 +9,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -26,7 +26,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import static java.time.LocalTime.now;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Date.from;
 
@@ -139,12 +138,12 @@ public class NewInternalTransactionPopupController extends PopupController {
             exc.printStackTrace();
         }
 
-        Date transferDateUtil =  from(transactionDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
-        DateTime transferDateTime = new DateTime(transferDateUtil);
+        Date transferDateUtil =  from(transactionDatePicker.getValue().atStartOfDay().atZone(systemDefault()).toInstant());
+        LocalDate transferDate = new LocalDate(transferDateUtil);
 
         String comment = commentTextArea.getText();
 
-        newTransaction = new InternalTransaction(sourceAccount, destinationAccount, transfer, transferDateTime);
+        newTransaction = new InternalTransaction(sourceAccount, destinationAccount, transfer, transferDate);
         if (!category.equals(NO_CATEGORY)) {
             newTransaction.setCategory(category);
         }

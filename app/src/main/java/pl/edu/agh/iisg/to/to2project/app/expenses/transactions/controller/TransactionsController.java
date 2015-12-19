@@ -10,7 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.fxmisc.easybind.EasyBind;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -63,7 +63,7 @@ public class TransactionsController {
     private TableColumn<ITransaction, BigDecimal> balanceColumn;
 
     @FXML
-    private TableColumn<ITransaction, DateTime> dateColumn;
+    private TableColumn<ITransaction, LocalDate> dateColumn;
 
     @FXML
     private TableColumn<ITransaction, String> categoryColumn;
@@ -101,7 +101,7 @@ public class TransactionsController {
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().accountBalanceAfterThisTransaction());
-        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
+        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
         toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());

@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -17,6 +17,7 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
+import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -24,7 +25,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import static java.math.BigDecimal.ZERO;
-import static java.time.LocalTime.now;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Date.from;
 
@@ -34,6 +34,8 @@ import static java.util.Date.from;
 @Controller
 @Scope("prototype")
 public class NewExternalTransactionPopupController extends PopupController {
+
+    private InternalTransactionService internalTransactionService;
 
     @Autowired
     private ExternalTransactionService externalTransactionService;
@@ -159,12 +161,12 @@ public class NewExternalTransactionPopupController extends PopupController {
             transfer = transfer.compareTo(ZERO) <= 0 ? transfer : transfer.multiply(new BigDecimal(-1));
         }
 
-        Date transferDateUtil =  from(transactionDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
-        DateTime transferDateTime = new DateTime(transferDateUtil);
+        Date transferDateUtil =  from(transactionDatePicker.getValue().atStartOfDay().atZone(systemDefault()).toInstant());
+        LocalDate transferDate = new LocalDate(transferDateUtil);
 
         String comment = commentTextArea.getText();
 
-        newTransaction = new ExternalTransaction(payee, sourceAccount, transfer, transferDateTime);
+        newTransaction = new ExternalTransaction(payee, sourceAccount, transfer, transferDate);
         if (!category.equals(NO_CATEGORY)) {
             newTransaction.setCategory(category);
         }

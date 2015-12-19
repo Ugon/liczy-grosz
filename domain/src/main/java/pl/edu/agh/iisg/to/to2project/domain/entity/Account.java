@@ -9,8 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
-import org.joda.time.DateTime;
-import org.joda.time.base.AbstractInstant;
+import org.joda.time.LocalDate;
 import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
 
 import javax.persistence.*;
@@ -162,22 +161,22 @@ public class Account extends AbstractEntity {
         return combineTransactionsIntoBalance(intTransDest, intTransSrc, extTransDest);
     }
 
-    MonadicObservableValue<BigDecimal> calculateBalanceAtInclusive(ObservableValue<DateTime> dateTime){
+    MonadicObservableValue<BigDecimal> calculateBalanceAtInclusive(ObservableValue<LocalDate> date){
         ObservableList<InternalTransaction> intTransDest = ObservableUtils
                 .observableList(internalTransactionDestinationSet,
-                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
-                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
-                        AbstractInstant::isAfter).get());
+                        trans -> new Observable[] {date, trans.dateProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateProperty(), date,
+                        LocalDate::isAfter).get());
         ObservableList<InternalTransaction> intTransSrc = ObservableUtils
                 .observableList(internalTransactionSourceSet,
-                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
-                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
-                        AbstractInstant::isAfter).get());
+                        trans -> new Observable[] {date, trans.dateProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateProperty(), date,
+                        LocalDate::isAfter).get());
         ObservableList<ExternalTransaction> extTransDest = ObservableUtils
                 .observableList(externalTransactionDestinationSet,
-                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
-                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
-                        AbstractInstant::isAfter).get());
+                        trans -> new Observable[] {date, trans.dateProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateProperty(), date,
+                        LocalDate::isAfter).get());
 
         return combineTransactionsIntoBalance(intTransDest, intTransSrc, extTransDest);
     }

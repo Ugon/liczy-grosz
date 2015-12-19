@@ -2,7 +2,6 @@ package pl.edu.agh.iisg.to.to2project.persistence.generic.generic;
 
 import com.google.common.base.Preconditions;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -10,9 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.agh.iisg.to.to2project.domain.ExtractableEntity;
 import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractEntity;
-import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 
 import java.io.Serializable;
 import java.util.List;

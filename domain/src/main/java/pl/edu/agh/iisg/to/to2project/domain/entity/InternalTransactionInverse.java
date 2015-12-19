@@ -4,7 +4,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import pl.edu.agh.iisg.to.to2project.domain.ExtractableEntity;
 import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
 
@@ -21,12 +21,12 @@ public class InternalTransactionInverse implements IInternalTransaction, Extract
     InternalTransactionInverse(InternalTransaction internalTransaction) {
         this.internalTransaction = internalTransaction;
         this.destinationAccountBalanceAfterThisTransaction = EasyBind.monadic(destinationAccountProperty())
-                .flatMap(acc -> acc.calculateBalanceAtInclusive(dateTimeProperty()));
+                .flatMap(acc -> acc.calculateBalanceAtInclusive(dateProperty()));
     }
 
     @Override
     public Observable[] extractObservables() {
-        return new Observable[] {destinationAccountProperty(), deltaProperty(), dateTimeProperty(),
+        return new Observable[] {destinationAccountProperty(), deltaProperty(), dateProperty(),
                 categoryMonadicProperty(), commentMonadicProperty(), sourcePropertyAsMonadicString(),
                 destinationAccountBalanceAfterThisTransaction};
     }
@@ -41,9 +41,8 @@ public class InternalTransactionInverse implements IInternalTransaction, Extract
         return EasyBind.monadic(internalTransaction.deltaProperty()).map(BigDecimal::negate);
     }
 
-    @Override
-    public ReadOnlyObjectProperty<DateTime> dateTimeProperty() {
-        return internalTransaction.dateTimeProperty();
+    public ReadOnlyObjectProperty<LocalDate> dateProperty() {
+        return internalTransaction.dateProperty();
     }
 
     @Override
