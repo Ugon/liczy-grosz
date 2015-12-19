@@ -46,7 +46,7 @@ public class NewCategoryPopupController extends PopupController {
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
         updateModel();
-        dialogStage.close();
+        closeDialog();
     }
 
     private void updateModel() {

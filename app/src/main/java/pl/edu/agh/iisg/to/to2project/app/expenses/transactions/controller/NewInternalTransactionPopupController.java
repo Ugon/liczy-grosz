@@ -1,7 +1,5 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -52,7 +50,7 @@ public class NewInternalTransactionPopupController extends PopupController {
     private ComboBox<Account> sourceAccountCombo;
 
     @FXML
-    private ComboBox<Account> targetAccountCombo;
+    private ComboBox<Account> destinationAccountCombo;
 
     @FXML
     private ComboBox<Category> categoryCombo;
@@ -77,15 +75,18 @@ public class NewInternalTransactionPopupController extends PopupController {
     @FXML
     public void initialize() {
         sourceAccountCombo.getItems().addAll(accountService.getList());
-        targetAccountCombo.getItems().addAll(accountService.getList());
+        destinationAccountCombo.getItems().addAll(accountService.getList());
+
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
         categoryCombo.setValue(NO_CATEGORY);
 
+        sourceAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
+        destinationAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
 
-        sourceAccountCombo.valueProperty().addListener(new AccountChangeListener());
-        targetAccountCombo.valueProperty().addListener(new AccountChangeListener());
         errorLabel.setText("");
+
+
 
         decimalFormat = new DecimalFormat();
         decimalFormat.setParseBigDecimal(true);
@@ -96,8 +97,7 @@ public class NewInternalTransactionPopupController extends PopupController {
     protected void handleOKButtonClick(ActionEvent actionEvent) {
         if(isInputValid()) {
             updateModel();
-            dialogStage.close();
-
+            closeDialog();
             transactionsController.refreshContent();
         }
     }
@@ -117,17 +117,17 @@ public class NewInternalTransactionPopupController extends PopupController {
 
     private boolean isAccountValid() {
         return sourceAccountCombo.getSelectionModel().getSelectedItem() != null &&
-                targetAccountCombo.getSelectionModel().getSelectedItem() != null &&
-                !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(targetAccountCombo.getSelectionModel().getSelectedItem());
+                destinationAccountCombo.getSelectionModel().getSelectedItem() != null &&
+                !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(destinationAccountCombo.getSelectionModel().getSelectedItem());
     }
 
     private boolean isTransferValueValid() {
-        return transferTextField.getText().matches("^\\-?\\d+(?:.\\d+)?$");
+        return transferTextField.getText().matches("^\\d+(?:.\\d+)?$");
     }
 
     private void updateModel() {
         Account sourceAccount = sourceAccountCombo.getSelectionModel().getSelectedItem();
-        Account destinationAccount = targetAccountCombo.getSelectionModel().getSelectedItem();
+        Account destinationAccount = destinationAccountCombo.getSelectionModel().getSelectedItem();
         Category category = categoryCombo.getSelectionModel().getSelectedItem();
 
         BigDecimal transfer = null;
@@ -158,12 +158,4 @@ public class NewInternalTransactionPopupController extends PopupController {
         showDialog();
     }
 
-
-
-    private class AccountChangeListener implements ChangeListener<Account> {
-        @Override
-        public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-            errorLabel.setText("");
-        }
-    }
 }

@@ -2,7 +2,6 @@ package pl.edu.agh.iisg.to.to2project.app.expenses.common.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 /**
@@ -11,7 +10,7 @@ import javafx.stage.Stage;
  */
 public abstract class PopupController {
 
-    protected Stage dialogStage;
+    private Stage dialogStage;
 
     @FXML
     protected abstract void handleOKButtonClick(ActionEvent actionEvent);
@@ -25,11 +24,11 @@ public abstract class PopupController {
         this.dialogStage = dialogStage;
     }
 
-    public Stage getDialogStage() {
-        return dialogStage;
-    }
-
     protected void showDialog(){
         dialogStage.show();
+    }
+
+    protected void closeDialog() {
+        dialogStage.close();
     }
 }

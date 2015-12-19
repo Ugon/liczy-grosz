@@ -26,7 +26,7 @@ public class DeleteAccountPopupController extends PopupController {
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
         accountService.remove(account);
-        dialogStage.close();
+        closeDialog();
     }
 
     public void deleteAccount(Account account){

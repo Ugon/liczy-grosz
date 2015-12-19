@@ -43,7 +43,7 @@ public class DeleteCategoryPopupController extends PopupController {
         }
         else{
             categoryService.remove(deletedCategory);
-            dialogStage.close();
+            closeDialog();
         }
     }
 

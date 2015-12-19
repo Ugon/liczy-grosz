@@ -14,10 +14,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
+import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.*;
 import pl.edu.agh.iisg.to.to2project.domain.IExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.ITransaction;
@@ -135,20 +132,27 @@ public class TransactionsController {
 
     @FXML
     private void handleEditTransactionClick(ActionEvent actionEvent) {
-        EditTransactionPopup popup = context.getBean(EditTransactionPopup.class);
-        EditTransactionPopupController controller = popup.getController();
-
         ITransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
 
         if (selectedTransaction != null && selectedTransaction instanceof InternalTransaction){
+            EditInternalTransactionPopup popup = context.getBean(EditInternalTransactionPopup.class);
+            EditInternalTransactionPopupController controller = popup.getController();
+            
             controller.editTransaction((InternalTransaction) selectedTransaction);
         }
         else if (selectedTransaction != null && selectedTransaction instanceof ExternalTransaction){
+            EditExternalTransactionPopup popup = context.getBean(EditExternalTransactionPopup.class);
+            EditExternalTransactionPopupController controller = popup.getController();
+            
             controller.editTransaction((ExternalTransaction) selectedTransaction);
         }
         else if (selectedTransaction != null && selectedTransaction instanceof InternalTransactionInverse){
+            EditInternalTransactionPopup popup = context.getBean(EditInternalTransactionPopup.class);
+            EditInternalTransactionPopupController controller = popup.getController();
+
             InternalTransactionInverse internalTransactionInverse = (InternalTransactionInverse)selectedTransaction;
             InternalTransaction internalTransaction = (InternalTransaction) internalTransactionInverse.getTransactionInverse();
+            
             controller.editTransaction(internalTransaction);
         }
     }

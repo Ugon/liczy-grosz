@@ -1,7 +1,5 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -12,9 +10,8 @@ import javafx.scene.text.Text;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
-import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
@@ -25,6 +22,7 @@ import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static java.time.ZoneId.systemDefault;
@@ -33,7 +31,7 @@ import static java.util.Date.from;
 /**
  * @author Bartłomiej Grochal
  */
-@Component
+@Controller
 @Scope("prototype")
 public class EditInternalTransactionPopupController extends PopupController {
 
@@ -48,11 +46,14 @@ public class EditInternalTransactionPopupController extends PopupController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private TransactionsController transactionsController;
+
     @FXML
     private ComboBox<Account> sourceAccountCombo;
 
     @FXML
-    private ComboBox<Account> targetAccountCombo;
+    private ComboBox<Account> destinationAccountCombo;
 
     @FXML
     private ComboBox<Category> categoryCombo;
@@ -72,19 +73,16 @@ public class EditInternalTransactionPopupController extends PopupController {
     private DecimalFormat decimalFormat;
     private InternalTransaction editedTransaction;
 
-
-
     @FXML
     public void initialize() {
         sourceAccountCombo.setItems(accountService.getList());
-        targetAccountCombo.setItems(accountService.getList());
+        destinationAccountCombo.setItems(accountService.getList());
         categoryCombo.getItems().addAll(categoryService.getList());
         categoryCombo.getItems().add(NO_CATEGORY);
         categoryCombo.setValue(NO_CATEGORY);
 
-        sourceAccountCombo.valueProperty().addListener(new AccountChangeListener());
-        targetAccountCombo.valueProperty().addListener(new AccountChangeListener());
-        errorLabel.setText("");
+        sourceAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
+        destinationAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
 
         decimalFormat = new DecimalFormat();
         decimalFormat.setParseBigDecimal(true);
@@ -93,14 +91,27 @@ public class EditInternalTransactionPopupController extends PopupController {
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
-    }
-
-    public void handleOKButtonClick(ActionEvent actionEvent, AbstractTransaction editedTransaction) {
-        this.editedTransaction = (InternalTransaction) editedTransaction;
-
         if(isInputValid()) {
             updateModel();
+            closeDialog();
+            transactionsController.refreshContent();
         }
+    }
+
+    public void editTransaction(InternalTransaction transaction){
+        this.editedTransaction = transaction;
+        fillDialog();
+        showDialog();
+    }
+
+    private void fillDialog(){
+        sourceAccountCombo.setValue(editedTransaction.sourceAccountProperty().getValue());
+        destinationAccountCombo.setValue(editedTransaction.destinationAccountProperty().getValue());
+        transferTextField.setText(editedTransaction.deltaProperty().getValue().toString());
+        java.time.LocalDate localDate = editedTransaction.dateProperty().getValue().toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        transactionDatePicker.setValue(localDate);
+        categoryCombo.setValue(editedTransaction.categoryMonadicProperty().getOrElse(NO_CATEGORY));
+        commentTextArea.setText(editedTransaction.commentMonadicProperty().getOrElse(""));
     }
 
     private boolean isInputValid() {
@@ -118,17 +129,17 @@ public class EditInternalTransactionPopupController extends PopupController {
 
     private boolean isAccountValid() {
         return sourceAccountCombo.getSelectionModel().getSelectedItem() != null &&
-                targetAccountCombo.getSelectionModel().getSelectedItem() != null &&
-                !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(targetAccountCombo.getSelectionModel().getSelectedItem());
+                destinationAccountCombo.getSelectionModel().getSelectedItem() != null &&
+                !sourceAccountCombo.getSelectionModel().getSelectedItem().equals(destinationAccountCombo.getSelectionModel().getSelectedItem());
     }
 
     private boolean isTransferValueValid() {
-        return transferTextField.getText().matches("^\\-?\\d+(?:.\\d+)?$");
+        return transferTextField.getText().matches("^\\d+(?:.\\d+)?$");
     }
 
     private void updateModel() {
         Account sourceAccount = sourceAccountCombo.getSelectionModel().getSelectedItem();
-        Account destinationAccount = targetAccountCombo.getSelectionModel().getSelectedItem();
+        Account destinationAccount = destinationAccountCombo.getSelectionModel().getSelectedItem();
         Category category = categoryCombo.getSelectionModel().getSelectedItem();
 
         BigDecimal transfer = null;
@@ -164,12 +175,4 @@ public class EditInternalTransactionPopupController extends PopupController {
         internalTransactionService.save(editedTransaction);
     }
 
-
-
-    private class AccountChangeListener implements ChangeListener<Account> {
-        @Override
-        public void changed(ObservableValue<? extends Account> observable, Account oldValue, Account newValue) {
-            errorLabel.setText("");
-        }
-    }
 }

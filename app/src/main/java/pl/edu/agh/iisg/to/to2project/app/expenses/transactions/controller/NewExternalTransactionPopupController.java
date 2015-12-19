@@ -1,7 +1,5 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -91,9 +89,8 @@ public class NewExternalTransactionPopupController extends PopupController {
         categoryCombo.getItems().add(NO_CATEGORY);
         categoryCombo.setValue(NO_CATEGORY);
 
-        accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
-        payeeTextField.textProperty().addListener(new AccountChangeListener<>());
-        errorLabel.setText("");
+        accountNameCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
+        payeeTextField.textProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
 
         decimalFormat = new DecimalFormat();
         decimalFormat.setParseBigDecimal(true);
@@ -104,8 +101,7 @@ public class NewExternalTransactionPopupController extends PopupController {
     protected void handleOKButtonClick(ActionEvent actionEvent) {
         if(isInputValid()) {
             updateModel();
-            dialogStage.close();
-
+            closeDialog();
             transactionsController.refreshContent();
         }
     }
@@ -134,7 +130,7 @@ public class NewExternalTransactionPopupController extends PopupController {
     }
 
     private boolean isTransferValueValid() {
-        return transferTextField.getText().matches("^\\-?\\d+(?:.\\d+)?$");
+        return transferTextField.getText().matches("^\\d+(?:.\\d+)?$");
     }
 
     private boolean isTransferTypeValid() {
@@ -181,12 +177,4 @@ public class NewExternalTransactionPopupController extends PopupController {
         showDialog();
     }
 
-
-
-    private class AccountChangeListener<T> implements ChangeListener<T> {
-        @Override
-        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-            errorLabel.setText("");
-        }
-    }
 }

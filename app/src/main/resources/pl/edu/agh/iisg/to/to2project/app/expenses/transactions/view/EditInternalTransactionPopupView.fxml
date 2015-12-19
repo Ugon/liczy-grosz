@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="360" prefWidth="320"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.EditInternalTransactionPopupController">
     <VBox spacing="15">
+        <padding>
+            <Insets top="20" left="10" right="10"/>
+        </padding>
         <HBox>
             <GridPane>
                 <Label text="New Source Account:" minWidth="130" GridPane.columnIndex="0"/>
@@ -16,7 +19,7 @@
         <HBox>
             <GridPane>
                 <Label text="New Target Account:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="targetAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="destinationAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
@@ -43,6 +46,13 @@
                 <TextArea fx:id="commentTextArea" minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
                           style="-fx-font-size: 10"/>
             </GridPane>
+        </HBox>
+        <HBox spacing="20" alignment="CENTER">
+            <padding>
+                <Insets top="15" left="65" right="65"/>
+            </padding>
+            <Button minWidth="75" text="OK" onAction="#handleOKButtonClick"/>
+            <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
         </HBox>
         <Text fx:id="errorLabel" style="-fx-text-alignment: justify; -fx-fill: red;" wrappingWidth="300"/>
     </VBox>

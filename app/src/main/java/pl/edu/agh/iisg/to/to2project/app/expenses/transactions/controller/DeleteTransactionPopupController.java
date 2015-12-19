@@ -5,7 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
@@ -15,7 +15,7 @@ import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 /**
  * @author Bartłomiej Grochal
  */
-@Component
+@Controller
 @Scope("prototype")
 public class DeleteTransactionPopupController extends PopupController {
 
@@ -45,7 +45,7 @@ public class DeleteTransactionPopupController extends PopupController {
 
         transactionsController.refreshContent();
 
-        dialogStage.close();
+        closeDialog();
     }
 
     public void deleteTransaction(InternalTransaction transaction) {
