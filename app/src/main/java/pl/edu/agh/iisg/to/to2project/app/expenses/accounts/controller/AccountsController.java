@@ -54,7 +54,7 @@ public class AccountsController {
 
         nameColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
         initialBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().initialBalanceProperty());
-        currentBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().currentBalance());
+        currentBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().currentBalanceProperty());
     }
 
     @FXML

@@ -25,6 +25,9 @@ public class DeleteTransactionPopupController extends PopupController {
     @Autowired
     private ExternalTransactionService externalTransactionService;
 
+    @Autowired
+    private TransactionsController transactionsController;
+
     private InternalTransaction internalTransaction;
     private ExternalTransaction externalTransaction;
 
@@ -39,6 +42,8 @@ public class DeleteTransactionPopupController extends PopupController {
         else if (internalTransaction != null) {
             internalTransactionService.remove(internalTransaction);
         }
+
+        transactionsController.refreshContent();
 
         dialogStage.close();
     }

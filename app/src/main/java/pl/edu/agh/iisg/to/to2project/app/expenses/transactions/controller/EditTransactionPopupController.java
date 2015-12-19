@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
@@ -16,6 +17,9 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 @Component
 @Scope("prototype")
 public class EditTransactionPopupController extends PopupController {
+
+    @Autowired
+    private TransactionsController transactionsController;
 
     @FXML
     private VBox conditionalBox;
@@ -46,6 +50,8 @@ public class EditTransactionPopupController extends PopupController {
         else if(externalTransaction != null) {
             externalController.handleOKButtonClick(actionEvent, externalTransaction);
         }
+
+        transactionsController.refreshContent();
 
         dialogStage.close();
     }

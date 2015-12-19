@@ -28,10 +28,7 @@ import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
-import java.util.ConcurrentModificationException;
-import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
 import static javafx.scene.control.SelectionMode.SINGLE;
 
 /**
@@ -90,7 +87,7 @@ public class TransactionsController {
         final ObservableList<? extends IInternalTransaction> internalTransactions = internalTransactionService.getList();
         final ObservableList<? extends IExternalTransaction> externalTransactions = externalTransactionService.getList();
         final ObservableList<? extends IInternalTransaction> internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
-        final ObservableList<ITransaction> allTransactions = ObservableUtils.merge(internalTransactions, externalTransactions, internalTransactionInverses);
+        final ObservableList<ITransaction> allTransactions = ObservableUtils.transferElements(internalTransactions, externalTransactions, internalTransactionInverses);
 
         final FilteredList<ITransaction> filteredTransactions = allTransactions.filtered(p -> true);
 
@@ -103,13 +100,13 @@ public class TransactionsController {
         fromAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
-        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
+        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().accountBalanceAfterThisTransaction());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
         toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
 
-        accounts = ObservableUtils.merge(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
+        accounts = ObservableUtils.transferElements(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
         accountsFilterCombo.setItems(accounts);
         accountsFilterCombo.setValue(ALL_ACCOUNTS);
 

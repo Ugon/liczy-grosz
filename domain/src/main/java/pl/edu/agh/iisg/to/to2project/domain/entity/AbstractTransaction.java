@@ -58,6 +58,9 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     @Transient
     private final MonadicObservableValue<String> commentMonadic;
 
+    @Transient
+    private final MonadicObservableValue<BigDecimal> destinationAccountBalanceAfterThisTransaction;
+
     AbstractTransaction() {
         this.destinationAccount = new SimpleObjectProperty<>();
         this.delta = new SimpleObjectProperty<>();
@@ -66,6 +69,7 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
         this.categoryMonadic = EasyBind.monadic(category);
         this.comment = new SimpleStringProperty();
         this.commentMonadic = EasyBind.monadic(comment);
+        this.destinationAccountBalanceAfterThisTransaction = EasyBind.monadic(destinationAccount).flatMap(acc -> acc.calculateBalanceAtInclusive(dateTime));
     }
 
     public AbstractTransaction(Account destinationAccount, BigDecimal delta, DateTime dateTime) {
@@ -94,7 +98,8 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
 
     @Override
     public Observable[] extractObservables() {
-        return new Observable[] {destinationAccount, delta, dateTime, categoryMonadic, commentMonadic, sourcePropertyAsMonadicString()};
+        return new Observable[] {destinationAccount, delta, dateTime, categoryMonadic, commentMonadic,
+                destinationAccountBalanceAfterThisTransaction, sourcePropertyAsMonadicString()};
     }
 
 
@@ -176,6 +181,12 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     @Override
     public MonadicObservableValue<String> commentMonadicProperty() {
         return commentMonadic;
+    }
+
+
+    @Override
+    public MonadicObservableValue<BigDecimal> accountBalanceAfterThisTransaction(){
+        return destinationAccountBalanceAfterThisTransaction;
     }
 
 

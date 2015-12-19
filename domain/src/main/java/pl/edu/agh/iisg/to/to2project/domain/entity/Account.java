@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
+import org.joda.time.DateTime;
+import org.joda.time.base.AbstractInstant;
 import pl.edu.agh.iisg.to.to2project.domain.utils.ObservableUtils;
 
 import javax.persistence.*;
@@ -52,6 +54,9 @@ public class Account extends AbstractEntity {
     @Transient
     private final ObservableSet<InternalTransaction> internalTransactionSourceSet;
 
+    @Transient
+    private final MonadicObservableValue<BigDecimal> currentBalance;
+
     Account() {
         super();
         this.name = new SimpleStringProperty();
@@ -59,6 +64,7 @@ public class Account extends AbstractEntity {
         this.internalTransactionDestinationSet = FXCollections.observableSet();
         this.externalTransactionDestinationSet = FXCollections.observableSet();
         this.internalTransactionSourceSet = FXCollections.observableSet();
+        this.currentBalance = prepareCurrentBalanceProperty();
     }
 
     public Account(String name, BigDecimal balance) {
@@ -114,7 +120,7 @@ public class Account extends AbstractEntity {
 
     @Override
     public Observable[] extractObservables() {
-        return new Observable[] {name, initialBalance};
+        return new Observable[] {name, initialBalance, currentBalance};
     }
 
     public void setName(String name) {
@@ -131,7 +137,6 @@ public class Account extends AbstractEntity {
 
     public void setInitialBalance(BigDecimal initialBalance){
         Preconditions.checkNotNull(initialBalance);
-        Preconditions.checkArgument(initialBalance.compareTo(BigDecimal.ZERO) >= 0);
         this.initialBalance.set(initialBalance);
     }
 
@@ -139,21 +144,65 @@ public class Account extends AbstractEntity {
         return this.initialBalance;
     }
 
+    public MonadicObservableValue<BigDecimal> currentBalanceProperty(){
+        return currentBalance;
+    }
 
-    public MonadicObservableValue<BigDecimal> currentBalance(){
-        ObservableList<InternalTransaction> intTransDest = ObservableUtils.observableList(internalTransactionDestinationSet);
-        ObservableList<InternalTransaction> intTransSrc = ObservableUtils.observableList(internalTransactionSourceSet);
-        ObservableList<ExternalTransaction> extTransDest = ObservableUtils.observableList(externalTransactionDestinationSet);
+    private MonadicObservableValue<BigDecimal> prepareCurrentBalanceProperty(){
+        ObservableList<InternalTransaction> intTransDest = ObservableUtils
+                .observableList(internalTransactionDestinationSet, trans -> new Observable[]
+                        {trans.deltaProperty()});
+        ObservableList<InternalTransaction> intTransSrc = ObservableUtils
+                .observableList(internalTransactionSourceSet, trans -> new Observable[]
+                        {trans.deltaProperty()});
+        ObservableList<ExternalTransaction> extTransDest = ObservableUtils
+                .observableList(externalTransactionDestinationSet, trans -> new Observable[]
+                        {trans.deltaProperty()});
 
-        ObservableList<ObservableValue<BigDecimal>> internalIncomes = EasyBind.map(intTransDest, AbstractTransaction::deltaProperty);
-        ObservableList<ObservableValue<BigDecimal>> externalIncomes = EasyBind.map(extTransDest, AbstractTransaction::deltaProperty);
-        ObservableList<ObservableValue<BigDecimal>> internalOutcomes = EasyBind.map(intTransSrc, AbstractTransaction::deltaProperty);
+        return combineTransactionsIntoBalance(intTransDest, intTransSrc, extTransDest);
+    }
 
-        ObservableValue<BigDecimal> internalIncome = EasyBind.combine(internalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
-        ObservableValue<BigDecimal> externalIncome = EasyBind.combine(externalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
-        ObservableValue<BigDecimal> internalOutcome = EasyBind.combine(internalOutcomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+    MonadicObservableValue<BigDecimal> calculateBalanceAtInclusive(ObservableValue<DateTime> dateTime){
+        ObservableList<InternalTransaction> intTransDest = ObservableUtils
+                .observableList(internalTransactionDestinationSet,
+                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
+                        AbstractInstant::isAfter).get());
+        ObservableList<InternalTransaction> intTransSrc = ObservableUtils
+                .observableList(internalTransactionSourceSet,
+                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
+                        AbstractInstant::isAfter).get());
+        ObservableList<ExternalTransaction> extTransDest = ObservableUtils
+                .observableList(externalTransactionDestinationSet,
+                        trans -> new Observable[] {dateTime, trans.dateTimeProperty(), trans.deltaProperty()})
+                .filtered(elem -> !EasyBind.combine(elem.dateTimeProperty(), dateTime,
+                        AbstractInstant::isAfter).get());
 
-        return EasyBind.combine(initialBalance, internalIncome, externalIncome, internalOutcome, (a, b, c, d) -> a.add(b).add(c).subtract(d));
+        return combineTransactionsIntoBalance(intTransDest, intTransSrc, extTransDest);
+    }
+
+    private MonadicObservableValue<BigDecimal> combineTransactionsIntoBalance(
+        ObservableList<InternalTransaction> intTransDest,
+        ObservableList<InternalTransaction> intTransSrc,
+        ObservableList<ExternalTransaction> extTransDest){
+
+        ObservableList<ObservableValue<BigDecimal>> internalIncomes = EasyBind
+                .map(intTransDest, AbstractTransaction::deltaProperty);
+        ObservableList<ObservableValue<BigDecimal>> externalIncomes = EasyBind
+                .map(extTransDest, AbstractTransaction::deltaProperty);
+        ObservableList<ObservableValue<BigDecimal>> internalOutcomes = EasyBind
+                .map(intTransSrc, AbstractTransaction::deltaProperty);
+
+        ObservableValue<BigDecimal> internalIncome = EasyBind
+                .combine(internalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+        ObservableValue<BigDecimal> externalIncome = EasyBind
+                .combine(externalIncomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+        ObservableValue<BigDecimal> internalOutcome = EasyBind
+                .combine(internalOutcomes, stream -> stream.reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
+
+        return EasyBind.combine(initialBalance, internalIncome, externalIncome, internalOutcome,
+                (a, b, c, d) -> a.add(b).add(c).subtract(d));
     }
 
     void addAsInternalTransactionDestination(InternalTransaction transaction){

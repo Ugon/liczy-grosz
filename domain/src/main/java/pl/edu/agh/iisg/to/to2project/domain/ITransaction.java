@@ -25,4 +25,6 @@ public interface ITransaction {
 
     MonadicObservableValue<String> sourcePropertyAsMonadicString();
 
+    MonadicObservableValue<BigDecimal> accountBalanceAfterThisTransaction();
+
 }

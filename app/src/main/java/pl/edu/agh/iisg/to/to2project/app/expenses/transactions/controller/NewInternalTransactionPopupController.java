@@ -4,7 +4,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ import static java.util.Date.from;
 @Controller
 @Scope("prototype")
 public class NewInternalTransactionPopupController extends PopupController {
+
+    @Autowired
+    private TransactionsController transactionsController;
 
     @Autowired
     private InternalTransactionService internalTransactionService;
@@ -92,6 +98,8 @@ public class NewInternalTransactionPopupController extends PopupController {
         if(isInputValid()) {
             updateModel();
             dialogStage.close();
+
+            transactionsController.refreshContent();
         }
     }
 

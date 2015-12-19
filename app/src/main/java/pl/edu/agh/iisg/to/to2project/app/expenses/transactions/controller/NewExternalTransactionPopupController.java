@@ -39,6 +39,9 @@ public class NewExternalTransactionPopupController extends PopupController {
     private ExternalTransactionService externalTransactionService;
 
     @Autowired
+    private TransactionsController transactionsController;
+
+    @Autowired
     private CategoryService categoryService;
 
     @Autowired
@@ -100,6 +103,8 @@ public class NewExternalTransactionPopupController extends PopupController {
         if(isInputValid()) {
             updateModel();
             dialogStage.close();
+
+            transactionsController.refreshContent();
         }
     }
 

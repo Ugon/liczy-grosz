@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.agh.iisg.to.to2project.domain.ExtractableEntity;
 import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractEntity;
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
     private void populateCache() {
         Session session = sessionFactory.getCurrentSession();
         List<T> list = session.createCriteria(getPersistentType()).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
-        cache = FXCollections.observableList(list);//, T::extractObservables);
+        cache = FXCollections.observableList(list, T::extractObservables);
     }
 
     @Override
