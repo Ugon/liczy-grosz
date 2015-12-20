@@ -33,7 +33,7 @@ public class EditExternalTransactionPopupController extends AbstractExternalTran
         payeeTextField.setText(editedTransaction.sourcePayeeProperty().getValue());
         destinationAccountCombo.setValue(editedTransaction.destinationAccountProperty().getValue());
         java.time.LocalDate localDate = editedTransaction.dateProperty().getValue().toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        transactionDatePicker.setValue(localDate);
+        datePicker.setValue(localDate);
         categoryCombo.setValue(editedTransaction.categoryMonadicProperty().getOrElse(NO_CATEGORY));
         commentTextArea.setText(editedTransaction.commentMonadicProperty().getOrElse(""));
 

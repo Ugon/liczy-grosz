@@ -1,11 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.generic;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.ColorfulValidatingComboBox;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.AccountService;
@@ -23,7 +23,7 @@ public abstract class AbstractInternalTransactionPopupController extends Abstrac
     private AccountService accountService;
 
     @FXML
-    protected ComboBox<Account> sourceAccountCombo;
+    protected ColorfulValidatingComboBox<Account> sourceAccountCombo;
 
     @FXML
     @Override
@@ -31,22 +31,28 @@ public abstract class AbstractInternalTransactionPopupController extends Abstrac
         super.initialize();
 
         sourceAccountCombo.getItems().addAll(accountService.getList());
-        sourceAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> errorLabel.setText(""));
+
+        destinationAccountCombo.setValidationSupplier(this::isDestinationAccountValid);
+        destinationAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            sourceAccountCombo.triggerValidation();
+        });
+
+        sourceAccountCombo.setValidationSupplier(this::isSourceAccountValid);
+        sourceAccountCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
+            destinationAccountCombo.triggerValidation();
+        });
     }
 
     @Override
     protected boolean isInputValid() {
-        if (!isSourceAccountValid()) {
-            errorLabel.setText("You are not able to create transaction between these accounts.");
-            return false;
-        }
+        sourceAccountCombo.triggerValidation();
 
-        return super.isInputValid();
+        return super.isInputValid() && isSourceAccountValid();
     }
 
     @Override
     protected boolean isDestinationAccountValid() {
-        return super.isDestinationAccountValid() &&
+        return destinationAccountCombo.getValue() != null &&
                 !sourceAccountCombo.getValue().equals(destinationAccountCombo.getValue());
     }
 

@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="360" prefWidth="330"
+<?import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.*?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="385" prefWidth="330"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.EditExternalTransactionPopupController">
     <VBox spacing="15">
         <padding>
@@ -13,13 +13,13 @@
         <HBox>
             <GridPane>
                 <Label text="Payee:" minWidth="140" GridPane.columnIndex="0"/>
-                <TextField fx:id="payeeTextField" minWidth="170" GridPane.columnIndex="1"/>
+                <ColorfulValidatingTextField fx:id="payeeTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Destination Account:" minWidth="140" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="destinationAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
+                <ColorfulValidatingComboBox fx:id="destinationAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
@@ -35,37 +35,36 @@
                     <fx:define>
                         <ToggleGroup fx:id="transferTypeGroup"/>
                     </fx:define>
-                    <RadioButton fx:id="incomeRadioButton" minWidth="85" text="Income" toggleGroup="$transferTypeGroup"/>
-                    <RadioButton fx:id="expenditureRadioButton" minWidth="85" text="Expenditure" toggleGroup="$transferTypeGroup"/>
+                    <ColorfulValidatingRadioButton fx:id="incomeRadioButton" minWidth="85" text="Income" toggleGroup="$transferTypeGroup"/>
+                    <ColorfulValidatingRadioButton fx:id="expenditureRadioButton" minWidth="85" text="Expenditure" toggleGroup="$transferTypeGroup"/>
                 </HBox>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Transfer:" minWidth="140" GridPane.columnIndex="0"/>
-                <TextField fx:id="transferTextField" minWidth="170" GridPane.columnIndex="1"/>
+                <ColorfulValidatingTextField fx:id="transferTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Date:" minWidth="140" GridPane.columnIndex="0"/>
-                <DatePicker fx:id="transactionDatePicker" minWidth="170" GridPane.columnIndex="1"/>
+                <ColorfulValidatingDatePicker fx:id="datePicker" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
                 <Label text="Comment:" minWidth="140" GridPane.columnIndex="0"/>
-                <TextArea fx:id="commentTextArea" minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
+                <TextArea fx:id="commentTextArea" minWidth="170" minHeight="70" GridPane.columnIndex="1" wrapText="true"
                           style="-fx-font-size: 10"/>
             </GridPane>
         </HBox>
         <HBox spacing="20" alignment="CENTER">
             <padding>
-                <Insets top="15" left="65" right="65"/>
+                <Insets left="65" right="65"/>
             </padding>
             <Button minWidth="75" text="OK" onAction="#handleOKButtonClick"/>
             <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
         </HBox>
-        <Text fx:id="errorLabel" style="-fx-text-alignment: justify; -fx-fill: red;" wrappingWidth="300"/>
     </VBox>
 </BorderPane>

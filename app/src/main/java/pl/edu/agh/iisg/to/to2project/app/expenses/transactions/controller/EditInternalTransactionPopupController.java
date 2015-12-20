@@ -34,7 +34,7 @@ public class EditInternalTransactionPopupController extends AbstractInternalTran
         destinationAccountCombo.setValue(editedTransaction.destinationAccountProperty().getValue());
         transferTextField.setText(editedTransaction.deltaProperty().getValue().toString());
         java.time.LocalDate localDate = editedTransaction.dateProperty().getValue().toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        transactionDatePicker.setValue(localDate);
+        datePicker.setValue(localDate);
         categoryCombo.setValue(editedTransaction.categoryMonadicProperty().getOrElse(NO_CATEGORY));
         commentTextArea.setText(editedTransaction.commentMonadicProperty().getOrElse(""));
     }

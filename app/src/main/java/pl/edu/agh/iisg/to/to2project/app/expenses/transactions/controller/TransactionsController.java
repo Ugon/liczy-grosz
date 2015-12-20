@@ -75,6 +75,7 @@ public class TransactionsController {
     private ComboBox<Account> accountsFilterCombo;
 
     private SortedList<ITransaction> sortedFilteredTransactions;
+
     private ObservableList<Account> accounts;
 
     private static final Account ALL_ACCOUNTS = new Account("All Accounts", new BigDecimal(0));
@@ -96,7 +97,6 @@ public class TransactionsController {
 
         destinationAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
-        //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().accountBalanceAfterThisTransaction());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));

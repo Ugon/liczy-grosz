@@ -146,7 +146,6 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
 
     public void setCategory(Category category){
         Preconditions.checkNotNull(category);
-        Preconditions.checkState(categoryMonadicProperty().isEmpty());
         Category oldCategory = this.category.get();
         this.category.set(category);
         updateCategorySet(oldCategory, category);
