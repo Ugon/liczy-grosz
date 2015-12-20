@@ -31,8 +31,6 @@ public class DeleteTransactionPopupController extends PopupController {
     private InternalTransaction internalTransaction;
     private ExternalTransaction externalTransaction;
 
-
-
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {

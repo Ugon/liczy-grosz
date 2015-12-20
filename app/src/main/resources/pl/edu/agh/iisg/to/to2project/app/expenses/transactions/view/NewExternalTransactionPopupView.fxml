@@ -14,7 +14,7 @@
         <HBox>
             <GridPane>
                 <Label text="Account Name:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="accountNameCombo" minWidth="170" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="destinationAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
