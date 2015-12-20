@@ -53,7 +53,7 @@ public abstract class AbstractInternalTransactionPopupController extends Abstrac
     @Override
     protected boolean isDestinationAccountValid() {
         return destinationAccountCombo.getValue() != null &&
-                !sourceAccountCombo.getValue().equals(destinationAccountCombo.getValue());
+                !destinationAccountCombo.getValue().equals(sourceAccountCombo.getValue());
     }
 
     private boolean isSourceAccountValid() {
