@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="360" prefWidth="320"
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="360" prefWidth="330"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.EditInternalTransactionPopupController">
     <VBox spacing="15">
         <padding>
@@ -12,37 +12,37 @@
         </padding>
         <HBox>
             <GridPane>
-                <Label text="New Source Account:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Source Account:" minWidth="140" GridPane.columnIndex="0"/>
                 <ComboBox fx:id="sourceAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Target Account:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Destination Account:" minWidth="140" GridPane.columnIndex="0"/>
                 <ComboBox fx:id="destinationAccountCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Category:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Category:" minWidth="140" GridPane.columnIndex="0"/>
                 <ComboBox fx:id="categoryCombo" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Transfer:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Transfer:" minWidth="140" GridPane.columnIndex="0"/>
                 <TextField fx:id="transferTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Date:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Date:" minWidth="140" GridPane.columnIndex="0"/>
                 <DatePicker fx:id="transactionDatePicker" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Comment:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Comment:" minWidth="140" GridPane.columnIndex="0"/>
                 <TextArea fx:id="commentTextArea" minWidth="170" minHeight="35" GridPane.columnIndex="1" wrapText="true"
                           style="-fx-font-size: 10"/>
             </GridPane>

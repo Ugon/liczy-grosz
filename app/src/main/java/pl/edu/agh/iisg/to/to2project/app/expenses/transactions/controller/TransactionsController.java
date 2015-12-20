@@ -51,7 +51,7 @@ public class TransactionsController {
     private TableView<ITransaction> transactionsTable;
 
     @FXML
-    private TableColumn<ITransaction, String> fromAccountColumn;
+    private TableColumn<ITransaction, String> destinationAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, BigDecimal> transferColumn;
@@ -66,7 +66,7 @@ public class TransactionsController {
     private TableColumn<ITransaction, String> categoryColumn;
 
     @FXML
-    private TableColumn<ITransaction, String> toAccountColumn;
+    private TableColumn<ITransaction, String> sourceAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, String> commentColumn;
@@ -94,13 +94,13 @@ public class TransactionsController {
         transactionsTable.setItems(sortedFilteredTransactions);
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
 
-        fromAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
+        destinationAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
         //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
         balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().accountBalanceAfterThisTransaction());
         dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
-        toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        sourceAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
 
         accounts = ObservableUtils.transferElements(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
