@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.text.Text;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -131,11 +130,13 @@ public abstract class AbstractTransactionPopupController<T extends AbstractTrans
         T transaction = produceTransaction(destinationAccount, transfer, date);
 
         Category category = categoryCombo.getSelectionModel().getSelectedItem();
+        transaction.removeCategoryIfPresent();
         if (!category.equals(NO_CATEGORY)) {
             transaction.setCategory(category);
         }
 
         String comment = commentTextArea.getText();
+        transaction.removeCommentIfPresent();
         if (!comment.isEmpty()) {
             transaction.setComment(comment);
         }

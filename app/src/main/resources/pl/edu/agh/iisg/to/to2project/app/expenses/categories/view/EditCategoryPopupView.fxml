@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="200" prefWidth="320"
+<?import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.ColorfulValidatingTextField?>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="185" prefWidth="320"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.EditCategoryPopupController">
     <VBox spacing="15">
         <padding>
@@ -12,25 +12,25 @@
         </padding>
         <HBox>
             <GridPane>
-                <Label text="New Category Name:" minWidth="130" GridPane.columnIndex="0"/>
-                <TextField fx:id="categoryNameTextField" minWidth="170" GridPane.columnIndex="1"/>
+                <Label text="Category Name:" minWidth="130" GridPane.columnIndex="0"/>
+                <ColorfulValidatingTextField fx:id="nameTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Parent Category:" minWidth="130" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="parentCategoryCombo" minWidth="170" GridPane.columnIndex="1"/>
+                <Label text="Parent Category:" minWidth="130" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="parentCategoryComboBox" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox>
             <GridPane>
-                <Label text="New Description:" minWidth="130" GridPane.columnIndex="0"/>
+                <Label text="Description:" minWidth="130" GridPane.columnIndex="0"/>
                 <TextField fx:id="descriptionTextField" minWidth="170" GridPane.columnIndex="1"/>
             </GridPane>
         </HBox>
         <HBox spacing="20" alignment="CENTER">
             <padding>
-                <Insets top="15" left="65" right="65"/>
+                <Insets left="65" right="65"/>
             </padding>
             <Button minWidth="75" text="OK" onAction="#handleOKButtonClick"/>
             <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>

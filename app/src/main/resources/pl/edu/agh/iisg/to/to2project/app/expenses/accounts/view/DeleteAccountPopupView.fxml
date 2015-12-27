@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="180" prefWidth="320"
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="165" prefWidth="320"
             fx:controller="pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller.DeleteAccountPopupController">
     <VBox spacing="15">
         <padding>
@@ -19,7 +19,7 @@
         </Text>
         <HBox spacing="20" alignment="CENTER">
             <padding>
-                <Insets top="15" left="65" right="65"/>
+                <Insets left="65" right="65"/>
             </padding>
             <Button minWidth="75" text="Proceed" onAction="#handleOKButtonClick"/>
             <Button minWidth="75" text="Cancel" onAction="#handleCancelButtonClick"/>
