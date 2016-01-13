@@ -1,15 +1,17 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import pl.edu.agh.iisg.to.to2project.domain.ITransaction;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+
 
 /**
  * @author Wojciech Pachuta.
@@ -25,9 +27,9 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     @Column(name = "delta", nullable = false)
     private BigDecimal deltaPOJO;
 
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    @Column(name = "dateTime", nullable = false)
-    private DateTime dateTimePOJO;
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+    @Column(name = "date", nullable = false)
+    private LocalDate datePOJO;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "category")
@@ -43,7 +45,7 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     private final ObjectProperty<BigDecimal> delta;
 
     @Transient
-    private final ObjectProperty<DateTime> dateTime;
+    private final ObjectProperty<LocalDate> date;
 
     @Transient
     protected final ObjectProperty<Category> category;
@@ -57,27 +59,31 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     @Transient
     private final MonadicObservableValue<String> commentMonadic;
 
+    @Transient
+    private final MonadicObservableValue<BigDecimal> destinationAccountBalanceAfterThisTransaction;
+
     AbstractTransaction() {
         this.destinationAccount = new SimpleObjectProperty<>();
         this.delta = new SimpleObjectProperty<>();
-        this.dateTime = new SimpleObjectProperty<>();
+        this.date = new SimpleObjectProperty<>();
         this.category = new SimpleObjectProperty<>();
         this.categoryMonadic = EasyBind.monadic(category);
         this.comment = new SimpleStringProperty();
         this.commentMonadic = EasyBind.monadic(comment);
+        this.destinationAccountBalanceAfterThisTransaction = EasyBind.monadic(destinationAccount).flatMap(acc -> acc.calculateBalanceAtInclusive(date));
     }
 
-    public AbstractTransaction(Account destinationAccount, BigDecimal delta, DateTime dateTime) {
+    public AbstractTransaction(Account destinationAccount, BigDecimal delta, LocalDate date) {
         this();
         setDelta(delta);
-        setDateTime(dateTime);
+        setDate(date);
         setDestinationAccount(destinationAccount);
     }
 
     void initProperties() {
         destinationAccount.setValue(destinationAccountEntity);
         delta.setValue(deltaPOJO);
-        dateTime.setValue(dateTimePOJO);
+        date.setValue(datePOJO);
         category.setValue(categoryEntity);
         comment.setValue(commentPOJO);
     }
@@ -85,9 +91,16 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     void updatePOJOs(){
         destinationAccountEntity = destinationAccount.get();
         deltaPOJO = delta.get();
-        dateTimePOJO = dateTime.get();
+        datePOJO = date.get();
         categoryEntity = categoryMonadic.getOrElse(null);
         commentPOJO = commentMonadic.getOrElse(null);
+    }
+
+
+    @Override
+    public Observable[] extractObservables() {
+        return new Observable[] {destinationAccount, delta, date, categoryMonadic, commentMonadic,
+                destinationAccountBalanceAfterThisTransaction, sourcePropertyAsMonadicString()};
     }
 
 
@@ -117,14 +130,13 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     }
 
 
-    public void setDateTime(DateTime dateTime) {
-        Preconditions.checkNotNull(dateTime);
-        this.dateTime.set(dateTime);
+    public void setDate(LocalDate date) {
+        Preconditions.checkNotNull(date);
+        this.date.set(date);
     }
 
-    @Override
-    public ReadOnlyObjectProperty<DateTime> dateTimeProperty() {
-        return dateTime;
+    public ReadOnlyObjectProperty<LocalDate> dateProperty() {
+        return date;
     }
 
 
@@ -134,7 +146,6 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
 
     public void setCategory(Category category){
         Preconditions.checkNotNull(category);
-        Preconditions.checkState(categoryMonadicProperty().isEmpty());
         Category oldCategory = this.category.get();
         this.category.set(category);
         updateCategorySet(oldCategory, category);
@@ -169,6 +180,12 @@ public abstract class AbstractTransaction extends AbstractEntity implements ITra
     @Override
     public MonadicObservableValue<String> commentMonadicProperty() {
         return commentMonadic;
+    }
+
+
+    @Override
+    public MonadicObservableValue<BigDecimal> accountBalanceAfterThisTransaction(){
+        return destinationAccountBalanceAfterThisTransaction;
     }
 
 

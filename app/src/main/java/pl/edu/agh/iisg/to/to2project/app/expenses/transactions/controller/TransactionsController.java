@@ -10,14 +10,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.fxmisc.easybind.EasyBind;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.DeleteTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.EditTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewExternalTransactionPopup;
-import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.NewInternalTransactionPopup;
+import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.view.*;
 import pl.edu.agh.iisg.to.to2project.domain.IExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.ITransaction;
@@ -28,10 +25,7 @@ import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
-import java.util.ConcurrentModificationException;
-import java.util.logging.Logger;
 
-import static java.util.logging.Level.INFO;
 import static javafx.scene.control.SelectionMode.SINGLE;
 
 /**
@@ -57,7 +51,7 @@ public class TransactionsController {
     private TableView<ITransaction> transactionsTable;
 
     @FXML
-    private TableColumn<ITransaction, String> fromAccountColumn;
+    private TableColumn<ITransaction, String> destinationAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, BigDecimal> transferColumn;
@@ -66,13 +60,13 @@ public class TransactionsController {
     private TableColumn<ITransaction, BigDecimal> balanceColumn;
 
     @FXML
-    private TableColumn<ITransaction, DateTime> dateColumn;
+    private TableColumn<ITransaction, LocalDate> dateColumn;
 
     @FXML
     private TableColumn<ITransaction, String> categoryColumn;
 
     @FXML
-    private TableColumn<ITransaction, String> toAccountColumn;
+    private TableColumn<ITransaction, String> sourceAccountColumn;
 
     @FXML
     private TableColumn<ITransaction, String> commentColumn;
@@ -81,6 +75,7 @@ public class TransactionsController {
     private ComboBox<Account> accountsFilterCombo;
 
     private SortedList<ITransaction> sortedFilteredTransactions;
+
     private ObservableList<Account> accounts;
 
     private static final Account ALL_ACCOUNTS = new Account("All Accounts", new BigDecimal(0));
@@ -90,7 +85,7 @@ public class TransactionsController {
         final ObservableList<? extends IInternalTransaction> internalTransactions = internalTransactionService.getList();
         final ObservableList<? extends IExternalTransaction> externalTransactions = externalTransactionService.getList();
         final ObservableList<? extends IInternalTransaction> internalTransactionInverses = EasyBind.map(internalTransactions, IInternalTransaction::getTransactionInverse);
-        final ObservableList<ITransaction> allTransactions = ObservableUtils.merge(internalTransactions, externalTransactions, internalTransactionInverses);
+        final ObservableList<ITransaction> allTransactions = ObservableUtils.transferElements(internalTransactions, externalTransactions, internalTransactionInverses);
 
         final FilteredList<ITransaction> filteredTransactions = allTransactions.filtered(p -> true);
 
@@ -100,22 +95,22 @@ public class TransactionsController {
         transactionsTable.setItems(sortedFilteredTransactions);
         transactionsTable.getSelectionModel().setSelectionMode(SINGLE);
 
-        fromAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
+        destinationAccountColumn.setCellValueFactory(dataValue -> EasyBind.monadic(dataValue.getValue().destinationAccountProperty()).flatMap(Account::nameProperty));
         transferColumn.setCellValueFactory(dataValue -> dataValue.getValue().deltaProperty());
-        //todo:that aint gonna work. not bound properly, also should be current balance, not initial balance
-        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().destinationAccountProperty().getValue().initialBalanceProperty());
-        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateTimeProperty());
+        balanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().accountBalanceAfterThisTransaction());
+        dateColumn.setCellValueFactory(dataValue -> dataValue.getValue().dateProperty());
         categoryColumn.setCellValueFactory(dataValue -> dataValue.getValue().categoryMonadicProperty().flatMap(Category::nameProperty));
-        toAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
+        sourceAccountColumn.setCellValueFactory(dataValue -> dataValue.getValue().sourcePropertyAsMonadicString());
         commentColumn.setCellValueFactory(dataValue -> dataValue.getValue().commentMonadicProperty());
 
-        accounts = ObservableUtils.merge(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
+        accounts = ObservableUtils.transferElements(accountService.getList(), FXCollections.observableArrayList(ALL_ACCOUNTS));
         accountsFilterCombo.setItems(accounts);
         accountsFilterCombo.setValue(ALL_ACCOUNTS);
+
         accountsFilterCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue == null || !oldValue.equals(newValue)){
                 filteredTransactions.setPredicate(transaction ->
-                        newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue));
+                        newValue == null || newValue.equals(ALL_ACCOUNTS) || transaction.destinationAccountProperty().getValue().equals(newValue));
             }});
     }
 
@@ -137,20 +132,27 @@ public class TransactionsController {
 
     @FXML
     private void handleEditTransactionClick(ActionEvent actionEvent) {
-        EditTransactionPopup popup = context.getBean(EditTransactionPopup.class);
-        EditTransactionPopupController controller = popup.getController();
-
         ITransaction selectedTransaction = transactionsTable.getSelectionModel().getSelectedItem();
 
         if (selectedTransaction != null && selectedTransaction instanceof InternalTransaction){
+            EditInternalTransactionPopup popup = context.getBean(EditInternalTransactionPopup.class);
+            EditInternalTransactionPopupController controller = popup.getController();
+            
             controller.editTransaction((InternalTransaction) selectedTransaction);
         }
         else if (selectedTransaction != null && selectedTransaction instanceof ExternalTransaction){
+            EditExternalTransactionPopup popup = context.getBean(EditExternalTransactionPopup.class);
+            EditExternalTransactionPopupController controller = popup.getController();
+            
             controller.editTransaction((ExternalTransaction) selectedTransaction);
         }
         else if (selectedTransaction != null && selectedTransaction instanceof InternalTransactionInverse){
+            EditInternalTransactionPopup popup = context.getBean(EditInternalTransactionPopup.class);
+            EditInternalTransactionPopupController controller = popup.getController();
+
             InternalTransactionInverse internalTransactionInverse = (InternalTransactionInverse)selectedTransaction;
             InternalTransaction internalTransaction = (InternalTransaction) internalTransactionInverse.getTransactionInverse();
+            
             controller.editTransaction(internalTransaction);
         }
     }
@@ -180,26 +182,5 @@ public class TransactionsController {
         internalTransactionService.refreshCache();
         accountService.refreshCache();
         transactionsTable.refresh();
-        updateAccountsComboItems();
-    }
-
-    private void updateAccountsComboItems() {
-        for(Account account : accountService.getList()) {
-            if(!accountsFilterCombo.getItems().contains(account)) {
-                accountsFilterCombo.getItems().add(account);
-            }
-        }
-
-        try {
-            for (Account account : accountsFilterCombo.getItems()) {
-                if (!accountService.getList().contains(account) && !account.equals(ALL_ACCOUNTS)) {
-                    accountsFilterCombo.getItems().remove(account);
-                }
-            }
-        }
-        catch(ConcurrentModificationException exc) {
-            Logger.getLogger("GUI").log(INFO, "Removed account used as a filter.");
-            accountsFilterCombo.setValue(ALL_ACCOUNTS);
-        }
     }
 }

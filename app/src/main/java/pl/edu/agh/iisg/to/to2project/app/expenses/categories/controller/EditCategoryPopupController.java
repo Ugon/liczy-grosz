@@ -1,85 +1,50 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
+import pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.generic.AbstractCategoriesPopupController;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
 @Controller
 @Scope("prototype")
-public class EditCategoryPopupController extends PopupController {
+public class EditCategoryPopupController extends AbstractCategoriesPopupController {
 
-    private static final Category NO_CATEGORY = new Category("None");
+    private Category category;
 
-    @Autowired
-    private CategoryService categoryService;
-
-    @FXML
-    private TextField categoryNameTextField;
-
-    @FXML
-    private ComboBox<Category> parentCategoryCombo;
-
-    @FXML
-    private TextField descriptionTextField;
-
-    private Category editedCategory;
-
-
-    @FXML
-    public void initialize() {
-        parentCategoryCombo.getItems().addAll(categoryService.getList());
-        parentCategoryCombo.getItems().add(NO_CATEGORY);
-        parentCategoryCombo.setValue(NO_CATEGORY);
-    }
-
-    @FXML
     @Override
-    protected void handleOKButtonClick(ActionEvent actionEvent) {
-        updateModel();
-        dialogStage.close();
+    protected Category produceCategory(String categoryName) {
+        category.setName(categoryName);
+        return category;
     }
 
-    private void updateModel() {
-        Category parentCategory = parentCategoryCombo.getSelectionModel().getSelectedItem();
-        String categoryName = categoryNameTextField.getText();
-        String description = descriptionTextField.getText();
-
-        editedCategory.setName(categoryName);
-        if(description.isEmpty()){
-            editedCategory.removeDescriptionIfPresent();
-        }
-        else{
-            editedCategory.setDescription(description);
-        }
-
-        if(parentCategory.equals(NO_CATEGORY)) {
-            editedCategory.removeParentCategoryIfPresent();
-        }
-        else {
-            editedCategory.removeParentCategoryIfPresent();
-            parentCategory.addSubCategory(editedCategory);
-        }
-
-        categoryService.save(editedCategory);
+    @Override
+    protected boolean isNameValid() {
+        return nameTextField.getText().equals(category.nameProperty().get()) || super.isNameValid();
     }
 
-    private void adaptComboBox(Category category) {
-        parentCategoryCombo.getItems().removeAll(category.deepSubCategoriesSet());
+    private void adaptComboBox() {
+        parentCategoryComboBox.getItems().removeAll(category.deepSubCategoriesSet());
+    }
+
+    private void fillDialog() {
+        nameTextField.setText(category.nameProperty().getValue());
+        if(category.parentCategoryMonadicProperty().isPresent()){
+            parentCategoryComboBox.setValue(category.parentCategoryMonadicProperty().getValue());
+        }
+        if(category.descriptionMonadicProperty().isPresent()){
+            descriptionTextField.setText(category.descriptionMonadicProperty().get());
+        }
     }
 
     public void editCategory(Category category) {
-        editedCategory = category;
-        adaptComboBox(editedCategory);
+        this.category = category;
+        adaptComboBox();
+        fillDialog();
         showDialog();
     }
+
 }

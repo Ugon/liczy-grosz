@@ -33,7 +33,7 @@ public abstract class TransactionalGenericCachingDAOImpl<T extends AbstractEntit
     private void populateCache() {
         Session session = sessionFactory.getCurrentSession();
         List<T> list = session.createCriteria(getPersistentType()).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
-        cache = FXCollections.observableArrayList(list);
+        cache = FXCollections.observableList(list, T::extractObservables);
     }
 
     @Override

@@ -1,18 +1,11 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
+import pl.edu.agh.iisg.to.to2project.app.expenses.accounts.controller.generic.AbstractAccountPopupController;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
-import pl.edu.agh.iisg.to.to2project.service.AccountService;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 
 /**
  * @author Bartłomiej Grochal
@@ -20,50 +13,30 @@ import java.text.ParseException;
  */
 @Controller
 @Scope("prototype")
-public class EditAccountPopupController extends PopupController {
-
-    @Autowired
-    private AccountService accountService;
-
-    private DecimalFormat decimalFormat;
+public class EditAccountPopupController extends AbstractAccountPopupController {
 
     private Account account;
 
-    @FXML
-    public TextField nameTextField;
-
-    @FXML
-    public TextField initialBalanceTextField;
-
-    @FXML
-    public void initialize(){
-        decimalFormat = new DecimalFormat();
-        decimalFormat.setParseBigDecimal(true);
-    }
-
-    @FXML
     @Override
-    protected void handleOKButtonClick(ActionEvent actionEvent) {
-        updateModel();
-        dialogStage.close();
-    }
-
-    private void updateModel() {
-        String name = nameTextField.getText();
-        BigDecimal initialBalance = null;
-        try {
-            initialBalance = (BigDecimal) decimalFormat.parse(initialBalanceTextField.getText());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
+    protected Account produceAccount(String name, BigDecimal initialBalance) {
         account.setName(name);
         account.setInitialBalance(initialBalance);
-        accountService.save(account);
+        return account;
+    }
+
+    @Override
+    protected boolean isNameValid() {
+        return nameTextField.getText().equals(account.nameProperty().get()) || super.isNameValid();
+    }
+
+    private void fillDialog(){
+        nameTextField.setText(account.nameProperty().getValue());
+        initialBalanceTextField.setText(account.initialBalanceProperty().getValue().toString());
     }
 
     public void editAccount(Account account) {
         this.account = account;
+        fillDialog();
         showDialog();
     }
 }

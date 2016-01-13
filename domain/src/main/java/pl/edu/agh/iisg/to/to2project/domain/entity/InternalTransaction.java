@@ -6,7 +6,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import pl.edu.agh.iisg.to.to2project.domain.IInternalTransaction;
 
 import javax.persistence.*;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * @author Bartłomiej Grochal.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sourceAccount", "destinationAccount", "delta", "dateTime"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sourceAccount", "destinationAccount", "delta", "date"}))
 public class InternalTransaction extends AbstractTransaction implements IInternalTransaction {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -40,8 +40,8 @@ public class InternalTransaction extends AbstractTransaction implements IInterna
         this.transactionInverse = new InternalTransactionInverse(this);
     }
 
-    public InternalTransaction(Account sourceAccount, Account destinationAccount, BigDecimal delta, DateTime dateTime) {
-        super(destinationAccount, delta, dateTime);
+    public InternalTransaction(Account sourceAccount, Account destinationAccount, BigDecimal delta, LocalDate date) {
+        super(destinationAccount, delta, date);
         this.sourceAccount = new SimpleObjectProperty<>();
         this.sourceMonadicString = EasyBind.map(this.sourceAccount, elem -> elem.nameProperty().get());
         this.transactionInverse = new InternalTransactionInverse(this);

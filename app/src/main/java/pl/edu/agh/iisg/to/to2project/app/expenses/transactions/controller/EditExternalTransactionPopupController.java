@@ -1,196 +1,56 @@
 package pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.text.Text;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.joda.time.LocalDate;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
-import pl.edu.agh.iisg.to.to2project.domain.entity.AbstractTransaction;
+import org.springframework.stereotype.Controller;
+import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.generic.AbstractExternalTransactionPopupController;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
-import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.service.AccountService;
-import pl.edu.agh.iisg.to.to2project.service.CategoryService;
-import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.Date;
-
-import static java.math.BigDecimal.ZERO;
-import static java.time.LocalTime.now;
-import static java.time.ZoneId.systemDefault;
-import static java.util.Date.from;
+import java.time.ZoneId;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
-@Component
+@Controller
 @Scope("prototype")
-public class EditExternalTransactionPopupController extends PopupController {
+public class EditExternalTransactionPopupController extends AbstractExternalTransactionPopupController {
 
-    private static final Category NO_CATEGORY = new Category("None");
-
-    @Autowired
-    private ExternalTransactionService externalTransactionService;
-
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @FXML
-    private ComboBox<Account> accountNameCombo;
-
-    @FXML
-    private TextField payeeTextField;
-
-    @FXML
-    private ComboBox<Category> categoryCombo;
-
-    @FXML
-    private TextField transferTextField;
-
-    @FXML
-    private ToggleGroup transferTypeGroup;
-
-    @FXML
-    private RadioButton incomeRadioButton;
-
-    @FXML
-    private RadioButton expenditureRadioButton;
-
-    @FXML
-    private DatePicker transactionDatePicker;
-
-    @FXML
-    private TextArea commentTextArea;
-
-    @FXML
-    private Text errorLabel;
-    private DecimalFormat decimalFormat;
     private ExternalTransaction editedTransaction;
 
-
-
-    @FXML
-    public void initialize() {
-        accountNameCombo.setItems(accountService.getList());
-        categoryCombo.getItems().addAll(categoryService.getList());
-        categoryCombo.getItems().add(NO_CATEGORY);
-        categoryCombo.setValue(NO_CATEGORY);
-
-        accountNameCombo.valueProperty().addListener(new AccountChangeListener<>());
-        payeeTextField.textProperty().addListener(new AccountChangeListener<>());
-        errorLabel.setText("");
-
-        decimalFormat = new DecimalFormat();
-        decimalFormat.setParseBigDecimal(true);
-    }
-
-
-    @FXML
     @Override
-    protected void handleOKButtonClick(ActionEvent actionEvent) {
-    }
-
-    public void handleOKButtonClick(ActionEvent actionEvent, AbstractTransaction editedTransaction) {
-        this.editedTransaction = (ExternalTransaction) editedTransaction;
-
-        if(isInputValid()) {
-            updateModel();
-        }
-    }
-
-    private boolean isInputValid() {
-        if(!isAccountValid()) {
-            errorLabel.setText("You are not able to create transaction between these accounts.");
-            return false;
-        }
-        if(!isTransferValueValid()) {
-            errorLabel.setText("You are not able to create transaction with given amount of money.");
-            return false;
-        }
-        if(!isTransferTypeValid()) {
-            errorLabel.setText("You are not able to create transaction with this type of transaction.");
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean isAccountValid() {
-        return accountNameCombo.getSelectionModel().getSelectedItem() != null &&
-                !payeeTextField.getText().isEmpty() &&
-                accountNameCombo.getSelectionModel().getSelectedItem().nameProperty().getValue() != payeeTextField.getText();
-    }
-
-    private boolean isTransferValueValid() {
-        return transferTextField.getText().matches("^\\-?\\d+(?:.\\d+)?$");
-    }
-
-    private boolean isTransferTypeValid() {
-        return transferTypeGroup.getSelectedToggle() != null;
-    }
-
-    private void updateModel() {
-        Account sourceAccount = accountNameCombo.getSelectionModel().getSelectedItem();
-        String payee = payeeTextField.getText();
-        Category category = categoryCombo.getSelectionModel().getSelectedItem();
-
-        BigDecimal transfer = null;
-        try {
-            transfer = (BigDecimal) decimalFormat.parse(transferTextField.getText());
-        }
-        catch (ParseException exc) {
-            //todo: what next?
-            exc.printStackTrace();
-        }
-
-        if(transferTypeGroup.getSelectedToggle().equals(incomeRadioButton)) {
-            transfer = transfer.compareTo(ZERO) >= 0 ? transfer : transfer.multiply(new BigDecimal(-1));
-        }
-        else if(transferTypeGroup.getSelectedToggle().equals(expenditureRadioButton)) {
-            transfer = transfer.compareTo(ZERO) <= 0 ? transfer : transfer.multiply(new BigDecimal(-1));
-        }
-
-        Date transferDateUtil =  from(transactionDatePicker.getValue().atTime(now()).atZone(systemDefault()).toInstant());
-        DateTime transferDateTime = new DateTime(transferDateUtil);
-
-        String comment = commentTextArea.getText();
-
-        editedTransaction.setDestinationAccount(sourceAccount);
-        editedTransaction.setSource(payee);
-
-        editedTransaction.removeCategoryIfPresent();
-        if(!category.equals(NO_CATEGORY)){
-            editedTransaction.setCategory(category);
-        }
+    protected ExternalTransaction produceInternalTransaction(String sourceAccount, Account destinationAccount, BigDecimal transfer, LocalDate date) {
+        editedTransaction.setSource(sourceAccount);
+        editedTransaction.setDestinationAccount(destinationAccount);
         editedTransaction.setDelta(transfer);
-        editedTransaction.setDateTime(transferDateTime);
-
-        editedTransaction.removeCommentIfPresent();
-        if(!comment.isEmpty()) {
-            editedTransaction.setComment(comment);
-        }
-
-        externalTransactionService.save(editedTransaction);
+        editedTransaction.setDate(date);
+        return editedTransaction;
     }
 
+    private void fillDialog() {
+        payeeTextField.setText(editedTransaction.sourcePayeeProperty().getValue());
+        destinationAccountCombo.setValue(editedTransaction.destinationAccountProperty().getValue());
+        java.time.LocalDate localDate = editedTransaction.dateProperty().getValue().toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        datePicker.setValue(localDate);
+        categoryCombo.setValue(editedTransaction.categoryMonadicProperty().getOrElse(NO_CATEGORY));
+        commentTextArea.setText(editedTransaction.commentMonadicProperty().getOrElse(""));
 
-
-    private class AccountChangeListener<T> implements ChangeListener<T> {
-        @Override
-        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-            errorLabel.setText("");
+        BigDecimal transfer = editedTransaction.deltaProperty().getValue();
+        if(transfer.compareTo(BigDecimal.ZERO) >= 0){
+            incomeRadioButton.fire();
         }
+        else {
+            expenditureRadioButton.fire();
+            transfer = transfer.negate();
+        }
+        transferTextField.setText(transfer.toString());
+    }
+
+    public void editTransaction(ExternalTransaction transaction){
+        this.editedTransaction = transaction;
+        fillDialog();
+        showDialog();
     }
 }

@@ -42,7 +42,6 @@ public class CategoriesController {
 
     private ObservableList<Category> data;
 
-
     @FXML
     public void initialize() {
         data = categoryService.getList();
@@ -54,7 +53,6 @@ public class CategoriesController {
         parentColumn.setCellValueFactory(dataValue -> dataValue.getValue().parentCategoryMonadicProperty().flatMap(Category::nameProperty));
         descriptionColumn.setCellValueFactory(dataValue -> dataValue.getValue().descriptionMonadicProperty());
     }
-
 
     @FXML
     private void handleAddCategoryClick(ActionEvent actionEvent) {
