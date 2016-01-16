@@ -28,6 +28,8 @@ public class ApplicationMain extends Application {
 
         Parent root = (Parent) loader.load("/pl/edu/agh/iisg/to/to2project/app/core/view/RootContent.fxml");
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("/pl/edu/agh/iisg/to/to2project/app/core/view/calendarstyle.css");
+        //scene.getStylesheets().add("/pl/edu/agh/iisg/to/to2project/app/stats/util/entity/calendar/calendarstyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
