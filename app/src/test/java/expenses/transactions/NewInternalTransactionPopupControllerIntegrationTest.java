@@ -30,17 +30,13 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.AccountDAO;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.CategoryDAO;
 import pl.edu.agh.iisg.to.to2project.persistence.generic.InternalTransactionDAO;
-import pl.edu.agh.iisg.to.to2project.service.AccountService;
-import pl.edu.agh.iisg.to.to2project.service.CategoryService;
-import pl.edu.agh.iisg.to.to2project.service.InternalTransactionService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Wojciech Pachuta.
@@ -88,15 +84,6 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
     @Autowired
     private InternalTransactionDAO internalTransactionDAO;
 
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private InternalTransactionService internalTransactionService;
-
     private NewInternalTransactionPopupController instance;
 
     private ColorfulValidatingComboBox<Account> destinationAccountCombo;
@@ -116,14 +103,18 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
     @Before
     public void setUp() throws Exception {
         new JFXPanel();
+        resetMocks();
         init();
         instance = context.getBean(NewInternalTransactionPopupController.class);
-        ReflectionTestUtils.setField(instance, "dialogStage", mock(Stage.class));
         setFieldsWithReflection();
         fillFXMLFields();
         ReflectionTestUtils.invokeMethod(instance, "initialize");
 
         assertThat((Boolean) ReflectionTestUtils.invokeMethod(instance, "isInputValid")).isTrue();
+    }
+
+    private void resetMocks(){
+        reset(internalTransactionDAO);
     }
 
     private void init() {
@@ -148,6 +139,7 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
         datePicker = new ColorfulValidatingDatePicker();
         commentTextArea = new TextArea();
 
+        ReflectionTestUtils.setField(instance, "dialogStage", mock(Stage.class));
         ReflectionTestUtils.setField(instance, "destinationAccountCombo", destinationAccountCombo);
         ReflectionTestUtils.setField(instance, "sourceAccountCombo", sourceAccountCombo);
         ReflectionTestUtils.setField(instance, "categoryCombo", categoryCombo);
@@ -178,6 +170,14 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
         assertThat(internalTransaction.sourceAccountProperty().get()).isEqualTo(sourceAccount);
         assertThat(internalTransaction.commentMonadicProperty().get()).isEqualTo(comment);
         assertThat(internalTransaction.deltaProperty().get().compareTo(new BigDecimal(transfer))).isEqualTo(0);
+    }
 
+    @Test
+    public void shouldTransactionDAOSaveNewEntity() throws Exception {
+        //given
+        //when
+        ReflectionTestUtils.invokeMethod(instance, "handleOKButtonClick", new ActionEvent());
+        //then
+        verify(internalTransactionDAO).saveOrUpdate(any());
     }
 }
