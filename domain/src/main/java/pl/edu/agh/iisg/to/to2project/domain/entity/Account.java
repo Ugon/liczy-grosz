@@ -232,4 +232,10 @@ public class Account extends AbstractEntity {
     public String toString() {
         return nameProperty().get();
     }
+
+    public boolean hasTransactions(){
+        return !externalTransactionDestinationSet.isEmpty() ||
+                !internalTransactionDestinationSet.isEmpty() ||
+                !internalTransactionSourceSet.isEmpty();
+    }
 }
