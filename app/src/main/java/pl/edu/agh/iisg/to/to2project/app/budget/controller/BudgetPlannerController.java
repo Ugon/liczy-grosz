@@ -1,5 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.app.budget.controller;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
@@ -102,19 +104,19 @@ public class BudgetPlannerController {
     public AnchorPane spendingProgressBarPane;
 
     @FXML
-    public TableColumn<Data, Double> summaryAvaiableResourcesColumn;
+    public TableColumn<Data, Double> summaryAvailableResourcesColumn;
 
     @FXML
     public TableColumn<Data, ObservableValue> summaryEarningsPlanColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summaryEarininsRealColumn;
+    public TableColumn<Data, ObservableValue> summaryEarningsRealColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summarySpendingsPlanColumn;
+    public TableColumn<Data, ObservableValue> summarySpendingPlanColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summarySpendingsRealColumn;
+    public TableColumn<Data, ObservableValue> summarySpendingRealColumn;
 
     @FXML
     public TableColumn<Data, ObservableValue>  summarySpendingsBalanceColumn;
@@ -155,8 +157,7 @@ public class BudgetPlannerController {
     }
 
     @FXML
-    public void initialize()
-    {
+    public void initialize() {
         initializeFE();
         initializeBE();
     }
@@ -168,8 +169,23 @@ public class BudgetPlannerController {
         earningCategoryColumn.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<DisplayedItem, String>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
+                try {
+                    Preconditions.checkArgument(BudgetPersistenceManager.doesCategoryExist(event.getNewValue()));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
+                Category category = p.getCategory();
+
                 p.setCategoryName(event.getNewValue());
+                category.setName(event.getNewValue());
+
+                try {
+                    BudgetPersistenceManager.updateCategoryName(event.getOldValue(), event.getNewValue());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                categoryService.save(category);
 
             }
         });
@@ -182,8 +198,23 @@ public class BudgetPlannerController {
         spendingCategoryColumn.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<DisplayedItem, String>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
+                try {
+                    Preconditions.checkArgument(BudgetPersistenceManager.doesCategoryExist(event.getNewValue()));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
+                Category category = p.getCategory();
+
                 p.setCategoryName(event.getNewValue());
+                category.setName(event.getNewValue());
+
+                try {
+                    BudgetPersistenceManager.updateCategoryName(event.getOldValue(), event.getNewValue());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                categoryService.save(category);
             }
         });
         spendingCategoryColumn.setCellValueFactory(dataValue -> {
@@ -275,12 +306,14 @@ public class BudgetPlannerController {
                     return p.showTransactionsSumAsString();
                 }
         );
-        summaryAvaiableResourcesColumn.setCellValueFactory(dataValue -> dataValue.getValue().getAvailableResourcesProperty());
+        summaryAvailableResourcesColumn.setCellValueFactory(dataValue -> dataValue.getValue().getAvailableResourcesProperty());
         summaryEarningsPlanColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummaryEarningsPlanColumn());
-        summaryEarininsRealColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummaryEarningsRealColumn());
-        summarySpendingsPlanColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummarySpendingPlanColumn());
-        summarySpendingsRealColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummarySpendingRealColumn());
+        summaryEarningsRealColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummaryEarningsRealColumn());
+        summarySpendingPlanColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummarySpendingPlanColumn());
+        summarySpendingRealColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummarySpendingRealColumn());
         summarySpendingsBalanceColumn.setCellValueFactory(dataValue -> dataValue.getValue().getSummarySpendingBalanceColumn());
+
+        summaryTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         datePicker.isBudgetDatePicker(true);
         datePicker.getCalendarView().selectedDateProperty()

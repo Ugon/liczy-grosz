@@ -191,17 +191,21 @@ public class BudgetPersistenceManager {
         return monthId;
     }
 
-    public static Double getPlannedEarningValueForMonth(String categoryName, int year,int month) throws SQLException
+    public static Double getPlannedValueForMonth(String categoryName, int year,int month, boolean isSpending) throws SQLException
     {
-        Double plannedEarningValue = null;
+        Double planValue = null;
         //STEP 4: Execute a query
         System.out.println("Creating statement...");
         Integer dateId = getDateId(year, month);
-        if (dateId == null) return plannedEarningValue;
+        if (dateId == null) return null;
 
-        String query = "SELECT EarningPlanValue FROM Plan WHERE DateId = ? and name = ?";
+        String query;
+        if(isSpending)
+            query = "SELECT SpendingPlanValue as planValue FROM Plan WHERE DateId = ? and name = ?";
+        else
+            query = "SELECT EarningPlanValue as planValue FROM Plan WHERE DateId = ? and name = ?";
         PreparedStatement preparedStmt = conn.prepareStatement(query);
-        preparedStmt.setInt(1,dateId);
+        preparedStmt.setInt(1, dateId);
         preparedStmt.setString(2, categoryName);
 
         ResultSet rs = preparedStmt.executeQuery();
@@ -209,48 +213,21 @@ public class BudgetPersistenceManager {
         //STEP 5: Extract data from result set
         if(rs.next()){
             //Retrieve by column name
-            plannedEarningValue  = rs.getDouble("EarningPlanValue");
+            planValue  = rs.getDouble("planValue");
         }
         //STEP 6: Clean-up environment
         preparedStmt.close();
         rs.close();
-        return plannedEarningValue;
-    }
-
-
-    public static Double getPlannedSpendingValueForMonth(String categoryName, int year, int month) throws SQLException
-    {
-        Double plannedSpendingValue = null;
-        //STEP 4: Execute a query
-        System.out.println("Creating statement...");
-        Integer dateId = getDateId(year, month);
-        if (dateId == null) return plannedSpendingValue;
-        String query = "SELECT SpendingPlanValue FROM Plan WHERE DateId = ? and name = ?";
-
-        PreparedStatement preparedStmt = conn.prepareStatement(query);
-        preparedStmt.setInt(1,dateId);
-        preparedStmt.setString(2, categoryName);
-
-        ResultSet rs = preparedStmt.executeQuery();
-
-        //STEP 5: Extract data from result set
-        if(rs.next()){
-            //Retrieve by column name
-            plannedSpendingValue  = rs.getDouble("SpendingPlanValue");
-        }
-        //STEP 6: Clean-up environment
-        preparedStmt.close();
-        rs.close();
-        return plannedSpendingValue;
+        return planValue;
     }
 
     public static boolean doesPlanForMonthExist(String categoryName, int year, int month) throws SQLException
     {
-        boolean planExist = false;
+        boolean planExist;
         //STEP 4: Execute a query
         System.out.println("Creating statement...");
         Integer dateId = getDateId(year, month);
-        if (dateId == null) return planExist;
+        if (dateId == null) return false;
         String query = "SELECT id FROM Plan WHERE DateId = ? and name = ?";
 
         PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -260,16 +237,28 @@ public class BudgetPersistenceManager {
         ResultSet rs = preparedStmt.executeQuery();
 
         //STEP 5: Extract data from result set
-        if (rs == null || !rs.first()) {
-            planExist = false;
-        } else {
-            planExist = true;
-        }
+        planExist = !(rs == null || !rs.first());
 
         //STEP 6: Clean-up environment
         preparedStmt.close();
         if (rs!=null) rs.close();
         return planExist;
+    }
+
+    public static boolean doesCategoryExist(String categoryName) throws SQLException {
+        boolean categoryExists;
+        System.out.println("Creating statement...");
+
+        String query = "SELECT * FROM Plan WHERE and name = ?";
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setString(1, categoryName);
+
+        ResultSet rs = preparedStmt.executeQuery();
+        categoryExists = rs != null && rs.first();
+
+        preparedStmt.close();
+        if (rs!=null) rs.close();
+        return categoryExists;
     }
 
     public static void closeConnection() throws SQLException

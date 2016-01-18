@@ -120,6 +120,16 @@ public class Data {
         return 12 * currentDate.getYear() + currentDate.getMonthValue() > 12 * year + month + 1;
     }
 
+    private BigDecimal retrievePlannedValue(Category category, boolean isSpending) {
+        Double earningPlanValue = null;
+        try {
+            earningPlanValue = BudgetPersistenceManager.getPlannedValueForMonth(category.nameProperty().get(), year, month, isSpending);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return earningPlanValue != null ? BigDecimal.valueOf(earningPlanValue): BigDecimal.ZERO;
+    }
+
     private Map<String,List<DisplayedItem>> buildTrees(List<Category> list) {
         List<DisplayedItem> earningList = new ArrayList<>();
         List<DisplayedItem> spendingList = new ArrayList<>();
@@ -139,29 +149,8 @@ public class Data {
             BigDecimal spendingTransactionsValue = yearMonthTransactions.stream().map(elem -> elem.deltaProperty().get())
                     .filter(elem -> elem.signum() < 0).reduce(BigDecimal.ZERO, BigDecimal::add).negate();
 
-            BigDecimal earningPlanValue = BigDecimal.ZERO;
-            BigDecimal spendingPlanValue = BigDecimal.ZERO;
-            try {
-                Double d_earningplanValue = BudgetPersistenceManager.getPlannedEarningValueForMonth(category.nameProperty().get(), year, month);
-                if (d_earningplanValue == null)
-                {
-                    earningPlanValue = BigDecimal.ZERO;
-                } else
-                {
-                    earningPlanValue = BigDecimal.valueOf(d_earningplanValue);
-                }
-                Double d_spendingplanValue = BudgetPersistenceManager.getPlannedSpendingValueForMonth(category.nameProperty().get(), year, month);
-                if (d_earningplanValue == null)
-                {
-                    spendingPlanValue = BigDecimal.ZERO;
-                } else
-                {
-                    spendingPlanValue = BigDecimal.valueOf(d_spendingplanValue);
-                }
-            } catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
+            BigDecimal earningPlanValue = retrievePlannedValue(category, false);
+            BigDecimal spendingPlanValue = retrievePlannedValue(category, true);
 
             LabeledProgressBar earningLabeledProgressBar = new LabeledProgressBar(earningVbox);
             LabeledProgressBar spendingLabeledProgressBar = new LabeledProgressBar(spendingVbox);
