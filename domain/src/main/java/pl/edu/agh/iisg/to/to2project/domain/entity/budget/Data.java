@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.VBox;
+import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 
@@ -15,7 +16,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toCollection;
 
 /**
- * Created by root on 9/12/15.
+ * Created by Patryk Skalski,Michal Krok on 9/12/15.
  */
 public class Data {
     private static Data instance = null;

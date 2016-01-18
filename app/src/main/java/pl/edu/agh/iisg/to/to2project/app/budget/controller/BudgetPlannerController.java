@@ -21,8 +21,8 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.NewCateg
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.EditCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.NewCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
+import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.budget.Data;
 import pl.edu.agh.iisg.to.to2project.domain.entity.budget.DisplayedItem;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
@@ -197,11 +197,13 @@ public class BudgetPlannerController {
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
                 DisplayedItem displayedItem = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
                 displayedItem.setPlanValue(Double.parseDouble(event.getNewValue()));
+
                 try {
-                    BudgetPersistenceManager.updatePlannedEarningForMonth(displayedItem.getCategoryName(), date.getYear(), date.getMonthValue() , Double.parseDouble(event.getNewValue()));
+                    BudgetPersistenceManager.updatePlannedEarningForMonth(displayedItem.getCategoryName(), date.getYear(), date.getMonthValue(), Double.parseDouble(event.getNewValue()));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+
                 //updateEarningProgressBarValue(displayedItem);
             }
         });
@@ -216,11 +218,13 @@ public class BudgetPlannerController {
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
                 DisplayedItem displayedItem = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
                 displayedItem.setPlanValue(Double.parseDouble(event.getNewValue()));
+
                 try {
                     BudgetPersistenceManager.updatePlannedSpendingForMonth(displayedItem.getCategoryName(), date.getYear(), date.getMonthValue() , Double.parseDouble(event.getNewValue()));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+
                 //updateSpendingProgressBarValue(displayedItem);
             }
         });
