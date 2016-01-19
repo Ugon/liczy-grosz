@@ -25,7 +25,7 @@ public class BudgetServiceImpl extends CRUDServiceGeneric<Category, Long> implem
 
     @Override
     public List<PlannedTransaction> getPlannedTransactions(LocalDate dateFrom, LocalDate dateTo, ObservableList<Category> categories) {
-        List<PlannedTransaction> plannedTransactions = new ArrayList<PlannedTransaction>();
+        List<PlannedTransaction> plannedTransactions = new ArrayList<>();
         List<Plan> plansForTimeInterval = null;
         try {
             plansForTimeInterval = BudgetPersistenceManager.getPlansForTimeInterval(dateFrom.getYear(), dateFrom.getMonthValue(), dateTo.getYear(), dateTo.getMonthValue());
@@ -34,6 +34,8 @@ public class BudgetServiceImpl extends CRUDServiceGeneric<Category, Long> implem
         }
 
         List<String> searchedCategorNames = plansForTimeInterval.stream().map(e -> e.getCategoryName()).collect(Collectors.toList());
+
+        if (searchedCategorNames == null) return plannedTransactions;
 
         plansForTimeInterval.removeIf(p -> !searchedCategorNames.contains(p.getCategoryName()));
 
