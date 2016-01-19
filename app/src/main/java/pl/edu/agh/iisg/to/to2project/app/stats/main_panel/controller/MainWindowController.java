@@ -250,9 +250,9 @@ public class MainWindowController {
         wplywyTextField.setText(income + " zl");
         double outgoings = mock2.getOutgoings(fromDatePicker.getSelectedDate(), toDatePicker.getSelectedDate(), accountsList, categoriesList);
         wydatkiTextField.setText(outgoings + " zl");
-        saldoTextField.setText(income - outgoings + " zl");
+        saldoTextField.setText(income + outgoings + " zl");
 
-        setImage(income-outgoings);
+        setImage(income+outgoings);
     }
 
     private void setImage(double balance) {
