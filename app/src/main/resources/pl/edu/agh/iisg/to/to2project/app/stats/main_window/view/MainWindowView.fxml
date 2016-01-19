@@ -20,7 +20,7 @@
     <GridPane minHeight="330" minWidth="240" alignment="CENTER" hgap="10" vgap="25" GridPane.columnIndex="1" GridPane.rowIndex="0">
         <ImageView fx:id="clipArt" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <GridPane GridPane.columnIndex="0" GridPane.rowIndex="1" vgap="10" hgap="40">
-            <Label      text="WpĹ‚ywy:"      minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label      text="Wpływy:"      minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
             <TextField  fx:id="wplywyTextField" maxWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
             <Label      text="Wydatki:"     minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
             <TextField  fx:id="wydatkiTextField" maxWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
