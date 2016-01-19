@@ -31,11 +31,6 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>pl.edu.agh.iisg.to</groupId>
-            <artifactId>to2project.persistence</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.fxmisc.easybind</groupId>
             <artifactId>easybind</artifactId>
             <version>1.0.3</version>
