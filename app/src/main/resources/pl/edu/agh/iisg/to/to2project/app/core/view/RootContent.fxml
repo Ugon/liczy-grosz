@@ -17,6 +17,7 @@
             </Tab>
             <Tab fx:id="statisticsTab" text="Statistics" closable="false">
                 <!--<AnchorPane id="Content"/>-->
+                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/stats/MainWindow.fxml"/>
             </Tab>
         </TabPane>
     </center>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane fx:controller="pl.edu.agh.iisg.to.to2project.app.stats.MainController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <TabPane fx:id="tabPane" side="TOP">
+            <Tab id="mainWindowTab" text="MainWindow" closable="false">
+                <fx:include fx:id="mainWindow" source="/pl/edu/agh/iisg/to/to2project/app/stats/main_window/view/MainWindowView.fxml"/>
+            </Tab>
+            <Tab id="inOutTab" text="InOut" closable="false">
+                <fx:include fx:id="inOut" source="/pl/edu/agh/iisg/to/to2project/app/stats/inout_graph_panel.view/InOutGraphWindowView.fxml"/>
+            </Tab>
+            <Tab id="categoryShareTab" text="CategoryShare" closable="false">
+                <fx:include fx:id="categoryShare" source="/pl/edu/agh/iisg/to/to2project/app/stats/category_share_graph_panel/view/CategoryGraphWindowView.fxml"/>
+            </Tab>
+            <Tab id="plannedBudgetTab" text="PlannedBudget" closable="false">
+                <fx:include fx:id="plannedBudget" source="/pl/edu/agh/iisg/to/to2project/app/stats/planned_budget_graph_panel.view/PlannedBudgetGraphWindowView.fxml"/>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
