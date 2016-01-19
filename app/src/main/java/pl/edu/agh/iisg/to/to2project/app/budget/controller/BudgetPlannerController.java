@@ -1,7 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.app.budget.controller;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
@@ -169,24 +168,33 @@ public class BudgetPlannerController {
         earningCategoryColumn.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<DisplayedItem, String>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
+                String oldValue = event.getOldValue();
+                String newValue = event.getNewValue();
                 try {
-                    Preconditions.checkArgument(BudgetPersistenceManager.doesCategoryExist(event.getNewValue()));
-                } catch (SQLException e) {
+                    if (!BudgetPersistenceManager.doesCategoryExist(newValue)) {
+                        Preconditions.checkArgument(true);
+
+                        DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
+                        Category category = p.getCategory();
+
+                        p.setCategoryName(newValue);
+                        category.setName(newValue);
+
+                        try {
+                            BudgetPersistenceManager.updateCategoryName(oldValue, newValue);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        categoryService.save(category);
+                    } else
+                    {
+                        event.getTreeTableView().getColumns().get(0).setVisible(false);
+                        event.getTreeTableView().getColumns().get(0).setVisible(true);
+                    }
+                } catch (SQLException e)
+                {
                     e.printStackTrace();
                 }
-                DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
-                Category category = p.getCategory();
-
-                p.setCategoryName(event.getNewValue());
-                category.setName(event.getNewValue());
-
-                try {
-                    BudgetPersistenceManager.updateCategoryName(event.getOldValue(), event.getNewValue());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                categoryService.save(category);
-
             }
         });
         earningCategoryColumn.setCellValueFactory(dataValue -> {
@@ -198,23 +206,33 @@ public class BudgetPlannerController {
         spendingCategoryColumn.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<DisplayedItem, String>>() {
             @Override
             public void handle(TreeTableColumn.CellEditEvent<DisplayedItem, String> event) {
+                String oldValue = event.getOldValue();
+                String newValue = event.getNewValue();
                 try {
-                    Preconditions.checkArgument(BudgetPersistenceManager.doesCategoryExist(event.getNewValue()));
-                } catch (SQLException e) {
+                    if (!BudgetPersistenceManager.doesCategoryExist(newValue)) {
+                        Preconditions.checkArgument(true);
+
+                        DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
+                        Category category = p.getCategory();
+
+                        p.setCategoryName(newValue);
+                        category.setName(newValue);
+
+                        try {
+                            BudgetPersistenceManager.updateCategoryName(oldValue, newValue);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        categoryService.save(category);
+                    } else
+                    {
+                        event.getTreeTableView().getColumns().get(0).setVisible(false);
+                        event.getTreeTableView().getColumns().get(0).setVisible(true);
+                    }
+                } catch (SQLException e)
+                {
                     e.printStackTrace();
                 }
-                DisplayedItem p = (DisplayedItem) event.getTreeTableView().getTreeItem(event.getTreeTablePosition().getRow());
-                Category category = p.getCategory();
-
-                p.setCategoryName(event.getNewValue());
-                category.setName(event.getNewValue());
-
-                try {
-                    BudgetPersistenceManager.updateCategoryName(event.getOldValue(), event.getNewValue());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                categoryService.save(category);
             }
         });
         spendingCategoryColumn.setCellValueFactory(dataValue -> {

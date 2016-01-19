@@ -1,6 +1,8 @@
 package pl.edu.agh.iisg.to.to2project.budget_persistence;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class BudgetPersistenceManager {
@@ -159,6 +161,7 @@ public class BudgetPersistenceManager {
 
     public static void updateCategoryName(String oldCategoryName, String newCategoryName) throws SQLException
     {
+        System.out.println("Old name" + oldCategoryName + " newName" + newCategoryName);
         String query = "update Plan set name = ? WHERE name = ?";
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setString(1, newCategoryName);
@@ -220,6 +223,45 @@ public class BudgetPersistenceManager {
         rs.close();
         return planValue;
     }
+    public static List<Plan> getPlansForTimeInterval(int yearFrom, int monthFrom, int yearTo, int monthTo) throws SQLException
+    {
+        List<Plan> plans = new ArrayList<Plan>();
+        //STEP 4: Execute a query
+        System.out.println("Creating statement...");
+        String query = "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM Plan as p JOIN Date as d on d.id = p.DateId WHERE d.Year > ? and d.Year < ? " +
+                " UNION " +
+                "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM Plan as p JOIN Date as d on d.id = p.DateId WHERE Year = ? and Month >= ?" +
+                " UNION " +
+                "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM Plan as p JOIN Date as d on d.id = p.DateId WHERE Year = ? and Month <= ?";
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setInt(1,yearFrom);
+        preparedStmt.setInt(2,yearTo);
+        preparedStmt.setInt(3,yearFrom);
+        preparedStmt.setInt(4,monthFrom);
+        preparedStmt.setInt(5,yearTo);
+        preparedStmt.setInt(6,monthTo);
+
+        ResultSet rs = preparedStmt.executeQuery();
+
+        while (rs.next())
+        {
+            //Retrieve by column name
+            String categoryName  = rs.getString("name");
+            Double earningPlanValue = rs.getDouble("EarningPlanValue");
+            Double spendingPlanValue = (-1.0) * rs.getDouble("SpendingPlanValue");
+            int year = rs.getInt("Year");
+            int month = rs.getInt("Month");
+            Plan earningTransaction = new Plan(categoryName, year, month , earningPlanValue, earningPlanValue);
+            Plan spendingTransaction = new Plan(categoryName, year, month , earningPlanValue, spendingPlanValue);
+            plans.add(earningTransaction);
+            plans.add(spendingTransaction);
+        }
+        preparedStmt.close();
+        rs.close();
+
+        return plans;
+
+    }
 
     public static boolean doesPlanForMonthExist(String categoryName, int year, int month) throws SQLException
     {
@@ -237,7 +279,13 @@ public class BudgetPersistenceManager {
         ResultSet rs = preparedStmt.executeQuery();
 
         //STEP 5: Extract data from result set
-        planExist = !(rs == null || !rs.first());
+        if (rs==null)
+        {
+            planExist = false;
+        } else
+        {
+            planExist =  (rs.isBeforeFirst());
+        }
 
         //STEP 6: Clean-up environment
         preparedStmt.close();
@@ -245,16 +293,42 @@ public class BudgetPersistenceManager {
         return planExist;
     }
 
-    public static boolean doesCategoryExist(String categoryName) throws SQLException {
-        boolean categoryExists;
-        System.out.println("Creating statement...");
 
-        String query = "SELECT * FROM Plan WHERE and name = ?";
+    public static boolean doesPlanForCategoryExist(String categoryName) throws SQLException {
+        boolean categoryExists;
+
+        String query = "SELECT id FROM Plan WHERE name = ? and SpendingPlanValue != 0 or EarningPlanValue != 0 ";
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setString(1, categoryName);
 
         ResultSet rs = preparedStmt.executeQuery();
-        categoryExists = rs != null && rs.first();
+        if (rs==null)
+        {
+            categoryExists = false;
+        } else
+        {
+            categoryExists =  (rs.isBeforeFirst());
+        }
+        preparedStmt.close();
+        if (rs!=null) rs.close();
+        return categoryExists;
+    }
+
+    public static boolean doesCategoryExist(String categoryName) throws SQLException {
+        boolean categoryExists;
+
+        String query = "SELECT id FROM Plan WHERE name = ?";
+        PreparedStatement preparedStmt = conn.prepareStatement(query);
+        preparedStmt.setString(1, categoryName);
+
+        ResultSet rs = preparedStmt.executeQuery();
+        if (rs==null)
+        {
+            categoryExists = false;
+        } else
+        {
+            categoryExists =  (rs.isBeforeFirst());
+        }
 
         preparedStmt.close();
         if (rs!=null) rs.close();
