@@ -12,7 +12,7 @@
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.stats.inout_graph_panel.controller.InOutWindowController">
     <GridPane alignment="center" hgap="10" vgap="10" GridPane.rowIndex="0" GridPane.columnIndex="0">
         <LineChart fx:id="lineChart" GridPane.columnIndex="1" GridPane.rowIndex="0">
-            <xAxis><CategoryAxis fx:id="monthXAxis" label="MiesiÄ…ce" /></xAxis>
+            <xAxis><CategoryAxis fx:id="monthXAxis" label="Miesiące" /></xAxis>
             <yAxis><NumberAxis label="Kwota" lowerBound="0" upperBound="3" tickUnit="1"/></yAxis>
         </LineChart>
     </GridPane>
