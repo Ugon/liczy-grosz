@@ -139,6 +139,7 @@ public class BudgetPlannerController {
 
     @FXML
     private void handleEditCategoryAction(ActionEvent event) {
+        //budgetService.getPlannedTransactions(LocalDate.of(2014, 1, 1), LocalDate.of(2017,12,1),categoryService.getList());
         EditCategoryPopup popup = context.getBean(EditCategoryPopup.class);
         EditCategoryPopupController controller = popup.getController();
 
