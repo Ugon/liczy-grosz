@@ -1,5 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.domain.entity.budget;
 
+import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 
@@ -7,9 +8,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by root on 8/12/15.
@@ -17,160 +16,416 @@ import java.util.Random;
 public class DataGenerator {
 
     private static long id = 1000;
-    public static Category generateSpendings()
-    {
 
-        Category child1 = new Category("ROWER");
-        child1.setId(1L);
-        Category child2 = new Category("MPK");
-        child2.setId(2L);
-        Category child3 = new Category("TARCZE");
-        child3.setId(3L);
-        Category child4 = new Category("KLOCKI");
-        child4.setId(4L);
-        Category child5 = new Category("HAMULCE");
-        child5.setId(5L);
-        Category child6 = new Category("SAMOCHOD");
-        child6.setId(6L);
-        Category child7 = new Category("TRANSPORT");
-        child7.setId(7L);
-        Category root = new Category("Wydatek");
-        root.setId(8L);
-        child5.addSubCategory(child4);
-        child5.addSubCategory(child3);
-        child6.addSubCategory(child5);
-        child7.addSubCategory(child6);
-        child7.addSubCategory(child1);
-        child7.addSubCategory(child2);
-        root.addSubCategory(child7);
-        return root;
+    private Map<String, Double[]> planMap = new HashMap<>();
+    private List<Category> categoryList;
 
+    public DataGenerator() {
+        planMap = new HashMap<>();
+        categoryList = new ArrayList<>();
     }
 
-    public static Category generateEarnings()
-    {
-        Category root = new Category("Przychod");
-        root.setId(9L);
-        Category child1 = new Category("PENSJA");
-        child1.setId(10L);
-        Category child2 = new Category("PREMIA");
-        child2.setId(11L);
-        Category child3 = new Category("BIZNES");
-        child3.setId(12L);
-        root.addSubCategory(child1);
-        root.addSubCategory(child2);
-        root.addSubCategory(child3);
-        return root;
+    public Map<String, Double[]> getPlanMap() {
+        return planMap;
+    }
+
+    public List<Category> getCategoryList() {
+        return categoryList;
     }
 
     public static double generateAvailableResources() {
         return 1000.0;
     }
 
-    private static ExternalTransaction makeupTransaction(LocalDate date, BigDecimal delta, Category category) {
-        ExternalTransaction trans = new ExternalTransaction("", null, delta, date);
+
+    private Account makeupAccount(String name, BigDecimal balance) {
+        Account account = new Account(name, balance);
+        account.setId(id++);
+        return  account;
+    }
+
+    private ExternalTransaction makeupTransaction(Account account, LocalDate date, BigDecimal delta, Category category) {
+        ExternalTransaction trans = new ExternalTransaction("", account, delta, date);
         trans.setId(id++);
         trans.setCategory(category);
         return  trans;
     }
 
-    private static Category makeupCategory(String name) {
+    private Category makeupCategory(String name) {
         Category cat = new Category(name);
         cat.setId(id++);
         return  cat;
     }
 
-    public static List<Category> generateCategoryList()
+    public void generateOneItemBothPresent(int year, int month)
     {
-        List<Category> list = new ArrayList<>();
-        Category catA = makeupCategory("inA");
-        Category catB = makeupCategory("inB");
-        Category catC = makeupCategory("inC");
-        Category catD = makeupCategory("inD");
+        String nameA = "catA";
 
-        ExternalTransaction tranA = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(100), catA);
-        ExternalTransaction tranB = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(30), catA);
-        ExternalTransaction tranC = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(55), catC);
-        ExternalTransaction tranD = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(10), catD);
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(30), catA);
+        ExternalTransaction tranC = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-70), catA);
+
+        categoryList.clear();
+        categoryList.add(catA);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{100.0, 40.0});
+    }
+
+    public void generateOneItemBothPast(int year, int month)
+    {
+        String nameA = "catA";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year - 2 , month, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year - 3, month, 8), new BigDecimal(-30), catA);
+
+        categoryList.clear();
+        categoryList.add(catA);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{null, null});
+    }
+
+    public void generateOneItemOnePastTrans(int year, int month)
+    {
+        String nameA = "catA";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year - 2 , month, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-90), catA);
+
+        categoryList.clear();
+        categoryList.add(catA);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{null, null});
+    }
+
+    public void generateOneItemOnePastPlan(int year, int month)
+    {
+        String nameA = "catA";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year - 2 , month, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year - 4 , month, 8), new BigDecimal(90), catA);
+
+        categoryList.clear();
+        categoryList.add(catA);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{20.0, null});
+    }
+
+    public void generateTwoItemsEqualLevel(int year, int month)
+    {
+        String nameA = "catA";
+        String nameB = "catB";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+        Category catB = makeupCategory(nameB);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(10), catA);
+        ExternalTransaction tranC = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catA);
+        ExternalTransaction tranD = makeupTransaction(account, new LocalDate(year + 1 , month, 8), new BigDecimal(-3000), catB);
+        ExternalTransaction tranE = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(250), catB);
+        ExternalTransaction tranF = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(1000), catB);
+        ExternalTransaction tranG = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catB);
+
+        categoryList.clear();
+        categoryList.add(catA);
+        categoryList.add(catB);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{7000.0, null});
+        planMap.put(nameB, new Double[]{null, 200.0});
+    }
+
+    public void generateTwoItemsParentAndChild(int year, int month)
+    {
+        String nameA = "catA";
+        String nameB = "catB";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+
+        Category catA = makeupCategory(nameA);
+        Category catB = makeupCategory(nameB);
+
+        catA.addSubCategory(catB);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(10), catA);
+        ExternalTransaction tranC = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catA);
+        ExternalTransaction tranD = makeupTransaction(account, new LocalDate(year + 1 , month, 8), new BigDecimal(-3000), catB);
+        ExternalTransaction tranE = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(250), catB);
+        ExternalTransaction tranF = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(1000), catB);
+        ExternalTransaction tranG = makeupTransaction(account, new LocalDate(year , month, 8), new BigDecimal(-100), catB);
+
+        categoryList.clear();
+        categoryList.add(catA);
+        categoryList.add(catB);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{7000.0, null});
+        planMap.put(nameB, new Double[]{null, 200.0});
+    }
+
+    public void generateWholeTree(int year, int month)
+    {
+        String nameA = "inA";
+        String nameB = "inB";
+        String nameC = "inC";
+        String nameD = "inD";
+        String nameE = "outA";
+        String nameF = "outB";
+        String nameG = "outC";
+        String nameH = "outD";
+        String nameI = "outE";
+        String nameJ = "bothA";
+        String nameK = "bothB";
+        String nameL = "bothC";
+        String nameM = "both2A";
+        String nameN = "both2B";
+        String nameO = "both2C";
+        String nameP = "both2D";
+        String nameQ = "both2E";
+
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+        categoryList.clear();
+
+        Category catA = makeupCategory(nameA);
+        Category catB = makeupCategory(nameB);
+        Category catC = makeupCategory(nameC);
+        Category catD = makeupCategory(nameD);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(30), catA);
+        ExternalTransaction tranC = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(55), catC);
+        ExternalTransaction tranD = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(10), catD);
 
         catB.addSubCategory(catD);
         catA.addSubCategory(catB);
         catA.addSubCategory(catC);
-        list.add(catA);
+        categoryList.add(catA);
+        categoryList.add(catB);
+        categoryList.add(catC);
 
 
-        Category catE = makeupCategory("outA");
-        Category catF = makeupCategory("outB");
-        Category catG = makeupCategory("outC");
-        Category catH = makeupCategory("outD");
-        Category catI = makeupCategory("outE");
+        Category catE = makeupCategory(nameE);
+        Category catF = makeupCategory(nameF);
+        Category catG = makeupCategory(nameG);
+        Category catH = makeupCategory(nameH);
+        Category catI = makeupCategory(nameI);
 
-        ExternalTransaction tranE = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-60), catF);
-        ExternalTransaction tranF = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-20), catF);
-        ExternalTransaction tranG = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-15), catF);
-        ExternalTransaction tranH = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-40), catF);
-        ExternalTransaction tranI = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-100), catH);
-        ExternalTransaction tranJ = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-150), catH);
-        ExternalTransaction tranK = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-10), catI);
+        ExternalTransaction tranE = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-60), catF);
+        ExternalTransaction tranF = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-20), catF);
+        ExternalTransaction tranG = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-15), catF);
+        ExternalTransaction tranH = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-40), catF);
+        ExternalTransaction tranI = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-100), catH);
+        ExternalTransaction tranJ = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-150), catH);
+        ExternalTransaction tranK = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-10), catI);
 
         catG.addSubCategory(catH);
         catG.addSubCategory(catI);
         catE.addSubCategory(catF);
         catE.addSubCategory(catG);
-        list.add(catE);
+        categoryList.add(catE);
+        categoryList.add(catF);
+        categoryList.add(catG);
+        categoryList.add(catH);
+        categoryList.add(catI);
 
-        Category catJ = makeupCategory("bothA");
-        Category catK = makeupCategory("bothB");
-        Category catL = makeupCategory("bothC");
+        Category catJ = makeupCategory(nameJ);
+        Category catK = makeupCategory(nameK);
+        Category catL = makeupCategory(nameL);
 
-        ExternalTransaction tranM = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(30), catK);
-        ExternalTransaction tranN = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(80), catK);
-        ExternalTransaction tranO = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-50), catL);
+        ExternalTransaction tranM = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(30), catK);
+        ExternalTransaction tranN = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(80), catK);
+        ExternalTransaction tranO = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-50), catL);
 
         catJ.addSubCategory(catK);
         catJ.addSubCategory(catL);
-        list.add(catJ);
+        categoryList.add(catJ);
+        categoryList.add(catK);
+        categoryList.add(catL);
 
-        Category catM = makeupCategory("both2A");
-        Category catN = makeupCategory("both2B");
-        Category catO = makeupCategory("both2C");
-        Category catP = makeupCategory("both2D");
-        Category catQ = makeupCategory("both2E");
+        Category catM = makeupCategory(nameM);
+        Category catN = makeupCategory(nameN);
+        Category catO = makeupCategory(nameO);
+        Category catP = makeupCategory(nameP);
+        Category catQ = makeupCategory(nameQ);
 
-        ExternalTransaction tranP = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(10), catN);
-        ExternalTransaction tranQ = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-50), catO);
-        ExternalTransaction tranR = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(90), catO);
-        ExternalTransaction tranT = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(-100), catP);
-        ExternalTransaction tranU = makeupTransaction(new LocalDate(2016, 10, 8), new BigDecimal(40), catQ);
+        ExternalTransaction tranP = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(10), catN);
+        ExternalTransaction tranQ = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-50), catO);
+        ExternalTransaction tranR = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(90), catO);
+        ExternalTransaction tranT = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(-100), catP);
+        ExternalTransaction tranU = makeupTransaction(account, new LocalDate(year, month, 8), new BigDecimal(40), catQ);
 
         catP.addSubCategory(catQ);
         catM.addSubCategory(catN);
         catM.addSubCategory(catO);
         catM.addSubCategory(catP);
-        list.add(catM);
+        categoryList.add(catM);
+        categoryList.add(catN);
+        categoryList.add(catO);
+        categoryList.add(catP);
+        categoryList.add(catQ);
 
-        return list;
+        planMap.clear();
+        planMap.put(nameA, new Double[]{null, null});
+        planMap.put(nameB, new Double[]{null, null});
+        planMap.put(nameC, new Double[]{null, null});
+        planMap.put(nameD, new Double[]{null, null});
+        planMap.put(nameE, new Double[]{null, null});
+        planMap.put(nameF, new Double[]{null, null});
+        planMap.put(nameG, new Double[]{null, null});
+        planMap.put(nameH, new Double[]{null, null});
+        planMap.put(nameI, new Double[]{null, null});
+        planMap.put(nameJ, new Double[]{null, null});
+        planMap.put(nameK, new Double[]{null, null});
+        planMap.put(nameL, new Double[]{null, null});
+        planMap.put(nameM, new Double[]{null, null});
+        planMap.put(nameN, new Double[]{null, null});
+        planMap.put(nameO, new Double[]{null, null});
+        planMap.put(nameP, new Double[]{null, null});
+        planMap.put(nameQ, new Double[]{null, null});
     }
 
-
-    public static Double getTransactionValueForCategory(String categoryName,int year,int month)
+    public void generateWholeTree_Past()
     {
-        Random r = new Random();
-        double d = r.nextDouble() * 100000.0;
-        DecimalFormat df = new DecimalFormat("#.##");
-        String dx=df.format(d);
-        d=Double.valueOf(dx);
-        return d;
-    }
+        String nameA = "inA";
+        String nameB = "inB";
+        String nameC = "inC";
+        String nameD = "inD";
+        String nameE = "outA";
+        String nameF = "outB";
+        String nameG = "outC";
+        String nameH = "outD";
+        String nameI = "outE";
+        String nameJ = "bothA";
+        String nameK = "bothB";
+        String nameL = "bothC";
+        String nameM = "both2A";
+        String nameN = "both2B";
+        String nameO = "both2C";
+        String nameP = "both2D";
+        String nameQ = "both2E";
 
-    public static Double getPlanValueForCategory(String categoryName,int year,int month)
-    {
-        Random r = new Random();
-        double d = r.nextDouble() * 100000.0;
-        DecimalFormat df = new DecimalFormat("#.##");
-        String dx=df.format(d);
-        d=Double.valueOf(dx);
-        return d;
+        Account account = makeupAccount("TestAccount", BigDecimal.ZERO);
+        categoryList.clear();
+
+        Category catA = makeupCategory(nameA);
+        Category catB = makeupCategory(nameB);
+        Category catC = makeupCategory(nameC);
+        Category catD = makeupCategory(nameD);
+
+        ExternalTransaction tranA = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(100), catA);
+        ExternalTransaction tranB = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(30), catA);
+        ExternalTransaction tranC = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(55), catC);
+        ExternalTransaction tranD = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(10), catD);
+
+        catB.addSubCategory(catD);
+        catA.addSubCategory(catB);
+        catA.addSubCategory(catC);
+        categoryList.add(catA);
+        categoryList.add(catB);
+        categoryList.add(catC);
+
+
+        Category catE = makeupCategory(nameE);
+        Category catF = makeupCategory(nameF);
+        Category catG = makeupCategory(nameG);
+        Category catH = makeupCategory(nameH);
+        Category catI = makeupCategory(nameI);
+
+        ExternalTransaction tranE = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-60), catF);
+        ExternalTransaction tranF = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-20), catF);
+        ExternalTransaction tranG = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-15), catF);
+        ExternalTransaction tranH = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-40), catF);
+        ExternalTransaction tranI = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-100), catH);
+        ExternalTransaction tranJ = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-150), catH);
+        ExternalTransaction tranK = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-10), catI);
+
+        catG.addSubCategory(catH);
+        catG.addSubCategory(catI);
+        catE.addSubCategory(catF);
+        catE.addSubCategory(catG);
+        categoryList.add(catE);
+        categoryList.add(catF);
+        categoryList.add(catG);
+        categoryList.add(catH);
+        categoryList.add(catI);
+
+        Category catJ = makeupCategory(nameJ);
+        Category catK = makeupCategory(nameK);
+        Category catL = makeupCategory(nameL);
+
+        ExternalTransaction tranM = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(30), catK);
+        ExternalTransaction tranN = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(80), catK);
+        ExternalTransaction tranO = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-50), catL);
+
+        catJ.addSubCategory(catK);
+        catJ.addSubCategory(catL);
+        categoryList.add(catJ);
+        categoryList.add(catK);
+        categoryList.add(catL);
+
+        Category catM = makeupCategory(nameM);
+        Category catN = makeupCategory(nameN);
+        Category catO = makeupCategory(nameO);
+        Category catP = makeupCategory(nameP);
+        Category catQ = makeupCategory(nameQ);
+
+        ExternalTransaction tranP = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(10), catN);
+        ExternalTransaction tranQ = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-50), catO);
+        ExternalTransaction tranR = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(90), catO);
+        ExternalTransaction tranT = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(-100), catP);
+        ExternalTransaction tranU = makeupTransaction(account, new LocalDate(2016, 10, 8), new BigDecimal(40), catQ);
+
+        catP.addSubCategory(catQ);
+        catM.addSubCategory(catN);
+        catM.addSubCategory(catO);
+        catM.addSubCategory(catP);
+        categoryList.add(catM);
+        categoryList.add(catN);
+        categoryList.add(catO);
+        categoryList.add(catP);
+        categoryList.add(catQ);
+
+        planMap.clear();
+        planMap.put(nameA, new Double[]{null, null});
+        planMap.put(nameB, new Double[]{null, null});
+        planMap.put(nameC, new Double[]{null, null});
+        planMap.put(nameD, new Double[]{null, null});
+        planMap.put(nameE, new Double[]{null, null});
+        planMap.put(nameF, new Double[]{null, null});
+        planMap.put(nameG, new Double[]{null, null});
+        planMap.put(nameH, new Double[]{null, null});
+        planMap.put(nameI, new Double[]{null, null});
+        planMap.put(nameJ, new Double[]{null, null});
+        planMap.put(nameK, new Double[]{null, null});
+        planMap.put(nameL, new Double[]{null, null});
+        planMap.put(nameM, new Double[]{null, null});
+        planMap.put(nameN, new Double[]{null, null});
+        planMap.put(nameO, new Double[]{null, null});
+        planMap.put(nameP, new Double[]{null, null});
+        planMap.put(nameQ, new Double[]{null, null});
     }
 
 }

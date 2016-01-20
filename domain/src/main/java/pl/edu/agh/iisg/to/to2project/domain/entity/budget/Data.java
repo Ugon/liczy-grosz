@@ -21,6 +21,8 @@ import static java.util.stream.Collectors.toCollection;
 public class Data {
     private static Data instance = null;
 
+    BudgetPersistenceManager budgetPersistenceManager;
+
     private VBox earningVbox;
     private VBox spendingVbox;
     private DisplayedItem spendingDisplayedItemRoot;
@@ -30,7 +32,8 @@ public class Data {
     private int year;
 
     private Data() {
-        this.availableResources = new SimpleDoubleProperty(DataGenerator.generateAvailableResources());
+        availableResources = new SimpleDoubleProperty(DataGenerator.generateAvailableResources());
+        setBudgetPersistenceManager(new BudgetPersistenceManager());
     }
 
     public static Data getInstance() {
@@ -47,6 +50,10 @@ public class Data {
     public  void setVboxes(VBox earningVbox, VBox spendingVbox) {
         this.earningVbox = earningVbox;
         this.spendingVbox = spendingVbox;
+    }
+
+    public void setBudgetPersistenceManager (BudgetPersistenceManager bpm) {
+        budgetPersistenceManager = bpm;
     }
 
 
@@ -123,7 +130,7 @@ public class Data {
     private BigDecimal retrievePlannedValue(Category category, boolean isSpending) {
         Double earningPlanValue = null;
         try {
-            earningPlanValue = BudgetPersistenceManager.getPlannedValueForMonth(category.nameProperty().get(), year, month, isSpending);
+            earningPlanValue = budgetPersistenceManager.getPlannedValueForMonth(category.nameProperty().get(), year, month, isSpending);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -157,7 +164,9 @@ public class Data {
 
             Map<String,List<DisplayedItem>> childrenMap = null;
             if(!category.subCategoriesObservableSet().isEmpty()) {
-                childrenMap = buildTrees(new ArrayList<>(category.subCategoriesObservableSet()));
+                List<Category> childrenList = new ArrayList<>(category.subCategoriesObservableSet());
+                childrenList.sort((Category a, Category b) -> a.nameProperty().get().compareTo(b.nameProperty().get()));
+                childrenMap = buildTrees(childrenList);
             }
             boolean hasEarningChildren = childrenMap != null && !childrenMap.get("earningList").isEmpty();
             boolean hasSpendingChildren = childrenMap != null && !childrenMap.get("spendingList").isEmpty();
@@ -193,6 +202,8 @@ public class Data {
 
 
     public void build(List<Category> list) {
+        spendingVbox.getChildren().clear();
+        earningVbox.getChildren().clear();
         LabeledProgressBar earningLabeledProgressBar = new LabeledProgressBar(earningVbox);
         LabeledProgressBar spendingLabeledProgressBar = new LabeledProgressBar(spendingVbox);
 

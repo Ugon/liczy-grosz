@@ -360,9 +360,6 @@ public class BudgetPlannerController {
         if(!rootController.isBudgetTabActive())
             return;
 
-        spendingVbox.getChildren().clear();
-        earningVbox.getChildren().clear();
-
         data.build(categoryService.getList());
 
         //data.buildEarningTree(earningVbox);
