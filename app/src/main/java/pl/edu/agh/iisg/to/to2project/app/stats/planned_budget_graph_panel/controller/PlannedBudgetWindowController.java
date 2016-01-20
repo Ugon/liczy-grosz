@@ -14,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.AccountTreeProviderUtil;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.CategoryTreeProviderUtil;
@@ -25,7 +24,6 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.PlannedTransaction;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
 import pl.edu.agh.iisg.to.to2project.service.impl.BudgetServiceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
@@ -55,8 +53,6 @@ public class PlannedBudgetWindowController {
 
     @Autowired
     private AccountTreeProviderUtil accountTreeProviderUtil;
-
-
     @Autowired
     private BudgetServiceImpl budgetService;
     @FXML
@@ -385,20 +381,20 @@ public class PlannedBudgetWindowController {
         });
     }
     private void initChart() {
-        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = createLineChartData(dateFrom, dateTo, accountsList, categoriesList);
+        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = createLineChartData(mock2,dateFrom, dateTo, accountsList, categoriesList);
 
         lineChart.setData(lineChartData);
         lineChart.createSymbolsProperty();
     }
 
-    public ObservableList<XYChart.Series<String, BigDecimal>> createLineChartData(LocalDate from, LocalDate to, List<Account> accounts, ObservableList<Category> categories) {
+    public static ObservableList<XYChart.Series<String, BigDecimal>> createLineChartData(InOutWindowMockImpl dataSource, LocalDate from, LocalDate to, List<Account> accounts, ObservableList<Category> categories) {
         ObservableList<XYChart.Series<String, BigDecimal>> result = FXCollections.observableArrayList();
 
         LineChart.Series<String, BigDecimal> series1 = new LineChart.Series<>();
         LineChart.Series<String, BigDecimal> series2 = new LineChart.Series<>();
 
-        Map<LocalDate, BigDecimal> data = mock2.getIncomePerDay(from, to, accounts, categories);
-        Map<LocalDate, BigDecimal> data2 = mock2.getPlannedIncomePerDay(from, to, categories);
+        Map<LocalDate, BigDecimal> data = dataSource.getIncomePerDay(from, to, accounts, categories);
+        Map<LocalDate, BigDecimal> data2 = dataSource.getPlannedIncomePerDay(from, to, categories);
 
         if (data != null && data2 != null) {
             for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusMonths(1)) {

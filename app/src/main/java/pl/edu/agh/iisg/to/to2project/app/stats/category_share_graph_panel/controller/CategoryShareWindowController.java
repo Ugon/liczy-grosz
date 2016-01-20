@@ -15,7 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.AccountTreeProviderUtil;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.CategoryTreeProviderUtil;
@@ -25,7 +24,6 @@ import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
@@ -119,7 +117,7 @@ public class CategoryShareWindowController {
         this.categories = mock.getCategories();
         this.dateFrom = fromDatePicker.getSelectedDate();
         this.dateTo = toDatePicker.getSelectedDate();
-        this.subcategories = true;
+        this.subcategories = false;
 
         accountsList.add(0, new Account(PropertiesUtil.ALL, BigDecimal.ZERO));
 

@@ -15,7 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.AccountTreeProviderUtil;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.CategoryTreeProviderUtil;
@@ -25,7 +24,6 @@ import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
@@ -98,7 +96,7 @@ public class InOutWindowController {
 
 
 
-    private BigDecimal sumTransactions(LocalDate dateFrom, LocalDate dateTo, Map<LocalDate, BigDecimal> transactions){
+    private static BigDecimal sumTransactions(LocalDate dateFrom, LocalDate dateTo, Map<LocalDate, BigDecimal> transactions){
         return transactions.entrySet().stream()
                 .filter(a -> a.getKey().isAfter(dateFrom.minusDays(1)))
                 .filter(a -> a.getKey().isBefore(dateTo.plusDays(1)))
@@ -204,7 +202,7 @@ public class InOutWindowController {
     }
     private void initOptionPanel() {
 
-        accountsList.addListener(new ListChangeListener<Account>()  {
+        accountsList.addListener(new ListChangeListener<Account>() {
             @Override
             public void onChanged(Change<? extends Account> c) {
                 accounts = accountsList;
@@ -220,46 +218,7 @@ public class InOutWindowController {
         });
     }
     private void initChart() {
-        int i = 0;
-        int monthDiff = Period.between(dateFrom, dateTo).getMonths();
-
-        LineChart.Series<String, BigDecimal> series1 = new LineChart.Series<>();
-        series1.setName(PropertiesUtil.INCOMES);
-        LineChart.Series<String, BigDecimal> series2 = new LineChart.Series<>();
-        series2.setName(PropertiesUtil.OUTCOMES);
-
-        Map<LocalDate, BigDecimal> data = mock2.getIncomePerDay(dateFrom, dateTo, accounts, categories);
-        Map<LocalDate, BigDecimal> data2 = mock2.getOutgoingsPerDay(dateFrom, dateTo, accounts, categories);
-
-        if (data != null && data2 != null) {
-            if (monthDiff < 1 && monthDiff > -1) {
-                for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
-                    series1.getData().add(i, new XYChart.Data<>(iterDate.toString(), (data.get(iterDate) == null ? BigDecimal.ZERO : data.get(iterDate))));
-                    series2.getData().add(i, new XYChart.Data<>(iterDate.toString(), (data2.get(iterDate) == null ? BigDecimal.ZERO : data2.get(iterDate))));
-                }
-            }
-            else if (monthDiff > 0 && monthDiff < 6) {
-                for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusWeeks(1)) {
-                    series1.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM' week 'W")),
-                            (sumTransactions(iterDate.with(DayOfWeek.MONDAY), iterDate.with(DayOfWeek.SUNDAY), data))));
-                    series2.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM' week 'W")),
-                            (sumTransactions(iterDate.with(DayOfWeek.MONDAY), iterDate.with(DayOfWeek.SUNDAY), data2))));
-                }
-
-            } else if (monthDiff > 5) {
-                for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusMonths(1)) {
-                    series1.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
-                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data))));
-                    series2.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
-                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data2))));
-                }
-            }
-        }
-
-        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = FXCollections.observableArrayList();
-
-        lineChartData.add(series1);
-        lineChartData.add(series2);
+        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = createLineChartData(mock2, dateFrom, dateTo, mock.getAccounts(), mock.getCategories());
 
         lineChart.setData(lineChartData);
         lineChart.createSymbolsProperty();
@@ -374,6 +333,51 @@ public class InOutWindowController {
             categoriesList.clear();
             categoriesList.addAll(categoryTreeProviderUtil.getSelectedCategories(map));
         });
+    }
+
+    public static ObservableList<XYChart.Series<String, BigDecimal>> createLineChartData(InOutWindowMockImpl dataSource, LocalDate from, LocalDate to, List<Account> accounts, List<Category> categories) {
+        int i = 0;
+        int monthDiff = Period.between(from, to).getMonths();
+
+        LineChart.Series<String, BigDecimal> series1 = new LineChart.Series<>();
+        series1.setName(PropertiesUtil.INCOMES);
+        LineChart.Series<String, BigDecimal> series2 = new LineChart.Series<>();
+        series2.setName(PropertiesUtil.OUTCOMES);
+
+        Map<LocalDate, BigDecimal> data = dataSource.getIncomePerDay(from, to, accounts, categories);
+        Map<LocalDate, BigDecimal> data2 = dataSource.getOutgoingsPerDay(from, to, accounts, categories);
+
+        if (data != null && data2 != null) {
+            if (monthDiff < 1 && monthDiff > -1) {
+                for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusDays(1)) {
+                    series1.getData().add(i, new XYChart.Data<>(iterDate.toString(), (data.get(iterDate) == null ? BigDecimal.ZERO : data.get(iterDate))));
+                    series2.getData().add(i, new XYChart.Data<>(iterDate.toString(), (data2.get(iterDate) == null ? BigDecimal.ZERO : data2.get(iterDate))));
+                }
+            }
+            else if (monthDiff > 0 && monthDiff < 6) {
+                for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusWeeks(1)) {
+                    series1.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM' week 'W")),
+                            (sumTransactions(iterDate.with(DayOfWeek.MONDAY), iterDate.with(DayOfWeek.SUNDAY), data))));
+                    series2.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM' week 'W")),
+                            (sumTransactions(iterDate.with(DayOfWeek.MONDAY), iterDate.with(DayOfWeek.SUNDAY), data2))));
+                }
+
+            } else if (monthDiff > 5) {
+                for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusMonths(1)) {
+                    series1.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data))));
+                    series2.getData().add(i, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data2))));
+                }
+            }
+        }
+
+        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = FXCollections.observableArrayList();
+
+        lineChartData.add(series1);
+        lineChartData.add(series2);
+
+        return lineChartData;
     }
     public void refreshContent(){
         mock.refreshCache();
