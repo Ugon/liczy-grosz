@@ -10,4 +10,10 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
  */
 @Service
 public class ExternalTransactionServiceImpl extends CRUDServiceGeneric<ExternalTransaction, Long> implements ExternalTransactionService {
+
+    @Override
+    public boolean canDelete(ExternalTransaction transaction) {
+        return true;
+    }
+
 }

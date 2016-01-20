@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import pl.edu.agh.iisg.to.to2project.app.budget.controller.BudgetPlannerController;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.controller.PopupController;
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.ColorfulValidatingTextField;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
@@ -24,6 +25,9 @@ public abstract class AbstractCategoriesPopupController extends PopupController 
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private BudgetPlannerController budgetPlannerController;
 
     @FXML
     protected ColorfulValidatingTextField nameTextField;
@@ -85,6 +89,8 @@ public abstract class AbstractCategoriesPopupController extends PopupController 
         }
 
         categoryService.save(category);
+
+        budgetPlannerController.refreshContent();
     }
 
     protected abstract Category produceCategory(String categoryName);

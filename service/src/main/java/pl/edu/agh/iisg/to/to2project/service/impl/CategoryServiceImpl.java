@@ -20,4 +20,13 @@ public class CategoryServiceImpl extends CRUDServiceGeneric<Category, Long> impl
         entity.removeParentCategoryIfPresent();
         super.remove(entity);
     }
+
+    @Override
+    public boolean canDelete(Category category) {
+        boolean noSubcategories = category.subCategoriesObservableSet().isEmpty();
+        boolean noInternalTransactions = category.externalTransactionsObservableSet().isEmpty();
+        boolean noExternalTransactions = category.internalTransactionObservableSet().isEmpty();
+
+        return noSubcategories && noInternalTransactions && noExternalTransactions;
+    }
 }

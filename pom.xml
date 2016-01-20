@@ -18,6 +18,7 @@
 
     <modules>
         <module>domain</module>
+        <module>budget-persistence</module>
         <module>persistence</module>
         <module>service</module>
         <module>app</module>

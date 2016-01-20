@@ -4,9 +4,9 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.service.generic.CRUDService;
 
 /**
- * @author Wojciech Pachuta.
+ * Created by Patryk Skalski on 19/01/16.
  */
-public interface CategoryService extends CRUDService<Category, Long> {
+public interface BudgetService extends CRUDService<Category, Long>, IPlannedTransactionsDataSource {
 
     boolean canDelete(Category category);
 }
