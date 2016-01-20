@@ -125,7 +125,7 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
         comment = "comment";
         transfer = "10.00";
         sourceAccount.setId(1L);
-        sourceAccount.setId(2L);
+        destinationAccount.setId(2L);
 
         when(accountDAO.findAll()).thenReturn(FXCollections.observableArrayList(sourceAccount, destinationAccount));
         when(categoryDAO.findAll()).thenReturn(FXCollections.observableArrayList(category));

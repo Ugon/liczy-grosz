@@ -228,6 +228,18 @@ public class Account extends AbstractEntity {
         internalTransactionSourceSet.remove(transaction);
     }
 
+    public ObservableSet<InternalTransaction> getInternalTransactionDestinationSet() {
+        return FXCollections.unmodifiableObservableSet(internalTransactionDestinationSet);
+    }
+
+    public ObservableSet<ExternalTransaction> getExternalTransactionDestinationSet() {
+        return FXCollections.unmodifiableObservableSet(externalTransactionDestinationSet);
+    }
+
+    public ObservableSet<InternalTransaction> getInternalTransactionSourceSet() {
+        return FXCollections.unmodifiableObservableSet(internalTransactionSourceSet);
+    }
+
     @Override
     public String toString() {
         return nameProperty().get();
