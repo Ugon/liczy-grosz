@@ -117,7 +117,7 @@ public class CategoryShareWindowController {
         this.categories = mock.getCategories();
         this.dateFrom = fromDatePicker.getSelectedDate();
         this.dateTo = toDatePicker.getSelectedDate();
-        this.subcategories = false;
+        this.subcategories = true;
 
         accountsList.add(0, new Account(PropertiesUtil.ALL, BigDecimal.ZERO));
 
