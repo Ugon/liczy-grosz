@@ -11,7 +11,7 @@
                 <fx:include fx:id="mainWindow" source="/pl/edu/agh/iisg/to/to2project/app/stats/main_window/view/MainWindowView.fxml"/>
             </Tab>
             <Tab id="inOutTab" text="InOut" closable="false">
-                <fx:include fx:id="inOut" source="/pl/edu/agh/iisg/to/to2project/app/stats/inout_graph_panel.view/InOutGraphWindowView.fxml"/>
+                <fx:include fx:id="inOut" source="/pl/edu/agh/iisg/to/to2project/app/stats/inout_graph_panel.view/InOutGraphWindowView.fxml" />
             </Tab>
             <Tab id="categoryShareTab" text="CategoryShare" closable="false">
                 <fx:include fx:id="categoryShare" source="/pl/edu/agh/iisg/to/to2project/app/stats/category_share_graph_panel/view/CategoryGraphWindowView.fxml"/>

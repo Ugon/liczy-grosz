@@ -1,6 +1,7 @@
 package pl.edu.agh.iisg.to.to2project.service.impl;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -141,9 +142,9 @@ public class InOutWindowMockImpl {
         return null;
     }
 
-    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
+    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, ObservableList<Category> categories) {
         Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
-        List<PlannedTransaction> plannedTransactions = budgetService.getPlannedTransactions(dateFrom, dateTo, FXCollections.observableList(categories));
+        List<PlannedTransaction> plannedTransactions = budgetService.getPlannedTransactions(dateFrom, dateTo, categories);
         for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
             List<PlannedTransaction> transactionList = new LinkedList<>();
             for(PlannedTransaction transaction : plannedTransactions){
@@ -152,29 +153,27 @@ public class InOutWindowMockImpl {
                 }
             }
             BigDecimal value = transactionList.stream()
-                    .filter(a -> a.getValue()
-                            .compareTo(BigDecimal.ZERO) == -1)
-                    .map(a -> a.getValue().abs())
+                    .map(a -> a.getValue())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            if (value.compareTo(BigDecimal.ZERO) > 0)
+
                 income.put(iterDate, value);
         }
 
         return income;
     }
 
-    public Map<LocalDate, BigDecimal> getPlannedOutgoingsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
-        Map<LocalDate, BigDecimal> outgoings = new TreeMap<>(Collections.reverseOrder());
-        for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
-            BigDecimal value = budgetService.getPlannedTransactions(iterDate, iterDate, FXCollections.observableList(categories)).stream()
-                    .filter(a -> a.getValue()
-                            .compareTo(BigDecimal.ZERO) == 1)
-                    .map(a -> a.getValue().abs())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if ((value.compareTo(BigDecimal.ZERO) > 0) || iterDate.isEqual(dateFrom) || iterDate.isEqual(dateTo))
-                outgoings.put(iterDate, value);
-        }
-        return outgoings;
-    }
+//    public Map<LocalDate, BigDecimal> getPlannedOutgoingsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
+//        Map<LocalDate, BigDecimal> outgoings = new TreeMap<>(Collections.reverseOrder());
+//        for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
+//            BigDecimal value = budgetService.getPlannedTransactions(iterDate, iterDate, FXCollections.observableList(categories)).stream()
+//                    .filter(a -> a.getValue()
+//                            .compareTo(BigDecimal.ZERO) == 1)
+//                    .map(a -> a.getValue().abs())
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+//            if ((value.compareTo(BigDecimal.ZERO) > 0) || iterDate.isEqual(dateFrom) || iterDate.isEqual(dateTo))
+//                outgoings.put(iterDate, value);
+//        }
+//        return outgoings;
+//    }
 }

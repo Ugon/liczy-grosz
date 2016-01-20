@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.budget.controller.BudgetPlannerController;
+import pl.edu.agh.iisg.to.to2project.app.stats.MainController;
 
 /**
  * Created by mike on 15.01.16.
@@ -19,6 +20,9 @@ public class RootController {
     @Autowired
     private BudgetPlannerController budgetPlannerController;
 
+    @Autowired
+    private MainController mainController;
+
     @FXML
     private TabPane tabPane;
 
@@ -27,6 +31,9 @@ public class RootController {
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getId().equals("budgetTab")) {
                 budgetPlannerController.refreshContent();
+            } else if (newValue.getId().equals("statisticsTab")) {
+//                TO DO
+                mainController.refreshContent();
             }
         });
     }

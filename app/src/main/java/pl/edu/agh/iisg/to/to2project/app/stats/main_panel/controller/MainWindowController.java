@@ -21,6 +21,7 @@ import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
+import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
 import java.math.BigDecimal;
@@ -36,10 +37,7 @@ import java.util.stream.Collectors;
 @Controller
 public class MainWindowController {
     @Autowired
-    private IBasicDataSource mock;
-
-    @Autowired
-    private ApplicationContext context;
+    private IBasicDataSourceImpl mock;
 
     @Autowired
     private CategoryTreeProviderUtil categoryTreeProviderUtil;
@@ -275,6 +273,11 @@ public class MainWindowController {
 
     private List<Account> selectedAccounts(){
         return accountsList;
+    }
+
+    public void refreshContent(){
+        mock.refreshCache();
+        this.initialize();
     }
 
 }

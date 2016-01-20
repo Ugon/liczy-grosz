@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.AccountTreeProviderUtil;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.CategoryTreeProviderUtil;
@@ -25,6 +26,7 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
+import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
 import java.math.BigDecimal;
@@ -39,8 +41,9 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class CategoryShareWindowController {
+
     @Autowired
-    private IBasicDataSource mock;
+    private IBasicDataSourceImpl mock;
 
     @Autowired
     private InOutWindowMockImpl mock2;
@@ -88,6 +91,7 @@ public class CategoryShareWindowController {
     private List<CategoryTreeProviderUtil.CategoryAndCheckMenuItem> map = new LinkedList<>();
 
 
+
     @FXML
     private void initialize() {
 //        setVgap(15);
@@ -97,7 +101,6 @@ public class CategoryShareWindowController {
         categoriesMenuButton = new MenuButton();
         accountsList = FXCollections.observableList(mock.getAccounts()); //expensesDataSource.getAccounts()
         categoriesList = FXCollections.observableList(mock.getCategories()); //expensesDataSource.getCategories()
-
 
 
         fromDatePicker.setIsFromDatePicker(true);
@@ -144,16 +147,13 @@ public class CategoryShareWindowController {
 
 //        accounts.clear();
 //        categories.clear();
-
         map.addAll(categoryTreeProviderUtil.init(categoriesMenuButton));
-
         categoryTreeProviderUtil.selectCategoriesInMenu(categoriesMenuButton, it, new ArrayList<CategoryTreeProviderUtil.CategoryAndCheckMenuItem>());
 
 
         initDatePickers();
         initOptionPanel();
         initPieChart();
-
         borderedTitledPaneOpcje.setText(PropertiesUtil.OPTION_TITLE);
     }
     private Node providePane(String label, Node child) {
@@ -254,7 +254,7 @@ public class CategoryShareWindowController {
         if(subcategories) {
             transactions.stream()
                     .collect(Collectors
-                            .groupingBy(a -> a.categoryMonadicProperty().get().parentCategoryMonadicProperty().get(), Collectors
+                            .groupingBy(a -> a.categoryMonadicProperty().get().parentCategoryMonadicProperty().get() != null  ? a.categoryMonadicProperty().get().parentCategoryMonadicProperty().get() : a.categoryMonadicProperty().get(), Collectors
                                     .summingDouble(a -> a.deltaProperty().get().abs().doubleValue())))
                     .forEach((a, b) -> pieChartData.add(new PieChart.Data(a.nameProperty().get(), b)));
         }
@@ -347,5 +347,9 @@ public class CategoryShareWindowController {
                 }
             }
         });
+    }
+    public void refreshContent(){
+        mock.refreshCache();
+        this.initialize();
     }
 }
