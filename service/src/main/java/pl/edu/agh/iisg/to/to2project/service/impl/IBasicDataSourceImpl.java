@@ -9,7 +9,6 @@ import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
-import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +21,7 @@ import java.util.List;
  * @author Bartłomiej Grochal
  */
 @Service
-public class IBasicDataSourceImpl extends CRUDServiceGeneric<Account, Long> implements IBasicDataSource {
+public class IBasicDataSourceImpl implements IBasicDataSource {
 
     @Autowired
     private AccountService accountService;
@@ -37,6 +36,7 @@ public class IBasicDataSourceImpl extends CRUDServiceGeneric<Account, Long> impl
     @Override
     public List<Account> getAccounts() {
         List<Account> returnList = new LinkedList<>();
+
         for(Account account : accountService.getList()) {
             returnList.add(account);
         }
@@ -47,6 +47,7 @@ public class IBasicDataSourceImpl extends CRUDServiceGeneric<Account, Long> impl
     @Override
     public List<Category> getCategories() {
         List<Category> returnList = new LinkedList<>();
+
         for(Category category : categoryService.getList()) {
             if(category.parentCategoryMonadicProperty().isEmpty()) {
                 returnList.add(category);
@@ -62,11 +63,11 @@ public class IBasicDataSourceImpl extends CRUDServiceGeneric<Account, Long> impl
 
         for(ExternalTransaction transaction : transactionService.getList()) {
             if(
-                    compareDates(transaction.dateProperty().get().toDate(), dateFrom) >= 0 &&
-                            compareDates(transaction.dateProperty().get().toDate(), dateTo) <= 0 &&
-                            accounts.contains(transaction.destinationAccountProperty().get()) &&
-                            isAllowedCategory(transaction.categoryMonadicProperty().get(), categories)
-                    ) {
+                compareDates(transaction.dateProperty().get().toDate(), dateFrom) >= 0 &&
+                compareDates(transaction.dateProperty().get().toDate(), dateTo) <= 0 &&
+                accounts.contains(transaction.destinationAccountProperty().get()) &&
+                isAllowedCategory(transaction.categoryMonadicProperty().get(), categories)
+            ) {
 
                 returnList.add(transaction);
             }
