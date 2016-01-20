@@ -78,6 +78,10 @@ public class CategoryTreeProviderUtil {
         List<Category> result = new ArrayList<>();
 
         for (Category category : allCategories) {
+            CategoryAndCheckMenuItem object = getObjectFromCategory(category, map);
+            if (object==null) {
+                continue;
+            }
             if (getObjectFromCategory(category, map).menuItem.isSelected()) {
                 result.add(category);
             } else {
@@ -160,9 +164,13 @@ public class CategoryTreeProviderUtil {
 
     private void selectAllSubcategoriesIfCategoryIsSelected(List<CategoryAndCheckMenuItem> map) {
         allCategories.forEach(item -> {
-            if (!item.subCategoriesObservableSet().isEmpty() && getObjectFromCategory(item, map).menuItem.isSelected()) {
+            CategoryAndCheckMenuItem object = getObjectFromCategory(item, map);
+            if (!item.subCategoriesObservableSet().isEmpty() && object!=null && object.menuItem.isSelected()) {
                 item.subCategoriesObservableSet().forEach(subcategory -> {
-                    getObjectFromCategory(subcategory, map).menuItem.setSelected(true);
+                    CategoryAndCheckMenuItem objectSub = getObjectFromCategory(subcategory, map);
+                    if (object != null) {
+                        objectSub.menuItem.setSelected(true);
+                    }
                 });
             }
         });
@@ -195,7 +203,11 @@ public class CategoryTreeProviderUtil {
         }
 
         for (Category subcategory : subcategories) {
-            if (!getObjectFromCategory(subcategory, map).menuItem.isSelected()) {
+            CategoryAndCheckMenuItem object = getObjectFromCategory(subcategory, map);
+            if (object == null) {
+                continue;
+            }
+            if (!object.menuItem.isSelected()) {
                 result = false;
                 break;
             }
@@ -207,7 +219,10 @@ public class CategoryTreeProviderUtil {
     private void selectCategoryIfAllSubcategoriesAreSelected(List<CategoryAndCheckMenuItem> map) {
         allCategories.forEach(item -> {
             if (!item.subCategoriesObservableSet().isEmpty() && areAllSubcategoriesSelected(item, map)) {
-                getObjectFromCategory(item, map).menuItem.setSelected(true);
+                CategoryAndCheckMenuItem object = getObjectFromCategory(item, map);
+                if (object!=null) {
+                    getObjectFromCategory(item, map).menuItem.setSelected(true);
+                }
             }
         });
     }

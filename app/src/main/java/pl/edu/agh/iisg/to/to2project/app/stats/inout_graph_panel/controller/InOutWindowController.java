@@ -159,7 +159,9 @@ public class InOutWindowController {
 //        accounts.clear();
 //        categories.clear();
 
+        map.clear();
         map.addAll(categoryTreeProviderUtil.init(categoriesMenuButton));
+
 
         categoryTreeProviderUtil.selectCategoriesInMenu(categoriesMenuButton, it, new ArrayList<CategoryTreeProviderUtil.CategoryAndCheckMenuItem>());
 
@@ -170,7 +172,7 @@ public class InOutWindowController {
         lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.X_AXIS);
         borderedTitledPaneOpcje.setText(PropertiesUtil.OPTION_TITLE);
 
-        initChart();
+        initChart(mock.getCategories(), mock.getAccounts());
     }
 
     private void initDatePickers() {
@@ -182,7 +184,7 @@ public class InOutWindowController {
             } else {
                 dateFrom = fromDatePicker.getSelectedDate();
             }
-            initChart();
+            initChart(categoriesList, accountsList);
         });
 
         toDatePicker.selectedDateProperty().addListener(observable -> {
@@ -192,7 +194,7 @@ public class InOutWindowController {
             } else {
                 dateTo = toDatePicker.getSelectedDate();
             }
-            initChart();
+            initChart(categoriesList, accountsList);
         });
 
         if((fromDatePicker.getSelectedDate() == null) || (toDatePicker.getSelectedDate() == null)) {
@@ -206,19 +208,19 @@ public class InOutWindowController {
             @Override
             public void onChanged(Change<? extends Account> c) {
                 accounts = accountsList;
-                initChart();
+                initChart(categoriesList, accountsList);
             }
         });
         categoriesList.addListener(new ListChangeListener<Category>() {
             @Override
             public void onChanged(Change<? extends Category> c) {
                 categories = categoriesList;
-                initChart();
+                initChart(categoriesList, accountsList);
             }
         });
     }
-    private void initChart() {
-        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = createLineChartData(mock2, dateFrom, dateTo, mock.getAccounts(), mock.getCategories());
+    private void initChart(List<Category> categories, List<Account> accounts) {
+        ObservableList<XYChart.Series<String, BigDecimal>> lineChartData = createLineChartData(mock2, dateFrom, dateTo, accounts, categories);
 
         lineChart.setData(lineChartData);
         lineChart.createSymbolsProperty();
@@ -381,6 +383,6 @@ public class InOutWindowController {
     }
     public void refreshContent(){
         mock.refreshCache();
-        this.initialize();
+        initChart(categoriesList, accountsList);
     }
 }

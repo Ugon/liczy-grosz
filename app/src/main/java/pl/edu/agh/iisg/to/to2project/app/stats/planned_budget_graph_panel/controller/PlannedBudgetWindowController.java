@@ -159,6 +159,7 @@ public class PlannedBudgetWindowController {
 //        accounts.clear();
 //        categories.clear();
 
+        map.clear();
         map.addAll(categoryTreeProviderUtil.init(categoriesMenuButton));
 
         categoryTreeProviderUtil.selectCategoriesInMenu(categoriesMenuButton, it, new ArrayList<CategoryTreeProviderUtil.CategoryAndCheckMenuItem>());
@@ -393,15 +394,17 @@ public class PlannedBudgetWindowController {
         LineChart.Series<String, BigDecimal> series1 = new LineChart.Series<>();
         LineChart.Series<String, BigDecimal> series2 = new LineChart.Series<>();
 
-        Map<LocalDate, BigDecimal> data = dataSource.getIncomePerDay(from, to, accounts, categories);
-        Map<LocalDate, BigDecimal> data2 = dataSource.getPlannedIncomePerDay(from, to, categories);
+        if (!categories.isEmpty()) {
+            Map<LocalDate, BigDecimal> data = dataSource.getIncomePerDay(from, to, accounts, categories);
+            Map<LocalDate, BigDecimal> data2 = dataSource.getPlannedIncomePerDay(from, to, categories);
 
-        if (data != null && data2 != null) {
-            for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusMonths(1)) {
-                series1.getData().add(0, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
-                        (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data))));
-                series2.getData().add(0, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
-                        (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data2))));
+            if (data != null && data2 != null) {
+                for (LocalDate iterDate = to; iterDate.isAfter(from.minusDays(1)); iterDate = iterDate.minusMonths(1)) {
+                    series1.getData().add(0, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data))));
+                    series2.getData().add(0, new XYChart.Data<>(iterDate.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                            (sumTransactions(iterDate.withDayOfMonth(1), iterDate.withDayOfMonth(iterDate.lengthOfMonth()), data2))));
+                }
             }
         }
 
@@ -416,6 +419,6 @@ public class PlannedBudgetWindowController {
     }
     public void refreshContent(){
         mock.refreshCache();
-        this.initialize();
+        initChart();
     }
 }

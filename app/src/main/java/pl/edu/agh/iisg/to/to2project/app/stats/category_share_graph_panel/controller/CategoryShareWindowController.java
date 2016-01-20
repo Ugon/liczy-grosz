@@ -145,6 +145,7 @@ public class CategoryShareWindowController {
 
 //        accounts.clear();
 //        categories.clear();
+        map.clear();
         map.addAll(categoryTreeProviderUtil.init(categoriesMenuButton));
         categoryTreeProviderUtil.selectCategoriesInMenu(categoriesMenuButton, it, new ArrayList<CategoryTreeProviderUtil.CategoryAndCheckMenuItem>());
 

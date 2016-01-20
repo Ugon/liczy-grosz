@@ -11,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.AccountTreeProviderUtil;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.CategoryTreeProviderUtil;
@@ -20,7 +19,6 @@ import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.BorderedTitledPane;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
@@ -145,6 +143,7 @@ public class MainWindowController {
 //        accounts.clear();
 //        categories.clear();
 
+        map.clear();
         map.addAll(categoryTreeProviderUtil.init(categoriesMenuButton));
 
         categoryTreeProviderUtil.selectCategoriesInMenu(categoriesMenuButton, it, new ArrayList<CategoryTreeProviderUtil.CategoryAndCheckMenuItem>());
