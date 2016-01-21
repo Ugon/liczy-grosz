@@ -1,12 +1,16 @@
-package pl.edu.agh.iisg.to.to2project.domain.entity.budget;
+package pl.edu.agh.iisg.to.to2project.budget;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.VBox;
+import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
+import pl.edu.agh.iisg.to.to2project.budget.LabeledProgressBar;
+import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -21,6 +25,10 @@ import static java.util.stream.Collectors.toCollection;
 public class Data {
     private static Data instance = null;
 
+    IBasicDataSourceImpl dataSource;
+
+    BudgetPersistenceManager budgetPersistenceManager;
+
     private VBox earningVbox;
     private VBox spendingVbox;
     private DisplayedItem spendingDisplayedItemRoot;
@@ -30,7 +38,8 @@ public class Data {
     private int year;
 
     private Data() {
-        this.availableResources = new SimpleDoubleProperty(DataGenerator.generateAvailableResources());
+        dataSource = new IBasicDataSourceImpl();
+        setBudgetPersistenceManager(new BudgetPersistenceManager());
     }
 
     public static Data getInstance() {
@@ -49,6 +58,10 @@ public class Data {
         this.spendingVbox = spendingVbox;
     }
 
+    public void setBudgetPersistenceManager (BudgetPersistenceManager bpm) {
+        budgetPersistenceManager = bpm;
+    }
+
 
     public TreeItem<DisplayedItem> getSpendingDisplayedItemRoot() { return spendingDisplayedItemRoot; }
     public void setSpendingDisplayedItemRoot(DisplayedItem spendingDisplayedItemRoot) {
@@ -64,8 +77,17 @@ public class Data {
 
     public double getAvailaibleResources() { return availableResources.get(); }
     public ObservableValue getAvailableResourcesProperty() { return availableResources; }
-    public void setAvailaibleResources(int availableResources) {
+    public void setAvailaibleResources(double availableResources) {
         this.availableResources.set(availableResources);
+    }
+    public void setAvailaibleResources() {
+        if (dataSource != null) {
+            BigDecimal sum = dataSource.getAccounts().stream().map(elem -> dataSource.getCurrencBalance(elem))
+                    .reduce(BigDecimal.ZERO, (acc, item) -> acc.add(item));
+            availableResources = new SimpleDoubleProperty(sum.doubleValue());
+        }
+        else
+            availableResources = new SimpleDoubleProperty(0.0);
     }
 
     public ObservableValue getSummaryEarningsPlanColumn() { return earningDisplayedItemRoot.getPlanSumBinding(); }
@@ -123,7 +145,7 @@ public class Data {
     private BigDecimal retrievePlannedValue(Category category, boolean isSpending) {
         Double earningPlanValue = null;
         try {
-            earningPlanValue = BudgetPersistenceManager.getPlannedValueForMonth(category.nameProperty().get(), year, month, isSpending);
+            earningPlanValue = budgetPersistenceManager.getPlannedValueForMonth(category.nameProperty().get(), year, month, isSpending);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -157,7 +179,9 @@ public class Data {
 
             Map<String,List<DisplayedItem>> childrenMap = null;
             if(!category.subCategoriesObservableSet().isEmpty()) {
-                childrenMap = buildTrees(new ArrayList<>(category.subCategoriesObservableSet()));
+                List<Category> childrenList = new ArrayList<>(category.subCategoriesObservableSet());
+                childrenList.sort((Category a, Category b) -> a.nameProperty().get().compareTo(b.nameProperty().get()));
+                childrenMap = buildTrees(childrenList);
             }
             boolean hasEarningChildren = childrenMap != null && !childrenMap.get("earningList").isEmpty();
             boolean hasSpendingChildren = childrenMap != null && !childrenMap.get("spendingList").isEmpty();
@@ -193,6 +217,8 @@ public class Data {
 
 
     public void build(List<Category> list) {
+        spendingVbox.getChildren().clear();
+        earningVbox.getChildren().clear();
         LabeledProgressBar earningLabeledProgressBar = new LabeledProgressBar(earningVbox);
         LabeledProgressBar spendingLabeledProgressBar = new LabeledProgressBar(spendingVbox);
 
@@ -207,5 +233,7 @@ public class Data {
         spendingDisplayedItemRoot = new DisplayedItem("Spending",0.0, 0.0, true);
         spendingDisplayedItemRoot.addChildren(childrenMap.get("spendingList"));
         spendingLabeledProgressBar.update(spendingDisplayedItemRoot);
+
+//        setAvailaibleResources();
     }
 }
