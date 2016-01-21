@@ -383,6 +383,6 @@ public class InOutWindowController {
     }
     public void refreshContent(){
         mock.refreshCache();
-        initChart(categoriesList, accountsList);
+        this.initialize();
     }
 }

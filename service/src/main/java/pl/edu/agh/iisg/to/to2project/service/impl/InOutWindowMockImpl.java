@@ -1,6 +1,6 @@
 package pl.edu.agh.iisg.to.to2project.service.impl;
 
-import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,9 +144,9 @@ public class InOutWindowMockImpl {
         return null;
     }
 
-    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
+    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, ObservableList<Category> categories) {
         Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
-        List<PlannedTransaction> plannedTransactions = budgetService.getPlannedTransactions(dateFrom, dateTo, FXCollections.observableList(categories));
+        List<PlannedTransaction> plannedTransactions = budgetService.getPlannedTransactions(dateFrom, dateTo, categories);
         for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
             List<PlannedTransaction> transactionList = new LinkedList<>();
             for(PlannedTransaction transaction : plannedTransactions){

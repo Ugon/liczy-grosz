@@ -13,7 +13,7 @@ public class BudgetPersistenceManager {
 
     //  Database credentials
     static final String USER = "root";
-    static final String PASS = "";
+    static final String PASS = "1234";
 
     static {
         register();

@@ -9,6 +9,7 @@ import pl.edu.agh.iisg.to.to2project.service.AccountService;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
 import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
+import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ import java.util.List;
  * @author Bartłomiej Grochal
  */
 @Service
-public class IBasicDataSourceImpl implements IBasicDataSource {
+public class IBasicDataSourceImpl extends CRUDServiceGeneric<Account, Long> implements IBasicDataSource {
 
     @Autowired
     private AccountService accountService;
@@ -63,11 +64,11 @@ public class IBasicDataSourceImpl implements IBasicDataSource {
 
         for(ExternalTransaction transaction : transactionService.getList()) {
             if(
-                compareDates(transaction.dateProperty().get().toDate(), dateFrom) >= 0 &&
-                compareDates(transaction.dateProperty().get().toDate(), dateTo) <= 0 &&
-                accounts.contains(transaction.destinationAccountProperty().get()) &&
-                isAllowedCategory(transaction.categoryMonadicProperty().get(), categories)
-            ) {
+                    compareDates(transaction.dateProperty().get().toDate(), dateFrom) >= 0 &&
+                            compareDates(transaction.dateProperty().get().toDate(), dateTo) <= 0 &&
+                            accounts.contains(transaction.destinationAccountProperty().get()) &&
+                            isAllowedCategory(transaction.categoryMonadicProperty().get(), categories)
+                    ) {
 
                 returnList.add(transaction);
             }

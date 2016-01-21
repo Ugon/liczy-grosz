@@ -419,6 +419,6 @@ public class PlannedBudgetWindowController {
     }
     public void refreshContent(){
         mock.refreshCache();
-        initChart();
+        this.initialize();
     }
 }
