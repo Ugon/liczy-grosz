@@ -4,12 +4,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.VBox;
-import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
-import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
-import pl.edu.agh.iisg.to.to2project.budget.LabeledProgressBar;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 
 import java.math.BigDecimal;

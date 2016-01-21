@@ -396,7 +396,7 @@ public class PlannedBudgetWindowController {
         LineChart.Series<String, BigDecimal> series2 = new LineChart.Series<>();
 
         if (!categories.isEmpty()) {
-            Map<LocalDate, BigDecimal> data = dataSource.getIncomePerDay(from, to, accounts, categories);
+            Map<LocalDate, BigDecimal> data = dataSource.getTransactionsPerDay(from, to, accounts, categories);
             Map<LocalDate, BigDecimal> data2 = dataSource.getPlannedIncomePerDay(from, to, categories);
 
             if (data != null && data2 != null) {
