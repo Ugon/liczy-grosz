@@ -24,6 +24,7 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.PlannedTransaction;
+import pl.edu.agh.iisg.to.to2project.service.IInOutWindowMock;
 import pl.edu.agh.iisg.to.to2project.service.impl.BudgetServiceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
@@ -388,7 +389,7 @@ public class PlannedBudgetWindowController {
         lineChart.createSymbolsProperty();
     }
 
-    public static ObservableList<XYChart.Series<String, BigDecimal>> createLineChartData(InOutWindowMockImpl dataSource, LocalDate from, LocalDate to, List<Account> accounts, ObservableList<Category> categories) {
+    public static ObservableList<XYChart.Series<String, BigDecimal>> createLineChartData(IInOutWindowMock dataSource, LocalDate from, LocalDate to, List<Account> accounts, ObservableList<Category> categories) {
         ObservableList<XYChart.Series<String, BigDecimal>> result = FXCollections.observableArrayList();
 
         LineChart.Series<String, BigDecimal> series1 = new LineChart.Series<>();

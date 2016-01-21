@@ -1,10 +1,12 @@
 package pl.edu.agh.iisg.to.to2project.app.stats.tests;
 
 
+import javafx.collections.ObservableList;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.PlannedTransaction;
+import pl.edu.agh.iisg.to.to2project.service.IInOutWindowMock;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Nesbite on 2015-11-25.
  */
-public class InOutWindowMock {
+public class InOutWindowMock implements IInOutWindowMock{
     private List<PlannedTransaction> plannedTransactions;
     private List<ExternalTransaction> transactions;
     private List<Category> cat;
@@ -29,8 +31,9 @@ public class InOutWindowMock {
         this.cat = new ArrayList<>();
         makeAccounts(6);
         makeCategories(8);
-        makeTransactions(150);
-        makePlannedTransactions(100);
+//        makeTransactions(150);
+//        makePlannedTransactions(100);
+
     }
 
     private static class InOutWindowMockHolder {
@@ -53,7 +56,9 @@ public class InOutWindowMock {
 
     public void makeAccounts(int n) {
         for (int i = 1; i < n; i++) {
-            accounts.add(new Account("Konto nr " + i, BigDecimal.ONE));
+            Account acc = new Account("Konto nr " + i, BigDecimal.ONE);
+            acc.setId((long)i);
+            accounts.add(acc);
         }
     }
 
@@ -81,16 +86,28 @@ public class InOutWindowMock {
         return getCategories().contains(category) ? category : (categories.isEmpty() ? null : categories.get(0));
     }
 
-
+    private static long a = 0;
 
     public void makeTransactions(int n) {
-        for (int i = 0; i < n; i++) {
-            int categoryNo = i%cat.size();
-            String date = "2016-" + new DecimalFormat("00").format(i%12 + 1) + "-" + new DecimalFormat("00").format(i%28 + 1);
-            transactions.add(new ExternalTransaction("asdasda", accounts.get(i%accounts.size()),
-                    (categoryNo < (cat.size() / 2 + 1)) ? (new BigDecimal(i%200 + 50).negate())
-                            : (new BigDecimal(i%200 + 50)), org.joda.time.LocalDate.now()));
-        }
+//        for (int i = 0; i < n; i++) {
+//            int categoryNo = i%cat.size();
+//            String date = "2016-" + new DecimalFormat("00").format(i%12 + 1) + "-" + new DecimalFormat("00").format(i%28 + 1);
+//            transactions.add(new ExternalTransaction("asdasda", accounts.get(i%accounts.size()),
+//                    (categoryNo < (cat.size() / 2 + 1)) ? (new BigDecimal(i%200 + 50).negate())
+//                            : (new BigDecimal(i%200 + 50)), org.joda.time.LocalDate.now()));
+//        }
+
+//                String date = "2016-" + new DecimalFormat("00").format(1) + "-" + new DecimalFormat("00").format(25);
+//                ExternalTransaction tr = new ExternalTransaction("asdasda", accounts.get(0),
+//                        (new BigDecimal(232)), org.joda.time.LocalDate.parse(date));
+//                tr.setCategory(new ArrayList<>(getCategories().get(0).subCategoriesObservableSet()).get(0));
+//                tr.setId(a++);
+//                transactions.add(tr);
+
+
+//        for (ExternalTransaction tr : transactions){
+//            System.out.println("\nKonto: "+ tr.destinationAccountProperty().toString() + "\nKategoria: " + tr.categoryMonadicProperty().get() + "\nDelta:" + tr.deltaProperty().get() + "\nData: " + tr.dateProperty().get() + "");
+//        }
     }
     public void makePlannedTransactions(int n) {
         for (int i = 0; i < n; i++) {
@@ -114,34 +131,40 @@ public class InOutWindowMock {
 
     public List<ExternalTransaction> getTransactions(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
 
-        List<ExternalTransaction> selectedTransactions = new ArrayList<>();
-        for (Account account : accounts) {
-            for (Category category : categories) {
-                selectedTransactions.addAll(transactions.stream()
-                        .filter(a -> a.toString().equals(account.toString()))
-                        .filter(a -> (category.subCategoriesObservableSet().isEmpty() ? (a.categoryMonadicProperty().get().equals(category.nameProperty().get())) : (category.subCategoriesObservableSet().stream().map(b -> b.nameProperty().get()).collect(Collectors.toList()).contains(a.categoryMonadicProperty().get()))))
-                        .filter(a -> compareDates(a.dateProperty().get(), dateFrom.minusDays(1)) ==1)
-                        .filter(a -> compareDates(a.dateProperty().get(), dateFrom.plusDays(1)) == -1)
-                        .collect(Collectors.toList()));
-            }
-        }
-        return selectedTransactions;
+
+        String date = "2016-" + new DecimalFormat("00").format(1) + "-" + new DecimalFormat("00").format(25);
+        ExternalTransaction tr = new ExternalTransaction("asdasda", accounts.get(0),
+                (new BigDecimal(232)), org.joda.time.LocalDate.parse(date));
+        tr.setCategory(new ArrayList<>(getCategories().get(0).subCategoriesObservableSet()).get(0));
+        tr.setId(a++);
+        LinkedList<ExternalTransaction> list = new LinkedList<>();
+        list.add(tr);
+
+        return list;
     }
 
 
 
     public List<PlannedTransaction> getPlannedTransactions(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
 
-        List<PlannedTransaction> selectedTransactions = new ArrayList<>();
-        for (Category category : categories) {
-            selectedTransactions.addAll(plannedTransactions.stream()
-                    .filter(a -> (category.subCategoriesObservableSet().isEmpty() ? (a.getCategory().nameProperty().get().equals(category.nameProperty().get())) : (category.subCategoriesObservableSet().stream().map(b -> b.nameProperty().get()).collect(Collectors.toList()).contains(a.getCategory().nameProperty().get()))))
-                    .filter(a -> a.getDate().isAfter(dateFrom.minusDays(1)))
-                    .filter(a -> a.getDate().isBefore(dateTo.plusDays(1)))
-                    .collect(Collectors.toList()));
-        }
+//        List<PlannedTransaction> selectedTransactions = new ArrayList<>();
+//        for (Category category : categories) {
+//            selectedTransactions.addAll(plannedTransactions.stream()
+//                    .filter(a -> (category.subCategoriesObservableSet().isEmpty() ? (a.getCategory().nameProperty().get().equals(category.nameProperty().get())) : (category.subCategoriesObservableSet().stream().map(b -> b.nameProperty().get()).collect(Collectors.toList()).contains(a.getCategory().nameProperty().get()))))
+//                    .filter(a -> a.getDate().isAfter(dateFrom.minusDays(1)))
+//                    .filter(a -> a.getDate().isBefore(dateTo.plusDays(1)))
+//                    .collect(Collectors.toList()));
+//        }
 
-        return selectedTransactions;
+//        return selectedTransactions;
+        String date = "2016-" + new DecimalFormat("00").format(4) + "-" + new DecimalFormat("00").format(11);
+        PlannedTransaction tr = new PlannedTransaction(makeDate(date, "yyyy-MM-dd"),
+                        new BigDecimal(1000), new ArrayList<>(getCategories().get(0).subCategoriesObservableSet()).get(0));
+
+        LinkedList<PlannedTransaction> list = new LinkedList<>();
+        list.add(tr);
+
+        return list;
     }
 
     private int compareDates(org.joda.time.LocalDate checkedDate, LocalDate rangeDate) {
@@ -168,10 +191,17 @@ public class InOutWindowMock {
 
     public Map<LocalDate, BigDecimal> getIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
         Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
+        List<ExternalTransaction> transactions = getTransactions(dateFrom,dateTo,accounts,categories);
         for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
-            BigDecimal value = getTransactions(iterDate, iterDate, accounts, categories).stream()
+            List<ExternalTransaction> transactionList = new LinkedList<>();
+            for(ExternalTransaction transaction : transactions){
+                if ((compareDates(transaction.dateProperty().get(), iterDate.minusDays(1)) == 1)&&(compareDates(transaction.dateProperty().get(), iterDate.plusDays(1)) == -1)){
+                    transactionList.add(transaction);
+                }
+            }
+            BigDecimal value = transactionList.stream()
                     .filter(a -> a.deltaProperty().get()
-                            .compareTo(BigDecimal.ZERO) == -1)
+                            .compareTo(BigDecimal.ZERO) == 1)
                     .map(a -> a.deltaProperty().get().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -188,7 +218,7 @@ public class InOutWindowMock {
         for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
             BigDecimal value = getTransactions(iterDate, iterDate, accounts, categories).stream()
                     .filter(a -> a.deltaProperty().get()
-                            .compareTo(BigDecimal.ZERO) == 1)
+                            .compareTo(BigDecimal.ZERO) == -1)
                     .map(a -> a.deltaProperty().get().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             if ((value.compareTo(BigDecimal.ZERO) > 0) || iterDate.isEqual(dateFrom) || iterDate.isEqual(dateTo))
@@ -229,12 +259,19 @@ public class InOutWindowMock {
     }
 
 
-    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Category> categories) {
+    public Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, ObservableList<Category> categories) {
         Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
+        List<PlannedTransaction> transactions = getPlannedTransactions(dateFrom, dateTo, categories);
         for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
-            BigDecimal value = getPlannedTransactions(iterDate, iterDate, categories).stream()
+            List<PlannedTransaction> transactionList = new LinkedList<>();
+            for(PlannedTransaction transaction : transactions){
+                if (transaction.getDate().isAfter(iterDate.minusDays(1))&&transaction.getDate().isBefore(iterDate.plusDays(1))){
+                    transactionList.add(transaction);
+                }
+            }
+            BigDecimal value = transactionList.stream()
                     .filter(a -> a.getValue()
-                            .compareTo(BigDecimal.ZERO) == -1)
+                            .compareTo(BigDecimal.ZERO) == 1)
                     .map(a -> a.getValue().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 

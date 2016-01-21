@@ -2,11 +2,12 @@
 //
 //import javafx.collections.ObservableList;
 //import javafx.scene.chart.PieChart;
-//import junit.framework.Assert;
+//import org.testng.Assert;
 //import org.testng.annotations.Test;
 //import pl.edu.agh.iisg.to.to2project.app.stats.category_share_graph_panel.controller.CategoryShareWindowController;
-//import pl.edu.agh.iisg.to.to2project.app.stats.entity.IDataSource;
-//import pl.edu.agh.iisg.to.to2project.app.stats.mocks.InOutWindowMock;
+//import pl.edu.agh.iisg.to.to2project.app.stats.tests.InOutWindowMock;
+//import pl.edu.agh.iisg.to.to2project.service.IInOutWindowMock;
+//import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 //
 //import java.time.LocalDate;
 //import java.util.List;
@@ -16,7 +17,7 @@
 // * Created by Wojciech Dymek on 19.01.2016.
 // */
 //public class CategoryShareWindowControllerTest {
-//    private IDataSource mock = InOutWindowMock.getInstance();
+//    private InOutWindowMock mock = InOutWindowMock.getInstance();
 //    private LocalDate from = LocalDate.of(2016, 1, 1);
 //    private LocalDate to = LocalDate.of(2016, 6, 1);
 //

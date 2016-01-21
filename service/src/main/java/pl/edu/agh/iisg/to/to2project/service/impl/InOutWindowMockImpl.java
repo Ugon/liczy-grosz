@@ -8,10 +8,7 @@ import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
 import pl.edu.agh.iisg.to.to2project.domain.entity.PlannedTransaction;
-import pl.edu.agh.iisg.to.to2project.service.AccountService;
-import pl.edu.agh.iisg.to.to2project.service.CategoryService;
-import pl.edu.agh.iisg.to.to2project.service.ExternalTransactionService;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
+import pl.edu.agh.iisg.to.to2project.service.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +19,7 @@ import java.util.*;
  * Created by Nesbite on 2015-11-25.
  */
 @Service
-public class InOutWindowMockImpl {
+public class InOutWindowMockImpl implements IInOutWindowMock {
     @Autowired
     private IBasicDataSource dataSource;
 
