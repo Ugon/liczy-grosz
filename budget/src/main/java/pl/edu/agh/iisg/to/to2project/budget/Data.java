@@ -1,12 +1,16 @@
-package pl.edu.agh.iisg.to.to2project.domain.entity.budget;
+package pl.edu.agh.iisg.to.to2project.budget;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.VBox;
+import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
+import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
+import pl.edu.agh.iisg.to.to2project.budget.LabeledProgressBar;
+import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -21,6 +25,8 @@ import static java.util.stream.Collectors.toCollection;
 public class Data {
     private static Data instance = null;
 
+    IBasicDataSourceImpl dataSource;
+
     BudgetPersistenceManager budgetPersistenceManager;
 
     private VBox earningVbox;
@@ -32,7 +38,7 @@ public class Data {
     private int year;
 
     private Data() {
-        availableResources = new SimpleDoubleProperty(DataGenerator.generateAvailableResources());
+        dataSource = new IBasicDataSourceImpl();
         setBudgetPersistenceManager(new BudgetPersistenceManager());
     }
 
@@ -71,8 +77,17 @@ public class Data {
 
     public double getAvailaibleResources() { return availableResources.get(); }
     public ObservableValue getAvailableResourcesProperty() { return availableResources; }
-    public void setAvailaibleResources(int availableResources) {
+    public void setAvailaibleResources(double availableResources) {
         this.availableResources.set(availableResources);
+    }
+    public void setAvailaibleResources() {
+        if (dataSource != null) {
+            BigDecimal sum = dataSource.getAccounts().stream().map(elem -> dataSource.getCurrencBalance(elem))
+                    .reduce(BigDecimal.ZERO, (acc, item) -> acc.add(item));
+            availableResources = new SimpleDoubleProperty(sum.doubleValue());
+        }
+        else
+            availableResources = new SimpleDoubleProperty(0.0);
     }
 
     public ObservableValue getSummaryEarningsPlanColumn() { return earningDisplayedItemRoot.getPlanSumBinding(); }
@@ -218,5 +233,7 @@ public class Data {
         spendingDisplayedItemRoot = new DisplayedItem("Spending",0.0, 0.0, true);
         spendingDisplayedItemRoot.addChildren(childrenMap.get("spendingList"));
         spendingLabeledProgressBar.update(spendingDisplayedItemRoot);
+
+//        setAvailaibleResources();
     }
 }

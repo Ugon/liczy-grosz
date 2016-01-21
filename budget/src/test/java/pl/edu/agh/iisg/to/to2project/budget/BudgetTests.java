@@ -1,4 +1,4 @@
-package expenses.transactions;
+package  pl.edu.agh.iisg.to.to2project.budget;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.layout.VBox;
@@ -12,13 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import pl.edu.agh.iisg.to.to2project.app.core.ApplicationMain;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.Data;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.DataGenerator;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.DisplayedItem;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +26,7 @@ import static org.mockito.Mockito.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ApplicationMain.class, BudgetTests.TestConfig.class})
+@ContextConfiguration(classes = {BudgetTests.TestConfig.class})
 public class BudgetTests {
 
     @Configuration

@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain.entity.budget;
+package pl.edu.agh.iisg.to.to2project.budget;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

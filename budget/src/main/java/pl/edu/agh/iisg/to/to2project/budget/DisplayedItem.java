@@ -1,4 +1,4 @@
-package pl.edu.agh.iisg.to.to2project.domain.entity.budget;
+package pl.edu.agh.iisg.to.to2project.budget;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;

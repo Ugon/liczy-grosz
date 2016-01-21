@@ -22,6 +22,7 @@
         <module>persistence</module>
         <module>service</module>
         <module>app</module>
+        <module>budget</module>
     </modules>
 
     <build>

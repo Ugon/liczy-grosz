@@ -24,8 +24,8 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.NewCategoryPop
 import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.Data;
-import pl.edu.agh.iisg.to.to2project.domain.entity.budget.DisplayedItem;
+import pl.edu.agh.iisg.to.to2project.budget.Data;
+import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 
 import java.sql.SQLException;
