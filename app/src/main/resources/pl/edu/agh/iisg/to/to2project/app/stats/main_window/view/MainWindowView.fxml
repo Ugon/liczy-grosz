@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.image.ImageView?>
+
+<?import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.BorderedTitledPane?>
+<?import pl.edu.agh.iisg.to.to2project.app.stats.util.OptionsPanel?>
+<?import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker?>
+
+<GridPane alignment="center" hgap="10" vgap="10" styleClass="backgroud" stylesheets="/pl/edu/agh/iisg/to/to2project/app/stats/util/Styles.css"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.stats.main_panel.controller.MainWindowController">
+    <BorderedTitledPane fx:id="optionPanelBorder" GridPane.rowIndex="0" GridPane.columnIndex="0">
+        <GridPane fx:id="optionPanelGridPane" minHeight="330" minWidth="200" alignment="CENTER" hgap="10" vgap="15" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        </GridPane>
+    </BorderedTitledPane>
+
+    <GridPane minHeight="330" minWidth="240" alignment="CENTER" hgap="10" vgap="25" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <ImageView fx:id="clipArt" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <GridPane GridPane.columnIndex="0" GridPane.rowIndex="1" vgap="10" hgap="40">
+            <Label      text="Wpływy:"      minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField  fx:id="wplywyTextField" maxWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label      text="Wydatki:"     minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField  fx:id="wydatkiTextField" maxWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        </GridPane>
+        <Line startX="250" startY="250" endX="450" endY="250" fill="darkgray" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <GridPane GridPane.columnIndex="0" GridPane.rowIndex="3" hgap="40">
+            <Label      text="Saldo:"       minWidth="50"   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField  fx:id="saldoTextField" maxWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        </GridPane>
+    </GridPane>
+
+    <!--<BorderedTitledPane fx:id="borderedTitledPaneStatystyki" GridPane.columnIndex="2" GridPane.rowIndex="0">-->
+        <!--<GridPane minHeight="330" minWidth="200" alignment="CENTER" hgap="10" vgap="25">-->
+            <!--<Button text="WpĹ‚ywy vs Wydatki" fx:id="wplywyVsWydatki" onAction="#handleWplywyVsWydatki"-->
+                                             <!--minWidth="180" minHeight="40" GridPane.columnIndex="0" GridPane.rowIndex="0" />-->
+            <!--<Button text="UdziaĹ‚ kategorii w Wydatkach" fx:id="udzialKategoriiWydatkach" minWidth="180" minHeight="40" GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#handleUdzialKategoriiWWydatkach"/>-->
+            <!--<Button text="Planowany budĹĽet"             fx:id="planowanyBudzet" minWidth="180" minHeight="40" GridPane.columnIndex="0" GridPane.rowIndex="2" onAction="#handlePlanowanyBudzet"/>-->
+        <!--</GridPane>-->
+    <!--</BorderedTitledPane>-->
+</GridPane>

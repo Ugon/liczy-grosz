@@ -14,8 +14,12 @@
         <artifactId>to2project</artifactId>
         <version>1.0</version>
     </parent>
-
     <dependencies>
+        <dependency>
+            <groupId>pl.edu.agh.iisg.to</groupId>
+            <artifactId>to2project.budget-persistence</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

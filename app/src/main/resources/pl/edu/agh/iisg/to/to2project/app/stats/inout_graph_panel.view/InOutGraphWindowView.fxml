@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.CategoryAxis?>
+
+<?import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.BorderedTitledPane?>
+<?import pl.edu.agh.iisg.to.to2project.app.stats.util.OptionsPanel?>
+<GridPane alignment="center" hgap="10" vgap="10" stylesheets="@../util/Styles.css"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.iisg.to.to2project.app.stats.inout_graph_panel.controller.InOutWindowController">
+    <GridPane alignment="center" hgap="10" vgap="10" GridPane.rowIndex="0" GridPane.columnIndex="0">
+        <LineChart fx:id="lineChart" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <xAxis><CategoryAxis fx:id="monthXAxis" label="Miesiące" /></xAxis>
+            <yAxis><NumberAxis label="Kwota" lowerBound="0" upperBound="3" tickUnit="1"/></yAxis>
+        </LineChart>
+    </GridPane>
+
+    <BorderedTitledPane fx:id="borderedTitledPaneOpcje" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <GridPane fx:id="optionPanelGridPane" minHeight="330" minWidth="200" alignment="CENTER" hgap="10" vgap="15" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        </GridPane>
+    </BorderedTitledPane>
+
+    <TableView fx:id="transactionsTable" maxWidth="750"  maxHeight="200" GridPane.columnSpan="2" GridPane.rowIndex="1">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Data" prefWidth="100"/>
+            <TableColumn fx:id="valueColumn" text="Kwota" prefWidth="100"/>
+            <TableColumn fx:id="categoryColumn" text="Kategoria" prefWidth="100"/>
+            <!--<TableColumn fx:id="sourceAccountColumn" text="Source Account" prefWidth="200"/>-->
+            <TableColumn fx:id="destinationAccountColumn" text="Destination Account" prefWidth="200"/>
+            <TableColumn fx:id="descriptionColumn" text="Opis" prefWidth="250"/>
+        </columns>
+    </TableView>
+</GridPane>

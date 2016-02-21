@@ -24,6 +24,7 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.ColorfulValidatin
 import pl.edu.agh.iisg.to.to2project.app.expenses.common.nodes.ColorfulValidatingTextField;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.NewInternalTransactionPopupController;
 import pl.edu.agh.iisg.to.to2project.app.expenses.transactions.controller.TransactionsController;
+import pl.edu.agh.iisg.to.to2project.app.stats.main_panel.controller.MainWindowController;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Account;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.InternalTransaction;
@@ -63,6 +64,12 @@ public class NewInternalTransactionPopupControllerIntegrationTest {
         @Primary
         public InternalTransactionDAO internalTransactionDAOImpl() {
             return mock(InternalTransactionDAO.class);
+        }
+
+        @Bean
+        @Primary
+        public MainWindowController mainWindowController() {
+            return mock(MainWindowController.class);
         }
 
         @Bean

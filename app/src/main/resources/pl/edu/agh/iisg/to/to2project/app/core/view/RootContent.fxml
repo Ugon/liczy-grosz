@@ -4,18 +4,20 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0">
+<BorderPane fx:controller="pl.edu.agh.iisg.to.to2project.app.core.RootController" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0">
     <center>
-        <TabPane side="TOP">
-            <Tab text="Expenses" closable="false">
+        <TabPane fx:id="tabPane" side="TOP">
+            <Tab fx:id="expensesTab" text="Expenses" closable="false">
                 <!--<AnchorPane id="Content"/>-->
                 <fx:include source="/pl/edu/agh/iisg/to/to2project/app/expenses/ExpensesRootContent.fxml"/>
             </Tab>
-            <Tab text="Budget" closable="false">
+            <Tab fx:id="budgetTab" text="Budget" closable="false">
                 <!--<AnchorPane id="Content"/>-->
+                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/budget/view/BudgetRootContent.fxml"/>
             </Tab>
-            <Tab text="Statistics" closable="false">
+            <Tab fx:id="statisticsTab" text="Statistics" closable="false">
                 <!--<AnchorPane id="Content"/>-->
+                <fx:include source="/pl/edu/agh/iisg/to/to2project/app/stats/MainWindow.fxml"/>
             </Tab>
         </TabPane>
     </center>
