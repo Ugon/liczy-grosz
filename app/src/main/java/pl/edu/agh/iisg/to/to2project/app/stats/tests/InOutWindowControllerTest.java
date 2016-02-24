@@ -6,8 +6,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import pl.edu.agh.iisg.to.to2project.app.stats.inout_graph_panel.controller.InOutWindowController;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.PropertiesUtil;
-import pl.edu.agh.iisg.to.to2project.service.IBasicDataSource;
-import pl.edu.agh.iisg.to.to2project.service.impl.IBasicDataSourceImpl;
 import pl.edu.agh.iisg.to.to2project.service.impl.InOutWindowMockImpl;
 
 import java.math.BigDecimal;
@@ -33,7 +31,7 @@ public class InOutWindowControllerTest {
 
     @Test
     public void testContent() throws Exception {
-        ObservableList<XYChart.Series<String, BigDecimal>>result = InOutWindowController.createLineChartData(mock, from, to, mock.getAccounts(), mock.getCategories());
+        ObservableList<XYChart.Series<String, BigDecimal>> result = InOutWindowController.createLineChartData(mock, from, to, mock.getAccounts(), mock.getCategories());
 
         Assert.assertEquals(PropertiesUtil.INCOMES, result.get(0).getName());
         Assert.assertEquals(PropertiesUtil.OUTCOMES, result.get(1).getName());
