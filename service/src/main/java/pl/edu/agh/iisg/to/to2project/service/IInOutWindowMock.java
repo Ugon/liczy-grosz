@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public interface IInOutWindowMock {
     Map<LocalDate, BigDecimal> getIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories);
+    Map<LocalDate, BigDecimal> getTransactionsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories);
     Map<LocalDate, BigDecimal> getOutgoingsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories);
     Category getCategoryByName(List<Category> categories, String categoryName);
     Map<LocalDate, BigDecimal> getPlannedIncomePerDay(LocalDate dateFrom, LocalDate dateTo, ObservableList<Category> categories);

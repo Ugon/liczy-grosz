@@ -212,6 +212,11 @@ public class InOutWindowMock implements IInOutWindowMock{
         return income;
     }
 
+    @Override
+    public Map<LocalDate, BigDecimal> getTransactionsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
+        return null;
+    }
+
 
     public Map<LocalDate, BigDecimal> getOutgoingsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
         Map<LocalDate, BigDecimal> outgoings = new TreeMap<>(Collections.reverseOrder());

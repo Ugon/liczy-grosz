@@ -271,10 +271,14 @@ public class CategoryShareWindowController {
                     e -> {
                         if (e.getButton() == MouseButton.PRIMARY) {
                             List<Category> cats = new LinkedList<>(mock2.getCategoryByName(categories, data.getName()).subCategoriesObservableSet());
-                            if (!cats.isEmpty()) {
-                                categories = cats;
-                                this.subcategories = false;
-                                this.initPieChart();
+                            if (!mock.getTransactions(dateFrom, dateTo, accounts, cats).stream()
+                                    .filter(a -> a.deltaProperty().get().doubleValue() < 0)
+                                    .collect(Collectors.toList()).isEmpty()) {
+                                if (!cats.isEmpty()) {
+                                    categories = cats;
+                                    this.subcategories = false;
+                                    this.initPieChart();
+                                }
                             }
                         } else if (e.getButton() == MouseButton.SECONDARY) {
                             if (subcategories) {

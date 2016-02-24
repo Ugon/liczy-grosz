@@ -195,7 +195,7 @@ public class BudgetPersistenceManager {
         return monthId;
     }
 
-    public static Double getPlannedValueForMonth(String categoryName, int year,int month, boolean isSpending) throws SQLException
+    public Double getPlannedValueForMonth(String categoryName, int year,int month, boolean isSpending) throws SQLException
     {
         Double planValue = null;
         //STEP 4: Execute a query
@@ -226,19 +226,15 @@ public class BudgetPersistenceManager {
     }
     public static List<Plan> getPlansForTimeInterval(int yearFrom, int monthFrom, int yearTo, int monthTo) throws SQLException
     {
-        List<Plan> plans = new ArrayList<Plan>();
+        List<Plan> plans = new ArrayList<>();
         //STEP 4: Execute a query
         System.out.println("Creating statement...");
-        String query = "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM PLAN as p JOIN DATE as d on d.id = p.DateId WHERE d.Year > ? and d.Year < ? " +
-                " UNION " +
-                "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM PLAN as p JOIN DATE as d on d.id = p.DateId WHERE Year = ? and Month >= ?" +
-                " UNION " +
-                "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM PLAN as p JOIN DATE as d on d.id = p.DateId WHERE Year = ? and Month <= ?";
+        String query = "SELECT p.name, p.SpendingPlanValue, p.EarningPlanValue, d.Year, d.Month FROM PLAN as p JOIN DATE as d on d.id = p.DateId WHERE (d.Year > ? or (d.Year = ? and d.Month >= ?)) and (d.Year < ? or (d.Year = ? and d.Month <= ?))";
         PreparedStatement preparedStmt = conn.prepareStatement(query);
         preparedStmt.setInt(1,yearFrom);
-        preparedStmt.setInt(2,yearTo);
-        preparedStmt.setInt(3,yearFrom);
-        preparedStmt.setInt(4,monthFrom);
+        preparedStmt.setInt(2,yearFrom);
+        preparedStmt.setInt(3,monthFrom);
+        preparedStmt.setInt(4,yearTo);
         preparedStmt.setInt(5,yearTo);
         preparedStmt.setInt(6,monthTo);
 
@@ -252,10 +248,8 @@ public class BudgetPersistenceManager {
             Double spendingPlanValue = (-1.0) * rs.getDouble("SpendingPlanValue");
             int year = rs.getInt("Year");
             int month = rs.getInt("Month");
-            Plan earningTransaction = new Plan(categoryName, year, month , earningPlanValue, earningPlanValue);
-            Plan spendingTransaction = new Plan(categoryName, year, month , earningPlanValue, spendingPlanValue);
-            plans.add(earningTransaction);
-            plans.add(spendingTransaction);
+            Plan plan = new Plan(categoryName, year, month , earningPlanValue, spendingPlanValue);
+            plans.add(plan);
         }
         preparedStmt.close();
         rs.close();
@@ -351,7 +345,7 @@ public class BudgetPersistenceManager {
                 "ON DELETE NO ACTION "+
                 "ON UPDATE NO ACTION);";
 
-        PreparedStatement preparedStmt = null;
+        PreparedStatement preparedStmt;
         try {
             preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
@@ -373,7 +367,7 @@ public class BudgetPersistenceManager {
                 " PRIMARY KEY ( id ))";
 
         String alter_table = "ALTER TABLE DATE ADD UNIQUE unique_index (Year, Month);";
-        PreparedStatement preparedStmt = null;
+        PreparedStatement preparedStmt;
         try {
             preparedStmt = conn.prepareStatement(query);
             preparedStmt.executeUpdate();
@@ -389,7 +383,7 @@ public class BudgetPersistenceManager {
     private static void addDateUniqueIndex()
     {
         String alter_table = "ALTER TABLE DATE ADD UNIQUE unique_index (Year, Month);";
-        PreparedStatement preparedStmt = null;
+        PreparedStatement preparedStmt;
         try {
             preparedStmt = conn.prepareStatement(alter_table);
             preparedStmt.executeUpdate();
@@ -407,7 +401,7 @@ public class BudgetPersistenceManager {
     {
         boolean dateExist = false;
         boolean planExist = false;
-        DatabaseMetaData md = null;
+        DatabaseMetaData md;
         try {
             md = conn.getMetaData();
             ResultSet rs = md.getTables(null, null, "%", null);

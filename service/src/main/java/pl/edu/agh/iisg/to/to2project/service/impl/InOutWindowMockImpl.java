@@ -72,6 +72,27 @@ public class InOutWindowMockImpl implements IInOutWindowMock {
         return localDateUnified.isAfter(rangeDate) ? 1 : -1;
     }
 
+    public Map<LocalDate, BigDecimal> getTransactionsPerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
+        Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
+        List<ExternalTransaction> transactions = dataSource.getTransactions(dateFrom,dateTo,accounts,categories);
+        for (LocalDate iterDate = dateTo; iterDate.isAfter(dateFrom.minusDays(1)); iterDate = iterDate.minusDays(1)) {
+            List<ExternalTransaction> transactionList = new LinkedList<>();
+            for(ExternalTransaction transaction : transactions){
+                if (compareDates(transaction.dateProperty().get(), iterDate) == 0){
+                    transactionList.add(transaction);
+                }
+            }
+            BigDecimal value = transactionList.stream()
+                    .map(a -> a.deltaProperty().get())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+                income.put(iterDate, value);
+        }
+
+        return income;
+    }
+
     public Map<LocalDate, BigDecimal> getIncomePerDay(LocalDate dateFrom, LocalDate dateTo, List<Account> accounts, List<Category> categories) {
         Map<LocalDate, BigDecimal> income = new TreeMap<>(Collections.reverseOrder());
         List<ExternalTransaction> transactions = dataSource.getTransactions(dateFrom,dateTo,accounts,categories);
@@ -84,7 +105,7 @@ public class InOutWindowMockImpl implements IInOutWindowMock {
             }
             BigDecimal value = transactionList.stream()
                     .filter(a -> a.deltaProperty().get()
-                            .compareTo(BigDecimal.ZERO) == -1)
+                            .compareTo(BigDecimal.ZERO) == 1)
                     .map(a -> a.deltaProperty().get().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -110,7 +131,7 @@ public class InOutWindowMockImpl implements IInOutWindowMock {
             }
             BigDecimal value = transactionList.stream()
                     .filter(a -> a.deltaProperty().get()
-                            .compareTo(BigDecimal.ZERO) == 1)
+                            .compareTo(BigDecimal.ZERO) == -1)
                     .map(a -> a.deltaProperty().get().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -152,8 +173,6 @@ public class InOutWindowMockImpl implements IInOutWindowMock {
                 }
             }
             BigDecimal value = transactionList.stream()
-                    .filter(a -> a.getValue()
-                            .compareTo(BigDecimal.ZERO) == -1)
                     .map(a -> a.getValue().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
