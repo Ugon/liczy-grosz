@@ -12,6 +12,7 @@ import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 
 /**
  * @author Bartłomiej Grochal
+ * @author Wojciech Pachuta
  */
 @Controller
 @Scope("prototype")
@@ -34,12 +35,8 @@ public class DeleteCategoryPopupController extends PopupController {
     @FXML
     @Override
     protected void handleOKButtonClick(ActionEvent actionEvent) {
-        if(!deletedCategory.subCategoriesObservableSet().isEmpty()){
-            errorLabel.setText("You are not able to delete this category, because it contains subcategories.");
-        }
-        else if(!deletedCategory.externalTransactionsObservableSet().isEmpty() ||
-                !deletedCategory.internalTransactionObservableSet().isEmpty()){
-            errorLabel.setText("You are not able to delete this category, because it contains transactions.");
+        if(!categoryService.canDelete(deletedCategory)){
+            errorLabel.setText("Sorry, you can't delete this category.");
         }
         else{
             categoryService.remove(deletedCategory);

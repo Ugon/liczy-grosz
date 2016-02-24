@@ -11,4 +11,9 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 @Service
 public class InternalTransactionServiceImpl extends CRUDServiceGeneric<InternalTransaction, Long> implements InternalTransactionService {
 
+    @Override
+    public boolean canDelete(InternalTransaction transaction) {
+        return true;
+    }
+
 }

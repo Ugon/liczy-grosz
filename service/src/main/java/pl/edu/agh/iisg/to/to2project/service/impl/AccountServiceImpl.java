@@ -11,4 +11,9 @@ import pl.edu.agh.iisg.to.to2project.service.generic.CRUDServiceGeneric;
 @Service
 public class AccountServiceImpl extends CRUDServiceGeneric<Account, Long> implements AccountService {
 
+    @Override
+    public boolean canDelete(Account account) {
+        return !account.hasTransactions();
+    }
+
 }
