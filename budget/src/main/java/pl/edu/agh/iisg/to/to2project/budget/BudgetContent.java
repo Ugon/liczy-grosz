@@ -4,6 +4,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.VBox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
 import pl.edu.agh.iisg.to.to2project.domain.entity.ExternalTransaction;
@@ -19,9 +21,10 @@ import static java.util.stream.Collectors.toCollection;
 /**
  * Created by Patryk Skalski,Michal Krok on 9/12/15.
  */
-public class Data {
-    private static Data instance = null;
+@Component
+public class BudgetContent {
 
+    @Autowired
     IBasicDataSourceImpl dataSource;
 
     BudgetPersistenceManager budgetPersistenceManager;
@@ -34,15 +37,8 @@ public class Data {
     private int month;
     private int year;
 
-    private Data() {
-        dataSource = new IBasicDataSourceImpl();
+    public BudgetContent() {
         setBudgetPersistenceManager(new BudgetPersistenceManager());
-    }
-
-    public static Data getInstance() {
-        if(instance == null)
-            instance = new Data();
-        return instance;
     }
 
     public void setYearAndMonth(int year, int month) {
@@ -94,45 +90,6 @@ public class Data {
     public ObservableValue getSummarySpendingBalanceColumn() {
         return earningDisplayedItemRoot.getTransactionsSumBinding().subtract(spendingDisplayedItemRoot.getTransactionsSumBinding());
     }
-
-
-   /** public DisplayedItem buildSpendingTree(VBox vbox)
-    {
-        DisplayedItem root = new DisplayedItem("Spending",0.0, 0.0, true);
-        spendingDisplayedItemRoot = root;
-        addTextField(root, vbox);
-        ProgressBar progressBar = addProgressBar(vbox);
-        root.addChild(buildTree(DataGenerator.generateSpendings(), vbox));
-        setProgressBarProgress(root, progressBar);
-        return root;
-    }
-
-    public DisplayedItem buildEarningTree(VBox vbox)
-    {
-        DisplayedItem root = new DisplayedItem("Earning",0.0, 0.0, false);
-        earningDisplayedItemRoot = root;
-        addTextField(root, vbox);
-        ProgressBar progressBar = addProgressBar(vbox);
-        root.addChild(buildTree(DataGenerator.generateEarnings(),vbox));
-        setProgressBarProgress(root, progressBar);
-        return root;
-    }
-
-    public DisplayedItem buildTree(Category category,VBox vbox){
-        DisplayedItem root = new DisplayedItem(category,DataGenerator.getTransactionValueForCategory(category.nameProperty().get(),month,year),DataGenerator.getPlanValueForCategory(category.nameProperty().get(),month,year));
-        addTextField(root, vbox);
-        ProgressBar progressBar = addProgressBar(vbox);
-        if (category.hasChildren()) {
-
-            for (Category child : category.subCategoriesObservableSet())
-            {
-                DisplayedItem newChild = buildTree(child, vbox);
-                root.addChild(newChild);
-            }
-        }
-        setProgressBarProgress(root, progressBar);
-        return root;
-    }*/
 
     private boolean isOld() {
         YearMonth currentDate = YearMonth.now();
@@ -231,6 +188,6 @@ public class Data {
         spendingDisplayedItemRoot.addChildren(childrenMap.get("spendingList"));
         spendingLabeledProgressBar.update(spendingDisplayedItemRoot);
 
-//        setAvailaibleResources();
+        setAvailaibleResources();
     }
 }

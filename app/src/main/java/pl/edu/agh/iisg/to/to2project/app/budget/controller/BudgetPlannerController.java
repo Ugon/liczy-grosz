@@ -22,10 +22,10 @@ import pl.edu.agh.iisg.to.to2project.app.expenses.categories.controller.NewCateg
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.EditCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.expenses.categories.view.NewCategoryPopup;
 import pl.edu.agh.iisg.to.to2project.app.stats.util.entity.calendar.DatePicker;
+import pl.edu.agh.iisg.to.to2project.budget.BudgetContent;
+import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
 import pl.edu.agh.iisg.to.to2project.budget_persistence.BudgetPersistenceManager;
 import pl.edu.agh.iisg.to.to2project.domain.entity.Category;
-import pl.edu.agh.iisg.to.to2project.budget.Data;
-import pl.edu.agh.iisg.to.to2project.budget.DisplayedItem;
 import pl.edu.agh.iisg.to.to2project.service.CategoryService;
 
 import java.sql.SQLException;
@@ -47,7 +47,8 @@ public class BudgetPlannerController {
 
     private VBox earningVbox = new VBox();
 
-    private Data data;
+    @Autowired
+    private BudgetContent budgetContent;
 
     private YearMonth date = YearMonth.now();
 
@@ -103,22 +104,22 @@ public class BudgetPlannerController {
     public AnchorPane spendingProgressBarPane;
 
     @FXML
-    public TableColumn<Data, Double> summaryAvailableResourcesColumn;
+    public TableColumn<BudgetContent, Double> summaryAvailableResourcesColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summaryEarningsPlanColumn;
+    public TableColumn<BudgetContent, ObservableValue> summaryEarningsPlanColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summaryEarningsRealColumn;
+    public TableColumn<BudgetContent, ObservableValue> summaryEarningsRealColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summarySpendingPlanColumn;
+    public TableColumn<BudgetContent, ObservableValue> summarySpendingPlanColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue> summarySpendingRealColumn;
+    public TableColumn<BudgetContent, ObservableValue> summarySpendingRealColumn;
 
     @FXML
-    public TableColumn<Data, ObservableValue>  summarySpendingsBalanceColumn;
+    public TableColumn<BudgetContent, ObservableValue>  summarySpendingsBalanceColumn;
 
     @FXML
     public Button addCategoryButton;
@@ -127,7 +128,7 @@ public class BudgetPlannerController {
     public Button editCategoryButton;
 
     @FXML
-    public TableView<Data> summaryTableView;
+    public TableView<BudgetContent> summaryTableView;
 
     @FXML
     private void handleAddCategoryAction(ActionEvent event) {
@@ -342,7 +343,7 @@ public class BudgetPlannerController {
                                      int year = datePicker.getSelectedDate().getYear();
                                      int month = datePicker.getSelectedDate().getMonthValue();
                                      date = YearMonth.of(year, month);
-                                     data.setYearAndMonth(year, month);
+                                     budgetContent.setYearAndMonth(year, month);
                                      refreshContent();
                                  }
                              }
@@ -350,9 +351,8 @@ public class BudgetPlannerController {
     }
 
     private void initializeBE() {
-        data = Data.getInstance();
-        data.setYearAndMonth(date.getYear(), date.getMonthValue());
-        data.setVboxes(earningVbox, spendingVbox);
+        budgetContent.setYearAndMonth(date.getYear(), date.getMonthValue());
+        budgetContent.setVboxes(earningVbox, spendingVbox);
         refreshContent();
     }
 
@@ -360,18 +360,18 @@ public class BudgetPlannerController {
         if(!rootController.isBudgetTabActive())
             return;
 
-        data.build(categoryService.getList());
+        spendingVbox.getChildren().clear();
+        earningVbox.getChildren().clear();
 
-        //data.buildEarningTree(earningVbox);
-        //data.buildSpendingTree(spendingVbox);
+        budgetContent.build(categoryService.getList());
 
-        final ObservableList<Data> dataList = FXCollections.observableArrayList(data);
+        final ObservableList<BudgetContent> dataList = FXCollections.observableArrayList(budgetContent);
         summaryTableView.getItems().clear();
         summaryTableView.setItems(dataList);
 
-        spendingTreeTableView.setRoot(data.getSpendingDisplayedItemRoot());
+        spendingTreeTableView.setRoot(budgetContent.getSpendingDisplayedItemRoot());
         spendingTreeTableView.setShowRoot(false);
-        earningTreeTableView.setRoot(data.getEarningDisplayedItemRoot());
+        earningTreeTableView.setRoot(budgetContent.getEarningDisplayedItemRoot());
         earningTreeTableView.setShowRoot(false);
 
         spendingProgressBarPane.getChildren().clear();

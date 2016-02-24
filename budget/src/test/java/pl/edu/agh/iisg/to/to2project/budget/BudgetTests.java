@@ -46,7 +46,7 @@ public class BudgetTests {
 
     private DataGenerator dataGenerator;
 
-    private Data instance;
+    private BudgetContent instance;
 
     private LocalDate dateTime;
 
@@ -56,7 +56,7 @@ public class BudgetTests {
         resetMocks();
         dateTime = LocalDate.now();
         dataGenerator = new DataGenerator();
-        instance = Data.getInstance();
+        instance = new BudgetContent();
         instance.setVboxes(new VBox(), new VBox());
         instance.setBudgetPersistenceManager(budgetPersistenceManager);
     }

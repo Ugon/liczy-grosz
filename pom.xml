@@ -17,12 +17,12 @@
     </parent>
 
     <modules>
-        <module>domain</module>
-        <module>budget-persistence</module>
-        <module>persistence</module>
-        <module>service</module>
         <module>app</module>
         <module>budget</module>
+        <module>budget-persistence</module>
+        <module>domain</module>
+        <module>persistence</module>
+        <module>service</module>
     </modules>
 
     <build>

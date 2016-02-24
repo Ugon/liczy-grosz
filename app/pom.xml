@@ -63,6 +63,11 @@
             <artifactId>testng</artifactId>
             <version>6.9.10</version>
         </dependency>
+        <dependency>
+            <groupId>pl.edu.agh.iisg.to</groupId>
+            <artifactId>to2project.budget</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
